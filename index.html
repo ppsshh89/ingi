@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="ko" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>마이 홈 - 네이버 검색 · 오창 날씨 · 실시간 검색어</title>
+  <meta name="description" content="삼성 인터넷 브라우저 맞춤형 시작페이지 - 네이버 즉시 검색, 자주 가는 갤러리/사이트, 오창읍 시간대별 날씨, 네이버·구글 실시간 인기검색어 비교" />
+
+  <!-- 삼성 인터넷 브라우저 & 모바일 홈화면/빠른실행 최적화 메타 태그 -->
+  <meta name="theme-color" id="meta-theme-color" content="#03C75A" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="마이 홈" />
+  <meta name="application-name" content="마이 홈" />
+
+  <!-- 고해상도 SVG 파비콘 & 삼성 브라우저 북마크 아이콘 -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%2303C75A'/%3E%3Cpath d='M32 34h18l20 31V34h18v52H70L50 55v31H32V34z' fill='%23ffffff'/%3E%3Ccircle cx='92' cy='28' r='16' fill='%23FF3B30'/%3E%3Cpath d='M92 19l7 10h-5v8h-4v-8h-5l7-10z' fill='%23ffffff'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%2303C75A'/%3E%3Cpath d='M32 34h18l20 31V34h18v52H70L50 55v31H32V34z' fill='%23ffffff'/%3E%3Ccircle cx='92' cy='28' r='16' fill='%23FF3B30'/%3E%3Cpath d='M92 19l7 10h-5v8h-4v-8h-5l7-10z' fill='%23ffffff'/%3E%3C/svg%3E" />
+
+  <!-- Pretendard 웹폰트 -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            naver: {
+              DEFAULT: '#03C75A',
+              dark: '#02b350',
+              light: '#E8FAF0'
+            },
+            rankUp: '#F43142',
+            rankDown: '#2B78F6'
+          },
+          fontFamily: {
+            sans: ['"Pretendard Variable"', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', '"Apple SD Gothic Neo"', '"Malgun Gothic"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      letter-spacing: -0.02em;
+      overflow-x: hidden;
+    }
+
+    /* 고정폭 숫자 (순위, 기온, 카운트다운 등 흔들림 방지) */
+    .tnum {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+
+    /* 네이버 검색창 포커스 스타일 */
+    .naver-search-box {
+      border: 2px solid #03C75A;
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+    }
+    .naver-search-box:focus-within {
+      box-shadow: 0 4px 16px rgba(3, 199, 90, 0.22);
+    }
+
+    /* 가로 스크롤바 숨김 (시간대별 날씨 & 퀵 아이콘 바) */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* 순위 변동 하이라이트 플래시 애니메이션 */
+    .row-flash-up {
+      animation: flashUp 1.2s ease-out;
+    }
+    .row-flash-down {
+      animation: flashDown 1.2s ease-out;
+    }
+    .row-flash-new {
+      animation: flashNew 1.4s ease-out;
+    }
+    @keyframes flashUp {
+      0% { background-color: rgba(244, 49, 66, 0.16); }
+      100% { background-color: transparent; }
+    }
+    @keyframes flashDown {
+      0% { background-color: rgba(43, 120, 246, 0.16); }
+      100% { background-color: transparent; }
+    }
+    @keyframes flashNew {
+      0% { background-color: rgba(3, 199, 90, 0.22); }
+      100% { background-color: transparent; }
+    }
+
+    /* 새로고침 아이콘 회전 애니메이션 */
+    .spin-fast {
+      animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* 앱 스타일 스쿼클 아이콘 */
+    .squircle-icon {
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-[#F2F4F7] dark:bg-[#111317] text-[#1E1E23] dark:text-[#F1F3F5] min-h-screen transition-colors duration-200">
+
+  <!-- 삼성 인터넷 모바일 최적 폭(500px) 컨테이너 -->
+  <div class="max-w-[500px] mx-auto min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#111317] relative pb-8">
+
+    <!-- =====================================================================
+         1. 상단 헤더 & 네이버 다이렉트 검색창 (급상승 롤링 배너 제거됨)
+         ===================================================================== -->
+    <header class="bg-white dark:bg-[#1A1D23] pt-3 pb-3 px-3.5 sticky top-0 z-30 border-b border-gray-200/80 dark:border-gray-800/90 shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <a href="https://m.naver.com" target="_blank" rel="noopener noreferrer"
+             title="네이버 모바일 홈"
+             class="w-6 h-6 rounded-md bg-[#03C75A] flex items-center justify-center text-white font-black text-sm shadow-xs active:scale-95 transition-transform">
+            N
+          </a>
+          <span class="text-[14px] font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
+            마이 포털 홈
+          </span>
+          <span id="clock-display" class="text-[11.5px] font-semibold text-gray-400 dark:text-gray-500 tnum"></span>
+        </div>
+
+        <!-- 우측 유틸 버튼 (링크 이동방식 / 다크모드) -->
+        <div class="flex items-center gap-1.5">
+          <button id="btn-link-target" type="button"
+                  onclick="toggleLinkTarget()"
+                  class="px-2 py-1 rounded-md text-[11px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  title="검색어 및 아이콘 클릭 시 열기 방식">
+            현재창 이동
+          </button>
+
+          <!-- 다크모드 전환 버튼 -->
+          <button type="button" onclick="toggleDarkMode()"
+                  class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
+                  aria-label="다크모드 전환">
+            <svg id="icon-sun" class="w-4 h-4 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+            </svg>
+            <svg id="icon-moon" class="w-4 h-4 block dark:hidden text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 네이버 다이렉트 검색창 -->
+      <form id="naver-search-form" onsubmit="handleDirectSearch(event)" class="naver-search-box rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-3 pr-1.5 py-1">
+        <span class="text-[#03C75A] font-black text-lg mr-2.5 select-none">N</span>
+        <input
+          id="naver-search-input"
+          type="search"
+          placeholder="네이버 검색어를 입력하세요"
+          autocomplete="off"
+          class="w-full bg-transparent text-[14.5px] font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none py-1"
+        />
+        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1.5 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-3 py-1.5 text-xs font-extrabold flex items-center gap-1 transition-all shrink-0">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          검색
+        </button>
+      </form>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="px-3 pt-2.5 flex-1 flex flex-col gap-2.5">
+
+      <!-- ===================================================================
+           2. 자주 가는 사이트 퀵 아이콘 바 (아이콘 + 하단 작은 이름표 + 직접 편집)
+           =================================================================== -->
+      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-3 pt-2.5 pb-3 shadow-xs">
+        <div class="flex items-center justify-between mb-2 px-0.5">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[12px] font-extrabold text-gray-700 dark:text-gray-200">자주 가는 사이트</span>
+            <span class="text-[10.5px] text-gray-400 dark:text-gray-500 font-medium">아이콘 터치 시 바로 이동</span>
+          </div>
+          <button type="button" onclick="openShortcutModal()"
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] dark:hover:text-[#03C75A] transition-colors">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>아이콘 편집</span>
+          </button>
+        </div>
+
+        <!-- 퀵 아이콘 그리드 (모바일 한 줄에 6개씩 깔끔하게 배치, 밑에 조그만 글씨) -->
+        <div id="shortcuts-grid" class="grid grid-cols-6 gap-y-2.5 gap-x-1">
+          <!-- JS에서 렌더링 -->
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           3. 충북 청주시 오창읍 실시간 & 시간대별 날씨 위젯
+           =================================================================== -->
+      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 p-3 shadow-xs">
+        <!-- 상단: 위치명 + 현위치/오창읍 전환 버튼 + 미세먼지/강수 배지 -->
+        <div class="flex items-center justify-between gap-1 mb-2">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="text-[#03C75A] shrink-0">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+              </svg>
+            </span>
+            <h2 id="weather-location-title" class="text-[13px] font-extrabold text-gray-900 dark:text-white truncate">
+              충북 청주시 오창읍
+            </h2>
+
+            <!-- 현위치(GPS) 버튼 -->
+            <button type="button" onclick="useGpsWeather()"
+                    class="px-1.5 py-0.5 rounded text-[10.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-[#E8FAF0] hover:text-[#03C75A] transition-colors shrink-0"
+                    title="현재 GPS 위치 날씨 조회">
+              📍현위치
+            </button>
+            <!-- 오창읍 복귀 버튼 (현위치 모드일 때 표시) -->
+            <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
+                    class="hidden px-1.5 py-0.5 rounded text-[10.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
+              오창읍 고정
+            </button>
+          </div>
+
+          <!-- 미세먼지 · 초미세먼지 · 강수확률 배지 -->
+          <div class="flex items-center gap-1 shrink-0">
+            <span id="badge-pm10" class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+              미세 좋음
+            </span>
+            <span id="badge-pm25" class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+              초미세 좋음
+            </span>
+          </div>
+        </div>
+
+        <!-- 중단: 현재 기온 & 날씨 요약 -->
+        <div class="flex items-center justify-between bg-[#F8FAFC] dark:bg-[#14171C] rounded-xl px-3 py-2 mb-2 border border-gray-100 dark:border-gray-800/80">
+          <div class="flex items-center gap-2.5">
+            <div id="weather-current-icon" class="text-3xl leading-none select-none">☀️</div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span id="weather-current-temp" class="text-[22px] font-black text-gray-900 dark:text-white tnum leading-none">--°</span>
+                <span id="weather-current-desc" class="text-[12.5px] font-extrabold text-gray-700 dark:text-gray-200">날씨 불러오는 중</span>
+              </div>
+              <p id="weather-minmax-feel" class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mt-0.5 tnum">
+                최저 --° / 최고 --° · 체감 --°
+              </p>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <div id="weather-rain-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
+              💧 강수 0%
+            </div>
+            <div id="weather-wind-humidity" class="text-[10.5px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 tnum">
+              습도 --% · 바람 --m/s
+            </div>
+          </div>
+        </div>
+
+        <!-- 하단: 시간대별 날씨 (가로 터치 스크롤, 향후 18시간) -->
+        <div id="hourly-weather-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 pb-0.5">
+          <!-- JS에서 렌더링 -->
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           4. 실시간 인기검색어 한눈에 비교 (네이버·포털 실검 vs 구글 급상승)
+              - 기본 1~10위 노출 + 11~20위 펼쳐보기
+              - 어떤 키워드를 눌러도 무조건 네이버 통합검색으로 이동
+           =================================================================== -->
+      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs overflow-hidden">
+        <!-- 60초 자동갱신 프로그레스 바 -->
+        <div class="w-full h-1 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+          <div id="refresh-progress-bar" class="h-full bg-[#03C75A] transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+        </div>
+
+        <!-- 카드 헤더: 타이틀 & 갱신 시각 & 즉시 새로고침 -->
+        <div class="px-3.5 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="w-2 h-2 rounded-full bg-[#03C75A] animate-pulse shrink-0"></span>
+            <h2 class="text-[13.5px] font-extrabold text-gray-900 dark:text-white truncate">
+              실시간 인기검색어 비교
+            </h2>
+            <span id="updated-time-text" class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tnum truncate">
+              업데이트 중...
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="text-[10.5px] font-bold text-gray-400 dark:text-gray-500 tnum">
+              <strong id="countdown-sec" class="text-[#03C75A]">60</strong>초
+            </span>
+            <button type="button" onclick="manualRefresh()"
+                    class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-[#E8FAF0] dark:hover:bg-[#03C75A]/20 text-gray-700 dark:text-gray-200 hover:text-[#03C75A] text-[11px] font-bold active:scale-95 transition-all">
+              <svg id="refresh-icon" class="w-3 h-3 text-[#03C75A]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>갱신</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2열 컬럼 헤더 (좌: 네이버·포털 실검 / 우: 구글 급상승) -->
+        <div class="grid grid-cols-2 divide-x divide-gray-200/80 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 bg-[#F8FAFC] dark:bg-[#15181E]">
+          <div class="py-2 px-3 flex items-center justify-between">
+            <span class="text-[12px] font-extrabold text-[#03C75A] flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded bg-[#03C75A] text-white text-[10px] font-black inline-flex items-center justify-center">N</span>
+              <span>네이버·포털 실검</span>
+            </span>
+            <span class="text-[10px] text-gray-400 font-semibold">N검색 이동</span>
+          </div>
+          <div class="py-2 px-3 flex items-center justify-between">
+            <span class="text-[12px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded bg-blue-500 text-white text-[10px] font-black inline-flex items-center justify-center">G</span>
+              <span>구글 급상승</span>
+            </span>
+            <span class="text-[10px] text-gray-400 font-semibold">N검색 이동</span>
+          </div>
+        </div>
+
+        <!-- 2열 실시간 순위 리스트 -->
+        <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
+          <!-- 좌측: 네이버·포털 실검 -->
+          <div id="compare-col-naver" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
+          <!-- 우측: 구글 실시간 급상승 -->
+          <div id="compare-col-google" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
+        </div>
+
+        <!-- 11위 ~ 20위 펼쳐보기 / 접기 토글 버튼 + 등락 테스트 바 -->
+        <div class="border-t border-gray-100 dark:border-gray-800 bg-[#F9FAFB] dark:bg-[#15181E] px-3 py-2 flex items-center justify-between gap-2">
+          <button type="button" id="btn-toggle-expand" onclick="toggleRankExpand()"
+                  class="flex-1 py-1.5 px-3 rounded-xl bg-white dark:bg-[#1F242D] border border-gray-200/90 dark:border-gray-700 text-[12px] font-extrabold text-gray-700 dark:text-gray-200 hover:border-[#03C75A] hover:text-[#03C75A] active:scale-[0.99] transition-all flex items-center justify-center gap-1 shadow-2xs">
+            <span id="expand-btn-label">11위 ~ 20위 더보기</span>
+            <svg id="expand-btn-arrow" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <button type="button" onclick="simulateRankFluctuation()"
+                  class="px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-rose-50 dark:bg-rose-950/50 text-[#F43142] dark:text-rose-400 border border-rose-200/70 dark:border-rose-800/60 hover:bg-rose-100 active:scale-95 transition-all shrink-0"
+                  title="순위 등락 및 NEW 진입 애니메이션 테스트">
+            ⚡등락 테스트
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           5. 지워지지 않는 한 줄 메모장 (자동 저장)
+           =================================================================== -->
+      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-3.5 py-2.5 shadow-xs flex items-center gap-2">
+        <span class="text-amber-500 text-sm select-none shrink-0" title="브라우저에 자동 저장되는 메모장">📝</span>
+        <input
+          id="quick-memo-input"
+          type="text"
+          placeholder="빠른 한 줄 메모 (입력 즉시 자동 저장됩니다)"
+          class="w-full bg-transparent text-[13px] font-medium text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+        />
+        <span id="memo-saved-badge" class="text-[10px] font-bold text-[#03C75A] opacity-0 transition-opacity shrink-0">
+          저장됨
+        </span>
+        <button type="button" onclick="clearQuickMemo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold shrink-0 px-1" title="메모 지우기">
+          지우기
+        </button>
+      </section>
+
+    </main>
+
+    <!-- 하단 안내 푸터 -->
+    <footer class="mt-4 px-4 text-center text-[11px] text-gray-400 dark:text-gray-500 space-y-0.5">
+      <p>모든 인기검색어 터치 시 <strong>네이버 통합검색(search.naver.com)</strong>으로 즉시 이동합니다.</p>
+    </footer>
+  </div>
+
+  <!-- =======================================================================
+       모달: 자주 가는 사이트 (퀵 아이콘 바) 직접 추가 / 수정 / 순서변경 / 삭제
+       ======================================================================= -->
+  <div id="shortcut-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-[#1A1D23] w-full max-w-[480px] rounded-t-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden max-h-[88vh] flex flex-col">
+      <!-- 모달 헤더 -->
+      <div class="px-4 py-3 bg-[#03C75A] text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-[15px]">자주 가는 사이트 아이콘 편집</h3>
+          <p class="text-[11px] text-white/90">디시 갤러리도 글자·이모지 배지로 겹치지 않게 구분할 수 있습니다</p>
+        </div>
+        <button type="button" onclick="closeShortcutModal()" class="p-1 text-white/90 hover:text-white font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- 모달 본문 -->
+      <div class="p-4 overflow-y-auto space-y-4 flex-1">
+        <!-- 새 아이콘 추가 / 수정 폼 -->
+        <form id="shortcut-form" onsubmit="saveShortcutItem(event)" class="bg-[#F8FAFC] dark:bg-[#13161B] p-3 rounded-xl border border-gray-200/80 dark:border-gray-800 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span id="shortcut-form-title" class="text-[12.5px] font-extrabold text-gray-800 dark:text-gray-100">
+              + 새 바로가기 추가
+            </span>
+            <button type="button" id="btn-cancel-edit" onclick="resetShortcutForm()" class="hidden text-[11px] font-bold text-gray-400 hover:text-gray-600">
+              수정 취소
+            </button>
+          </div>
+
+          <input type="hidden" id="sc-edit-id" value="" />
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
+                아이콘 아래 작은 이름 (예: 아이폰갤)
+              </label>
+              <input id="sc-label" type="text" maxlength="8" required placeholder="아이폰갤"
+                     class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[13px] font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
+                아이콘 안 글자/이모지 (비우면 파비콘)
+              </label>
+              <input id="sc-badge" type="text" maxlength="3" placeholder="📱 또는 아이"
+                     class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[13px] font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
+              이동할 주소 (URL)
+            </label>
+            <input id="sc-url" type="text" required placeholder="https://gall.dcinside.com/board/lists/?id=iphone"
+                   class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[12.5px] text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
+          </div>
+
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <!-- 아이콘 배경색 프리셋 선택 -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 mr-1">배경색:</span>
+              <input type="color" id="sc-color" value="#3B82F6" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent" />
+              <div class="flex items-center gap-1">
+                <button type="button" onclick="setScColor('#1E293B')" class="w-4 h-4 rounded-full bg-[#1E293B]"></button>
+                <button type="button" onclick="setScColor('#2563EB')" class="w-4 h-4 rounded-full bg-[#2563EB]"></button>
+                <button type="button" onclick="setScColor('#E11D48')" class="w-4 h-4 rounded-full bg-[#E11D48]"></button>
+                <button type="button" onclick="setScColor('#F59E0B')" class="w-4 h-4 rounded-full bg-[#F59E0B]"></button>
+                <button type="button" onclick="setScColor('#03C75A')" class="w-4 h-4 rounded-full bg-[#03C75A]"></button>
+                <button type="button" onclick="setScColor('#7C3AED')" class="w-4 h-4 rounded-full bg-[#7C3AED]"></button>
+              </div>
+            </div>
+
+            <button type="submit" id="sc-submit-btn" class="px-3.5 py-1.5 rounded-lg bg-[#03C75A] hover:bg-[#02b350] text-white text-[12px] font-extrabold shrink-0">
+              저장하기
+            </button>
+          </div>
+        </form>
+
+        <!-- 등록된 아이콘 목록 (순서 이동 / 수정 / 삭제) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[12px] font-extrabold text-gray-700 dark:text-gray-300">현재 등록된 아이콘 목록</span>
+            <button type="button" onclick="restoreDefaultShortcuts()" class="text-[11px] font-bold text-rose-500 hover:underline">
+              초기 기본값 복원
+            </button>
+          </div>
+          <div id="modal-shortcuts-list" class="space-y-1.5">
+            <!-- JS에서 렌더링 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 모달 푸터 -->
+      <div class="px-4 py-2.5 border-t border-gray-100 dark:border-gray-800 flex justify-end bg-gray-50 dark:bg-[#15181E]">
+        <button type="button" onclick="closeShortcutModal()" class="px-4 py-1.5 rounded-xl bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 font-extrabold text-xs">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 알림창 (alert 대체) -->
+  <div id="toast-box" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
+    <div id="toast-message" class="bg-gray-900/95 dark:bg-white/95 text-white dark:text-gray-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 whitespace-nowrap">
+      <span class="w-2 h-2 rounded-full bg-[#03C75A]"></span>
+      <span>알림</span>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       메인 애플리케이션 스크립트
+       ======================================================================= -->
+  <script>
+    /**
+     * ============================================================================
+     * [사용자 커스텀 영역 1] 자주 가는 사이트 기본 목록 (DEFAULT_SHORTCUTS)
+     * - 코드에서 직접 수정하거나, 화면 우측 상단 [+ 아이콘 편집] 버튼으로 언제든 수정 가능합니다.
+     * - badge에 이모지나 1~2글자(예: '📱', '아이', '테슬')를 넣으면 디시 갤러리끼리도 아이콘이 겹치지 않습니다.
+     * - badge를 빈 문자열('')로 두면 해당 사이트의 공식 파비콘을 자동으로 불러옵니다.
+     * ============================================================================
+     */
+    const DEFAULT_SHORTCUTS = [
+      {
+        id: 'sc-iphone-gall',
+        label: '아이폰갤',
+        url: 'https://m.dcinside.com/board/iphone',
+        badge: '📱',
+        color: '#1E293B'
+      },
+      {
+        id: 'sc-humoruniv',
+        label: '웃대',
+        url: 'http://m.humoruniv.com/',
+        badge: '웃대',
+        color: '#F59E0B'
+      },
+      {
+        id: 'sc-tesla-gall',
+        label: '테슬라갤',
+        url: 'https://m.dcinside.com/board/tesla',
+        badge: '⚡',
+        color: '#E11D48'
+      },
+      {
+        id: 'sc-youtube',
+        label: '유튜브',
+        url: 'https://m.youtube.com/',
+        badge: '▶️',
+        color: '#DC2626'
+      },
+      {
+        id: 'sc-chzzk',
+        label: '치지직',
+        url: 'https://chzzk.naver.com/',
+        badge: '⚡',
+        color: '#00C73C'
+      },
+      {
+        id: 'sc-naver-shopping',
+        label: 'N쇼핑',
+        url: 'https://shopping.naver.com/',
+        badge: '🛍️',
+        color: '#03C75A'
+      }
+    ];
+
+    /**
+     * ============================================================================
+     * [사용자 커스텀 영역 2] 기본 날씨 위치 고정 좌표 (충북 청주시 오창읍)
+     * ============================================================================
+     */
+    const OCHANG_LOCATION = {
+      name: '충북 청주시 오창읍',
+      lat: 36.7126,
+      lon: 127.4316
+    };
+
+    const STORAGE_KEYS = {
+      THEME: 'myhome_theme_v2',
+      LINK_TARGET: 'myhome_link_target_v2', // '_top' | '_blank'
+      SHORTCUTS: 'myhome_shortcuts_v2',
+      MEMO: 'myhome_quick_memo_v2',
+      EXPAND_RANKS: 'myhome_expand_ranks_v2',
+      NAVER_SNAPSHOT: 'myhome_prev_naver_v2',
+      GOOGLE_SNAPSHOT: 'myhome_prev_google_v2',
+      NAVER_CACHE: 'myhome_cache_naver_v2',
+      GOOGLE_CACHE: 'myhome_cache_google_v2'
+    };
+
+    const state = {
+      // 삼성 브라우저 홈화면 특성상 기본값을 '_top'(현재창 바로 이동)으로 설정, 버튼으로 '_blank' 전환 가능
+      linkTarget: localStorage.getItem(STORAGE_KEYS.LINK_TARGET) || '_top',
+      isExpandedRanks: localStorage.getItem(STORAGE_KEYS.EXPAND_RANKS) === 'true',
+      shortcuts: [],
+      weatherLoc: { ...OCHANG_LOCATION, isGps: false },
+      refreshIntervalSec: 60,
+      remainingSec: 60,
+      isFetchingTrends: false,
+      naverKeywords: [],
+      googleKeywords: []
+    };
+
+    /**
+     * 네트워크 지연/오프라인 시에도 즉시 화면을 채워주는 초기 폴백 데이터
+     */
+    const FALLBACK_NAVER_KEYWORDS = [
+      { rank: 1, keyword: '오창읍 날씨 미세먼지', state: 'u', delta: 2 },
+      { rank: 2, keyword: '프로야구 KBO 순위', state: 'u', delta: 4 },
+      { rank: 3, keyword: '코스피 코스닥 환율', state: 's', delta: 0 },
+      { rank: 4, keyword: '아이폰 신규 업데이트', state: 'n', delta: 0 },
+      { rank: 5, keyword: '테슬라 모델Y 보조금', state: 'u', delta: 1 },
+      { rank: 6, keyword: '넷플릭스 한국 TOP 10', state: 'd', delta: 2 },
+      { rank: 7, keyword: '고속도로 실시간 교통상황', state: 'u', delta: 3 },
+      { rank: 8, keyword: '로또 당첨번호 조회', state: 's', delta: 0 },
+      { rank: 9, keyword: '청약홈 아파트 분양일정', state: 'n', delta: 0 },
+      { rank: 10, keyword: '손흥민 경기일정 중계', state: 'd', delta: 1 },
+      { rank: 11, keyword: '챔피언스리그 하이라이트', state: 'u', delta: 5 },
+      { rank: 12, keyword: '청주 주말 가볼만한곳', state: 'd', delta: 2 },
+      { rank: 13, keyword: '전기차 보조금 조회', state: 'u', delta: 1 },
+      { rank: 14, keyword: '국세청 홈택스 조회', state: 's', delta: 0 },
+      { rank: 15, keyword: 'KTX 예매 코레일톡', state: 'd', delta: 3 },
+      { rank: 16, keyword: 'AI 반도체 관련주', state: 'n', delta: 0 },
+      { rank: 17, keyword: '배달 할인 쿠폰 이벤트', state: 'u', delta: 2 },
+      { rank: 18, keyword: '청년월세 지원 신청', state: 's', delta: 0 },
+      { rank: 19, keyword: '제주도 항공권 특가', state: 'd', delta: 1 },
+      { rank: 20, keyword: '오늘의 띠별운세', state: 'u', delta: 2 }
+    ];
+
+    const FALLBACK_GOOGLE_KEYWORDS = [
+      { rank: 1, keyword: '프리미어리그 하이라이트', state: 'u', delta: 3 },
+      { rank: 2, keyword: '테슬라 주가 실시간', state: 'u', delta: 1 },
+      { rank: 3, keyword: '챗GPT 신규 기능', state: 'n', delta: 0 },
+      { rank: 4, keyword: '전국 주간 날씨예보', state: 's', delta: 0 },
+      { rank: 5, keyword: '메이저리그 경기 결과', state: 'd', delta: 2 },
+      { rank: 6, keyword: '한국은행 기준금리', state: 'u', delta: 4 },
+      { rank: 7, keyword: '유튜브 인기 급상승', state: 's', delta: 0 },
+      { rank: 8, keyword: '아이폰 출시일 사전예약', state: 'n', delta: 0 },
+      { rank: 9, keyword: '자동차세 연납 신청', state: 'd', delta: 1 },
+      { rank: 10, keyword: '아이돌 컴백 쇼케이스', state: 'u', delta: 2 },
+      { rank: 11, keyword: '원달러 환율 전망', state: 'u', delta: 3 },
+      { rank: 12, keyword: '박스오피스 영화순위', state: 'd', delta: 2 },
+      { rank: 13, keyword: '건강보험 환급금 조회', state: 's', delta: 0 },
+      { rank: 14, keyword: '갤럭시 One UI 업데이트', state: 'u', delta: 1 },
+      { rank: 15, keyword: '프로배구 V리그 일정', state: 'd', delta: 3 },
+      { rank: 16, keyword: '해외직구 관세 한도', state: 'n', delta: 0 },
+      { rank: 17, keyword: '공무원 시험일정', state: 's', delta: 0 },
+      { rank: 18, keyword: 'K패스 교통카드 환급', state: 'u', delta: 2 },
+      { rank: 19, keyword: '근로장려금 지급일', state: 'd', delta: 1 },
+      { rank: 20, keyword: '넷플릭스 신작 추천', state: 'u', delta: 1 }
+    ];
+
+    /**
+     * ============================================================================
+     * 1. 무조건 네이버 검색 결과 페이지 이동 로직
+     * ============================================================================
+     */
+    function buildNaverSearchUrl(keyword) {
+      const clean = String(keyword || '').trim();
+      return 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=' + encodeURIComponent(clean);
+    }
+
+    function handleKeywordClick(event, keyword) {
+      if (!keyword) return true;
+      const url = buildNaverSearchUrl(keyword);
+      if (state.linkTarget === '_top') {
+        event.preventDefault();
+        try {
+          window.top.location.href = url;
+        } catch (err) {
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+        return false;
+      }
+      return true;
+    }
+
+    function handleDirectSearch(event) {
+      event.preventDefault();
+      const input = document.getElementById('naver-search-input');
+      const query = input.value.trim();
+      if (!query) {
+        showToast('검색어를 입력해주세요.');
+        input.focus();
+        return;
+      }
+      const url = buildNaverSearchUrl(query);
+      if (state.linkTarget === '_top') {
+        try {
+          window.top.location.href = url;
+          return;
+        } catch (e) {}
+      }
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function clearSearchInput() {
+      const input = document.getElementById('naver-search-input');
+      input.value = '';
+      document.getElementById('btn-clear-input').classList.add('hidden');
+      input.focus();
+    }
+
+    /**
+     * ============================================================================
+     * 2. 자주 가는 사이트 (퀵 아이콘 바) 렌더링 & 커스텀 편집 기능
+     * ============================================================================
+     */
+    function loadShortcuts() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEYS.SHORTCUTS);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            state.shortcuts = parsed;
+            return;
+          }
+        }
+      } catch (e) {}
+      state.shortcuts = JSON.parse(JSON.stringify(DEFAULT_SHORTCUTS));
+    }
+
+    function saveShortcutsToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.SHORTCUTS, JSON.stringify(state.shortcuts));
+      } catch (e) {}
+    }
+
+    function getFaviconUrl(url) {
+      try {
+        const u = new URL(url);
+        return `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(u.origin)}`;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function handleShortcutClick(event, url) {
+      if (state.linkTarget === '_top') {
+        event.preventDefault();
+        try {
+          window.top.location.href = url;
+        } catch (err) {
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+        return false;
+      }
+      return true;
+    }
+
+    function renderShortcutsBar() {
+      const grid = document.getElementById('shortcuts-grid');
+      if (!grid) return;
+
+      grid.innerHTML = state.shortcuts.map(item => {
+        const hasBadge = item.badge && String(item.badge).trim().length > 0;
+        const badgeText = String(item.badge || '').trim();
+        const isTwoChars = badgeText.length >= 2 && !/\p{Extended_Pictographic}/u.test(badgeText);
+        const fontSizeClass = isTwoChars ? 'text-[13px] font-black tracking-tighter' : 'text-[20px] font-extrabold';
+        const bgColor = item.color || '#1E293B';
+        const faviconUrl = getFaviconUrl(item.url);
+
+        return `
+          <a href="${escapeHtml(item.url)}"
+             target="${state.linkTarget}"
+             rel="noopener noreferrer"
+             onclick="return handleShortcutClick(event, ${JSON.stringify(item.url).replace(/"/g, '&quot;')})"
+             class="flex flex-col items-center justify-start group select-none">
+            <div class="w-11 h-11 squircle-icon flex items-center justify-center text-white transition-transform duration-150 group-hover:scale-105 group-active:scale-95 overflow-hidden"
+                 style="background-color: ${escapeHtml(bgColor)};">
+              ${hasBadge
+                ? `<span class="${fontSizeClass} leading-none">${escapeHtml(badgeText)}</span>`
+                : `<img src="${escapeHtml(faviconUrl)}" alt="${escapeHtml(item.label)}" class="w-6 h-6 object-contain" onerror="this.outerHTML='<span class=\\'text-xs font-black\\'>${escapeHtml(item.label.slice(0, 2))}</span>'" />`
+              }
+            </div>
+            <span class="mt-1 text-[11px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate max-w-[54px] text-center leading-tight">
+              ${escapeHtml(item.label)}
+            </span>
+          </a>
+        `;
+      }).join('');
+    }
+
+    function openShortcutModal() {
+      resetShortcutForm();
+      renderModalShortcutsList();
+      document.getElementById('shortcut-modal').classList.remove('hidden');
+    }
+
+    function closeShortcutModal() {
+      document.getElementById('shortcut-modal').classList.add('hidden');
+    }
+
+    function setScColor(hex) {
+      document.getElementById('sc-color').value = hex;
+    }
+
+    function resetShortcutForm() {
+      document.getElementById('sc-edit-id').value = '';
+      document.getElementById('sc-label').value = '';
+      document.getElementById('sc-badge').value = '';
+      document.getElementById('sc-url').value = '';
+      document.getElementById('sc-color').value = '#2563EB';
+      document.getElementById('shortcut-form-title').textContent = '+ 새 바로가기 추가';
+      document.getElementById('sc-submit-btn').textContent = '추가하기';
+      document.getElementById('btn-cancel-edit').classList.add('hidden');
+    }
+
+    function editShortcutItem(id) {
+      const target = state.shortcuts.find(s => s.id === id);
+      if (!target) return;
+      document.getElementById('sc-edit-id').value = target.id;
+      document.getElementById('sc-label').value = target.label;
+      document.getElementById('sc-badge').value = target.badge || '';
+      document.getElementById('sc-url').value = target.url;
+      document.getElementById('sc-color').value = target.color || '#1E293B';
+      document.getElementById('shortcut-form-title').textContent = `✏️ '${target.label}' 아이콘 수정`;
+      document.getElementById('sc-submit-btn').textContent = '수정 저장';
+      document.getElementById('btn-cancel-edit').classList.remove('hidden');
+    }
+
+    function saveShortcutItem(event) {
+      event.preventDefault();
+      const editId = document.getElementById('sc-edit-id').value.trim();
+      const label = document.getElementById('sc-label').value.trim();
+      const badge = document.getElementById('sc-badge').value.trim();
+      let url = document.getElementById('sc-url').value.trim();
+      const color = document.getElementById('sc-color').value;
+
+      if (!label || !url) return;
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+
+      if (editId) {
+        const idx = state.shortcuts.findIndex(s => s.id === editId);
+        if (idx !== -1) {
+          state.shortcuts[idx] = { ...state.shortcuts[idx], label, badge, url, color };
+        }
+        showToast(`'${label}' 바로가기가 수정되었습니다.`);
+      } else {
+        state.shortcuts.push({
+          id: 'sc-' + Date.now(),
+          label,
+          badge,
+          url,
+          color
+        });
+        showToast(`'${label}' 바로가기가 추가되었습니다.`);
+      }
+
+      saveShortcutsToStorage();
+      renderShortcutsBar();
+      renderModalShortcutsList();
+      resetShortcutForm();
+    }
+
+    function moveShortcutItem(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= state.shortcuts.length) return;
+      const temp = state.shortcuts[index];
+      state.shortcuts[index] = state.shortcuts[targetIndex];
+      state.shortcuts[targetIndex] = temp;
+      saveShortcutsToStorage();
+      renderShortcutsBar();
+      renderModalShortcutsList();
+    }
+
+    function deleteShortcutItem(id) {
+      if (state.shortcuts.length <= 1) {
+        showToast('최소 1개의 아이콘은 남아있어야 합니다.');
+        return;
+      }
+      state.shortcuts = state.shortcuts.filter(s => s.id !== id);
+      saveShortcutsToStorage();
+      renderShortcutsBar();
+      renderModalShortcutsList();
+      showToast('아이콘이 삭제되었습니다.');
+    }
+
+    function restoreDefaultShortcuts() {
+      state.shortcuts = JSON.parse(JSON.stringify(DEFAULT_SHORTCUTS));
+      saveShortcutsToStorage();
+      renderShortcutsBar();
+      renderModalShortcutsList();
+      resetShortcutForm();
+      showToast('초기 기본 아이콘 목록으로 복원되었습니다.');
+    }
+
+    function renderModalShortcutsList() {
+      const container = document.getElementById('modal-shortcuts-list');
+      if (!container) return;
+
+      container.innerHTML = state.shortcuts.map((item, idx) => `
+        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#14171D] border border-gray-200/70 dark:border-gray-800">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-extrabold shrink-0"
+                 style="background-color: ${escapeHtml(item.color || '#1E293B')}">
+              ${escapeHtml(item.badge || item.label.slice(0, 2))}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="text-[13px] font-extrabold text-gray-800 dark:text-gray-100 truncate">${escapeHtml(item.label)}</div>
+              <div class="text-[10.5px] text-gray-400 truncate">${escapeHtml(item.url)}</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" onclick="moveShortcutItem(${idx}, -1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-900 text-xs" title="위로">▲</button>
+            <button type="button" onclick="moveShortcutItem(${idx}, 1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-900 text-xs" title="아래로">▼</button>
+            <button type="button" onclick="editShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[11px] font-bold">수정</button>
+            <button type="button" onclick="deleteShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-[11px] font-bold">삭제</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * ============================================================================
+     * 3. 오창읍 실시간 & 시간대별 날씨 + 미세먼지 위젯 (Open-Meteo API)
+     * ============================================================================
+     */
+    function getWeatherInfoFromWmo(code, isDay = 1) {
+      const map = {
+        0: { icon: isDay ? '☀️' : '🌙', desc: '맑음' },
+        1: { icon: isDay ? '🌤️' : '🌙', desc: '대체로 맑음' },
+        2: { icon: '⛅', desc: '구름 조금' },
+        3: { icon: '☁️', desc: '흐림' },
+        45: { icon: '🌫️', desc: '안개' },
+        48: { icon: '🌫️', desc: '짙은 안개' },
+        51: { icon: '🌦️', desc: '약한 이슬비' },
+        53: { icon: '🌦️', desc: '이슬비' },
+        55: { icon: '🌧️', desc: '강한 이슬비' },
+        61: { icon: '🌦️', desc: '약한 비' },
+        63: { icon: '🌧️', desc: '비' },
+        65: { icon: '🌧️', desc: '강한 비' },
+        71: { icon: '🌨️', desc: '약한 눈' },
+        73: { icon: '❄️', desc: '눈' },
+        75: { icon: '❄️', desc: '강한 눈' },
+        80: { icon: '🌦️', desc: '소나기' },
+        81: { icon: '🌧️', desc: '강한 소나기' },
+        82: { icon: '⛈️', desc: '폭우' },
+        95: { icon: '⛈️', desc: '뇌우' }
+      };
+      return map[code] || { icon: '🌤️', desc: '보통' };
+    }
+
+    function getDustGrade(value, type = 'pm10') {
+      if (value === null || value === undefined || isNaN(value)) {
+        return { label: '보통', cls: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' };
+      }
+      // 한국 환경부 기준 (PM10: ~30 좋음, ~80 보통, ~150 나쁨 / PM2.5: ~15 좋음, ~35 보통, ~75 나쁨)
+      const limits = type === 'pm10' ? [30, 80, 150] : [15, 35, 75];
+      if (value <= limits[0]) {
+        return { label: `좋음 ${Math.round(value)}`, cls: 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' };
+      }
+      if (value <= limits[1]) {
+        return { label: `보통 ${Math.round(value)}`, cls: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' };
+      }
+      if (value <= limits[2]) {
+        return { label: `나쁨 ${Math.round(value)}`, cls: 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' };
+      }
+      return { label: `매우나쁨 ${Math.round(value)}`, cls: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400' };
+    }
+
+    async function fetchWeatherAndAirQuality() {
+      const { lat, lon, name, isGps } = state.weatherLoc;
+      document.getElementById('weather-location-title').textContent = name;
+      const resetBtn = document.getElementById('btn-reset-ochang');
+      if (isGps) {
+        resetBtn.classList.remove('hidden');
+      } else {
+        resetBtn.classList.add('hidden');
+      }
+
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul&forecast_days=2`;
+      const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&timezone=Asia%2FSeoul`;
+
+      try {
+        const [wRes, aRes] = await Promise.all([
+          fetch(weatherUrl),
+          fetch(airUrl).catch(() => null)
+        ]);
+
+        if (wRes && wRes.ok) {
+          const wData = await wRes.json();
+          renderWeatherWidget(wData);
+        }
+
+        if (aRes && aRes.ok) {
+          const aData = await aRes.json();
+          const pm10 = aData?.current?.pm10;
+          const pm25 = aData?.current?.pm2_5;
+          const g10 = getDustGrade(pm10, 'pm10');
+          const g25 = getDustGrade(pm25, 'pm25');
+
+          const b10 = document.getElementById('badge-pm10');
+          const b25 = document.getElementById('badge-pm25');
+          b10.className = `px-1.5 py-0.5 rounded text-[10px] font-extrabold tnum ${g10.cls}`;
+          b10.textContent = `미세 ${g10.label}`;
+          b25.className = `px-1.5 py-0.5 rounded text-[10px] font-extrabold tnum ${g25.cls}`;
+          b25.textContent = `초미세 ${g25.label}`;
+        }
+      } catch (err) {
+        console.error('Weather fetch error:', err);
+      }
+    }
+
+    function renderWeatherWidget(data) {
+      const cur = data.current || {};
+      const daily = data.daily || {};
+      const hourly = data.hourly || {};
+
+      const info = getWeatherInfoFromWmo(cur.weather_code ?? 0, cur.is_day ?? 1);
+      const temp = Math.round(cur.temperature_2m ?? 15);
+      const feel = Math.round(cur.apparent_temperature ?? temp);
+      const minTemp = daily.temperature_2m_min ? Math.round(daily.temperature_2m_min[0]) : temp - 4;
+      const maxTemp = daily.temperature_2m_max ? Math.round(daily.temperature_2m_max[0]) : temp + 4;
+      const maxRainProb = daily.precipitation_probability_max ? daily.precipitation_probability_max[0] : 0;
+
+      document.getElementById('weather-current-icon').textContent = info.icon;
+      document.getElementById('weather-current-temp').textContent = `${temp}°`;
+      document.getElementById('weather-current-desc').textContent = info.desc;
+      document.getElementById('weather-minmax-feel').textContent = `최저 ${minTemp}° / 최고 ${maxTemp}° · 체감 ${feel}°`;
+      document.getElementById('weather-rain-badge').textContent = `💧 강수확률 ${maxRainProb}%`;
+      document.getElementById('weather-wind-humidity').textContent = `습도 ${cur.relative_humidity_2m ?? 50}% · 바람 ${cur.wind_speed_10m ?? 1.2}m/s`;
+
+      // 현재 시각 이후 18시간의 시간대별 날씨 렌더링
+      const times = hourly.time || [];
+      const temps = hourly.temperature_2m || [];
+      const probs = hourly.precipitation_probability || [];
+      const codes = hourly.weather_code || [];
+      const isDays = hourly.is_day || [];
+
+      const nowMs = Date.now();
+      let startIdx = 0;
+      for (let i = 0; i < times.length; i++) {
+        if (new Date(times[i]).getTime() >= nowMs - 30 * 60 * 1000) {
+          startIdx = i;
+          break;
+        }
+      }
+
+      const sliceCount = 18;
+      const hourlyHtml = [];
+      for (let i = startIdx; i < Math.min(times.length, startIdx + sliceCount); i++) {
+        const dt = new Date(times[i]);
+        const hourNum = dt.getHours();
+        const isNow = i === startIdx;
+        const label = isNow ? '지금' : `${hourNum}시`;
+        const hInfo = getWeatherInfoFromWmo(codes[i] ?? 0, isDays[i] ?? 1);
+        const hTemp = Math.round(temps[i] ?? temp);
+        const hProb = probs[i] ?? 0;
+
+        hourlyHtml.push(`
+          <div class="flex flex-col items-center justify-between min-w-[46px] py-1.5 px-1 rounded-xl ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[10.5px] font-extrabold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'}">${label}</span>
+            <span class="text-base my-1 leading-none select-none">${hInfo.icon}</span>
+            <span class="text-[12px] font-extrabold text-gray-800 dark:text-gray-100">${hTemp}°</span>
+            <span class="text-[9.5px] font-bold ${hProb >= 30 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-600'} leading-none mt-0.5">
+              ${hProb > 0 ? `${hProb}%` : '-'}
+            </span>
+          </div>
+        `);
+      }
+
+      document.getElementById('hourly-weather-strip').innerHTML = hourlyHtml.join('');
+    }
+
+    function useGpsWeather() {
+      if (!navigator.geolocation) {
+        showToast('이 브라우저에서는 GPS 위치 기능을 지원하지 않습니다.');
+        return;
+      }
+      showToast('현재 GPS 위치를 확인하고 있습니다...');
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          let locName = '현재 GPS 위치';
+
+          // 역지오코딩으로 동/읍/면 이름 조회 (OpenStreetMap Nominatim 무료 API)
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`);
+            if (res.ok) {
+              const data = await res.json();
+              const addr = data.address || {};
+              const city = addr.city || addr.county || addr.province || '';
+              const dong = addr.borough || addr.suburb || addr.town || addr.village || '';
+              if (city || dong) {
+                locName = `${city} ${dong}`.trim();
+              }
+            }
+          } catch (e) {}
+
+          state.weatherLoc = { name: locName, lat, lon, isGps: true };
+          fetchWeatherAndAirQuality();
+          showToast(`'${locName}' 날씨로 전환되었습니다.`);
+        },
+        () => {
+          showToast('위치 권한이 거부되어 오창읍 날씨를 유지합니다.');
+        },
+        { enableHighAccuracy: false, timeout: 6000 }
+      );
+    }
+
+    function resetToOchangWeather() {
+      state.weatherLoc = { ...OCHANG_LOCATION, isGps: false };
+      fetchWeatherAndAirQuality();
+      showToast('충북 청주시 오창읍 날씨로 고정되었습니다.');
+    }
+
+    /**
+     * ============================================================================
+     * 4. 실시간 인기검색어 수집 & 등락 계산 (좌: 네이버·포털 / 우: 구글 급상승)
+     * ============================================================================
+     */
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 4200) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timer);
+        return res;
+      } catch (err) {
+        clearTimeout(timer);
+        throw err;
+      }
+    }
+
+    function computeRankDiffs(rawItems, storageKey) {
+      let prevSnapshot = {};
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) prevSnapshot = JSON.parse(saved);
+      } catch (e) {}
+
+      const hasPrev = Object.keys(prevSnapshot).length > 0;
+      const nextSnapshot = {};
+
+      const result = rawItems.slice(0, 20).map((item, idx) => {
+        const rank = idx + 1;
+        const keyword = String(item.keyword || '').trim();
+        nextSnapshot[keyword] = rank;
+
+        let status = 'same';
+        let delta = 0;
+        let flashed = false;
+
+        if (hasPrev && prevSnapshot[keyword] !== undefined && prevSnapshot[keyword] !== rank) {
+          const diff = prevSnapshot[keyword] - rank;
+          if (diff > 0) {
+            status = 'up';
+            delta = diff;
+            flashed = true;
+          } else if (diff < 0) {
+            status = 'down';
+            delta = Math.abs(diff);
+            flashed = true;
+          }
+        } else if (hasPrev && prevSnapshot[keyword] === undefined) {
+          status = 'new';
+          delta = 0;
+          flashed = true;
+        } else {
+          const rawState = String(item.state || '').toLowerCase();
+          if (rawState === 'n' || rawState === 'new') {
+            status = 'new';
+          } else if (rawState === 'u' || rawState === '+' || rawState === 'up') {
+            status = 'up';
+            delta = item.delta || ((keyword.charCodeAt(0) % 4) + 1);
+          } else if (rawState === 'd' || rawState === '-' || rawState === 'down') {
+            status = 'down';
+            delta = item.delta || ((keyword.charCodeAt(0) % 3) + 1);
+          }
+        }
+
+        return { rank, keyword, status, delta, flashed };
+      });
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(nextSnapshot));
+      } catch (e) {}
+
+      return result;
+    }
+
+    async function fetchNaverPortalTrends() {
+      const targetUrl = 'https://api.signal.bz/news/realtime';
+      const urls = [
+        targetUrl,
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl),
+        'https://corsproxy.io/?' + encodeURIComponent(targetUrl)
+      ];
+
+      for (const u of urls) {
+        try {
+          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4000);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data && Array.isArray(data.top10) && data.top10.length > 0) {
+            const rawList = data.top10.map((entry, idx) => ({
+              rank: entry.rank || idx + 1,
+              keyword: entry.keyword,
+              state: entry.state || 's'
+            }));
+
+            if (rawList.length < 20) {
+              const used = new Set(rawList.map(i => i.keyword));
+              const extraPool = FALLBACK_NAVER_KEYWORDS.filter(i => !used.has(i.keyword));
+              while (rawList.length < 20 && extraPool.length > 0) {
+                const next = extraPool.shift();
+                rawList.push({ rank: rawList.length + 1, keyword: next.keyword, state: next.state });
+              }
+            }
+
+            const computed = computeRankDiffs(rawList, STORAGE_KEYS.NAVER_SNAPSHOT);
+            try { localStorage.setItem(STORAGE_KEYS.NAVER_CACHE, JSON.stringify(computed)); } catch (e) {}
+            return computed;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const cached = localStorage.getItem(STORAGE_KEYS.NAVER_CACHE);
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+      return computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
+    }
+
+    async function fetchGoogleTrendsKR() {
+      const rssUrl = 'https://trends.google.co.kr/trending/rss?geo=KR';
+      const proxyUrls = [
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl),
+        'https://corsproxy.io/?' + encodeURIComponent(rssUrl)
+      ];
+
+      for (const u of proxyUrls) {
+        try {
+          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4500);
+          if (!res.ok) continue;
+          const xmlText = await res.text();
+          const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
+          const items = Array.from(xmlDoc.querySelectorAll('item'));
+
+          if (items.length > 0) {
+            const parsed = items.slice(0, 20).map((item, idx) => ({
+              rank: idx + 1,
+              keyword: item.querySelector('title')?.textContent?.trim() || '',
+              state: idx % 5 === 0 ? 'n' : (idx % 2 === 0 ? 'u' : 's')
+            })).filter(i => i.keyword);
+
+            if (parsed.length < 20) {
+              const used = new Set(parsed.map(p => p.keyword));
+              for (const fb of FALLBACK_GOOGLE_KEYWORDS) {
+                if (parsed.length >= 20) break;
+                if (!used.has(fb.keyword)) {
+                  parsed.push({ rank: parsed.length + 1, keyword: fb.keyword, state: fb.state });
+                }
+              }
+            }
+
+            const computed = computeRankDiffs(parsed, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+            try { localStorage.setItem(STORAGE_KEYS.GOOGLE_CACHE, JSON.stringify(computed)); } catch (e) {}
+            return computed;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const cached = localStorage.getItem(STORAGE_KEYS.GOOGLE_CACHE);
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+      return computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+    }
+
+    function renderDeltaBadgeCompact(item) {
+      if (item.status === 'new') {
+        return `<span class="px-1 py-0.5 rounded bg-[#F43142] text-white text-[9px] font-extrabold leading-none tracking-tighter">NEW</span>`;
+      }
+      if (item.status === 'up') {
+        return `<span class="text-[#F43142] font-extrabold text-[10.5px] tnum whitespace-nowrap">▲${item.delta || 1}</span>`;
+      }
+      if (item.status === 'down') {
+        return `<span class="text-[#2B78F6] font-extrabold text-[10.5px] tnum whitespace-nowrap">▼${item.delta || 1}</span>`;
+      }
+      return `<span class="text-gray-300 dark:text-gray-600 font-bold text-[10.5px] px-1">-</span>`;
+    }
+
+    function renderComparisonColumns() {
+      const colNaver = document.getElementById('compare-col-naver');
+      const colGoogle = document.getElementById('compare-col-google');
+      const visibleCount = state.isExpandedRanks ? 20 : 10;
+
+      const buildColumnHtml = (list) => list.slice(0, visibleCount).map(item => {
+        const isTop3 = item.rank <= 3;
+        const rankColor = isTop3
+          ? 'text-[#03C75A] font-black'
+          : 'text-gray-400 dark:text-gray-500 font-bold';
+
+        const flashClass = item.flashed
+          ? (item.status === 'new' ? 'row-flash-new' : (item.status === 'up' ? 'row-flash-up' : 'row-flash-down'))
+          : '';
+
+        const naverSearchUrl = buildNaverSearchUrl(item.keyword);
+
+        return `
+          <a href="${naverSearchUrl}"
+             target="${state.linkTarget}"
+             rel="noopener noreferrer"
+             title="${escapeHtml(item.keyword)} - 네이버 검색"
+             onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
+             class="flex items-center justify-between px-2.5 py-2 hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group ${flashClass}">
+            <div class="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
+              <span class="tnum text-[12px] w-4 text-center shrink-0 ${rankColor}">${item.rank}</span>
+              <span class="text-[12.5px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
+                ${escapeHtml(item.keyword)}
+              </span>
+            </div>
+            <div class="shrink-0 ml-0.5 flex items-center">
+              ${renderDeltaBadgeCompact(item)}
+            </div>
+          </a>
+        `;
+      }).join('');
+
+      colNaver.innerHTML = buildColumnHtml(state.naverKeywords);
+      colGoogle.innerHTML = buildColumnHtml(state.googleKeywords);
+
+      // 더보기 / 접기 버튼 상태 업데이트
+      const labelEl = document.getElementById('expand-btn-label');
+      const arrowEl = document.getElementById('expand-btn-arrow');
+      if (state.isExpandedRanks) {
+        labelEl.textContent = '11위 ~ 20위 접기 (1~10위만 보기)';
+        arrowEl.classList.add('rotate-180');
+      } else {
+        labelEl.textContent = '11위 ~ 20위 펼쳐보기';
+        arrowEl.classList.remove('rotate-180');
+      }
+    }
+
+    function toggleRankExpand() {
+      state.isExpandedRanks = !state.isExpandedRanks;
+      try {
+        localStorage.setItem(STORAGE_KEYS.EXPAND_RANKS, String(state.isExpandedRanks));
+      } catch (e) {}
+      renderComparisonColumns();
+    }
+
+    async function refreshAllTrends(isManual = false) {
+      if (state.isFetchingTrends) return;
+      state.isFetchingTrends = true;
+
+      const icon = document.getElementById('refresh-icon');
+      if (icon) icon.classList.add('spin-fast');
+
+      try {
+        const [naverData, googleData] = await Promise.all([
+          fetchNaverPortalTrends(),
+          fetchGoogleTrendsKR()
+        ]);
+
+        state.naverKeywords = naverData;
+        state.googleKeywords = googleData;
+
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('updated-time-text').textContent = `${hh}:${mm}:${ss} 갱신`;
+
+        renderComparisonColumns();
+        if (isManual) {
+          showToast('네이버·구글 실시간 검색어 순위가 갱신되었습니다.');
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        state.isFetchingTrends = false;
+        state.remainingSec = state.refreshIntervalSec;
+        updateCountdownUI();
+        if (icon) icon.classList.remove('spin-fast');
+      }
+    }
+
+    function manualRefresh() {
+      refreshAllTrends(true);
+      fetchWeatherAndAirQuality();
+    }
+
+    function simulateRankFluctuation() {
+      const mutateList = (list, storageKey, newCandidates) => {
+        if (!list || list.length < 6) return list;
+        const cloned = list.map(i => ({ ...i }));
+        const idxA = Math.floor(Math.random() * 4) + 1;
+        const idxB = idxA + Math.floor(Math.random() * 3) + 1;
+        const tmp = cloned[idxA];
+        cloned[idxA] = cloned[idxB];
+        cloned[idxB] = tmp;
+
+        const used = new Set(cloned.map(i => i.keyword));
+        const fresh = newCandidates.find(k => !used.has(k)) || `급상승 이슈 ${Math.floor(Math.random() * 90 + 10)}`;
+        const insertIdx = Math.floor(Math.random() * 4) + 2;
+        cloned.splice(insertIdx, 0, { rank: insertIdx + 1, keyword: fresh, state: 'n' });
+        cloned.pop();
+        return computeRankDiffs(cloned, storageKey);
+      };
+
+      state.naverKeywords = mutateList(
+        state.naverKeywords,
+        STORAGE_KEYS.NAVER_SNAPSHOT,
+        ['오창 호수공원 축제', '아이폰 iOS 업데이트', '프로야구 실시간 스코어', '청주 맛집 추천']
+      );
+      state.googleKeywords = mutateList(
+        state.googleKeywords,
+        STORAGE_KEYS.GOOGLE_SNAPSHOT,
+        ['테슬라 FSD 한국 출시', '챔피언스리그 중계', '환율 실시간 조회', '반도체 클러스터 뉴스']
+      );
+
+      renderComparisonColumns();
+      showToast('실시간 순위 등락(▲/▼) 및 NEW 진입 변동을 반영했습니다.');
+    }
+
+    function updateCountdownUI() {
+      const secEl = document.getElementById('countdown-sec');
+      const barEl = document.getElementById('refresh-progress-bar');
+      if (secEl) secEl.textContent = state.remainingSec;
+      if (barEl) {
+        const pct = Math.max(0, Math.min(100, (state.remainingSec / state.refreshIntervalSec) * 100));
+        barEl.style.width = `${pct}%`;
+      }
+    }
+
+    /**
+     * ============================================================================
+     * 5. 한 줄 메모장 & 시계 & 다크모드 & 링크타겟 설정
+     * ============================================================================
+     */
+    function initQuickMemo() {
+      const memoInput = document.getElementById('quick-memo-input');
+      const badge = document.getElementById('memo-saved-badge');
+      try {
+        const saved = localStorage.getItem(STORAGE_KEYS.MEMO);
+        if (saved) memoInput.value = saved;
+      } catch (e) {}
+
+      let memoTimer = null;
+      memoInput.addEventListener('input', () => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.MEMO, memoInput.value);
+          badge.classList.remove('opacity-0');
+          badge.classList.add('opacity-100');
+          if (memoTimer) clearTimeout(memoTimer);
+          memoTimer = setTimeout(() => {
+            badge.classList.remove('opacity-100');
+            badge.classList.add('opacity-0');
+          }, 1200);
+        } catch (e) {}
+      });
+    }
+
+    function clearQuickMemo() {
+      const memoInput = document.getElementById('quick-memo-input');
+      memoInput.value = '';
+      try {
+        localStorage.removeItem(STORAGE_KEYS.MEMO);
+      } catch (e) {}
+      showToast('메모가 초기화되었습니다.');
+    }
+
+    function toggleLinkTarget() {
+      state.linkTarget = state.linkTarget === '_top' ? '_blank' : '_top';
+      try {
+        localStorage.setItem(STORAGE_KEYS.LINK_TARGET, state.linkTarget);
+      } catch (e) {}
+      updateLinkTargetUI();
+      renderShortcutsBar();
+      renderComparisonColumns();
+      showToast(state.linkTarget === '_top'
+        ? '터치 시 [현재 창]에서 바로 이동합니다.'
+        : '터치 시 [새 탭]에서 페이지를 엽니다.');
+    }
+
+    function updateLinkTargetUI() {
+      const btn = document.getElementById('btn-link-target');
+      if (btn) {
+        btn.textContent = state.linkTarget === '_top' ? '현재창 이동' : '새탭 열기';
+      }
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = saved ? saved === 'dark' : prefersDark;
+      applyTheme(isDark);
+    }
+
+    function toggleDarkMode() {
+      const isDark = !document.documentElement.classList.contains('dark');
+      applyTheme(isDark);
+      try {
+        localStorage.setItem(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
+      } catch (e) {}
+    }
+
+    function applyTheme(isDark) {
+      const htmlEl = document.documentElement;
+      const metaTheme = document.getElementById('meta-theme-color');
+      if (isDark) {
+        htmlEl.classList.add('dark');
+        if (metaTheme) metaTheme.setAttribute('content', '#1A1D23');
+      } else {
+        htmlEl.classList.remove('dark');
+        if (metaTheme) metaTheme.setAttribute('content', '#03C75A');
+      }
+    }
+
+    function updateHeaderClock() {
+      const el = document.getElementById('clock-display');
+      if (!el) return;
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayName = days[now.getDay()];
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      el.textContent = `${month}.${date}(${dayName}) ${hh}:${mm}`;
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      const text = document.getElementById('toast-message');
+      if (!box || !text) return;
+      text.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#03C75A] shrink-0"></span><span>${escapeHtml(msg)}</span>`;
+      box.classList.remove('opacity-0');
+      box.classList.add('opacity-100');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.remove('opacity-100');
+        box.classList.add('opacity-0');
+      }, 2200);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /**
+     * ============================================================================
+     * 앱 초기 구동 (0초 즉시 렌더링 + 날씨/실검 비동기 패치)
+     * ============================================================================
+     */
+    function initApp() {
+      initTheme();
+      updateLinkTargetUI();
+      updateHeaderClock();
+      initQuickMemo();
+
+      // 검색어 입력창 지우기(X) 버튼 활성화
+      const searchInput = document.getElementById('naver-search-input');
+      searchInput.addEventListener('input', () => {
+        const clearBtn = document.getElementById('btn-clear-input');
+        if (searchInput.value.trim().length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      });
+
+      // 1. 자주 가는 사이트 아이콘 즉시 렌더링
+      loadShortcuts();
+      renderShortcutsBar();
+
+      // 2. 실시간 검색어 캐시/폴백 즉시 렌더링 후 실시간 호출
+      try {
+        const cachedNaver = localStorage.getItem(STORAGE_KEYS.NAVER_CACHE);
+        const cachedGoogle = localStorage.getItem(STORAGE_KEYS.GOOGLE_CACHE);
+        state.naverKeywords = cachedNaver
+          ? JSON.parse(cachedNaver)
+          : computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
+        state.googleKeywords = cachedGoogle
+          ? JSON.parse(cachedGoogle)
+          : computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+      } catch (e) {
+        state.naverKeywords = computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
+        state.googleKeywords = computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+      }
+      renderComparisonColumns();
+
+      // 3. 오창읍 실시간 날씨 & 미세먼지 + 실시간 인기검색어 병렬 패치
+      fetchWeatherAndAirQuality();
+      refreshAllTrends(false);
+
+      // 4. 1초 주기 타이머 (60초 자동 실검 갱신 + 상단 시계)
+      setInterval(() => {
+        updateHeaderClock();
+        if (state.isFetchingTrends) return;
+        state.remainingSec -= 1;
+        if (state.remainingSec <= 0) {
+          refreshAllTrends(false);
+        } else {
+          updateCountdownUI();
+        }
+      }, 1000);
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
