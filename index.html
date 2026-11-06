@@ -58,7 +58,7 @@
       overflow-x: hidden;
     }
 
-    /* 고정폭 숫자 (순위, 기온, 카운트다운 등 흔들림 방지) */
+    /* 고정폭 숫자 (순위, 기온 등 흔들림 방지) */
     .tnum {
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum";
@@ -67,13 +67,13 @@
     /* 네이버 검색창 포커스 스타일 */
     .naver-search-box {
       border: 2px solid #03C75A;
-      transition: box-shadow 0.2s ease, transform 0.15s ease;
+      transition: box-shadow 0.2s ease;
     }
     .naver-search-box:focus-within {
-      box-shadow: 0 4px 16px rgba(3, 199, 90, 0.22);
+      box-shadow: 0 3px 12px rgba(3, 199, 90, 0.2);
     }
 
-    /* 가로 스크롤바 숨김 (시간대별 날씨 & 퀵 아이콘 바) */
+    /* 가로 스크롤바 숨김 */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -82,84 +82,59 @@
       scrollbar-width: none;
     }
 
-    /* 순위 변동 하이라이트 플래시 애니메이션 */
-    .row-flash-up {
-      animation: flashUp 1.2s ease-out;
-    }
-    .row-flash-down {
-      animation: flashDown 1.2s ease-out;
-    }
-    .row-flash-new {
-      animation: flashNew 1.4s ease-out;
-    }
-    @keyframes flashUp {
-      0% { background-color: rgba(244, 49, 66, 0.16); }
-      100% { background-color: transparent; }
-    }
-    @keyframes flashDown {
-      0% { background-color: rgba(43, 120, 246, 0.16); }
-      100% { background-color: transparent; }
-    }
-    @keyframes flashNew {
-      0% { background-color: rgba(3, 199, 90, 0.22); }
-      100% { background-color: transparent; }
+    /* 컴팩트 앱 스타일 스쿼클 아이콘 (8열 배치 최적화) */
+    .squircle-icon-sm {
+      border-radius: 11px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
 
-    /* 새로고침 아이콘 회전 애니메이션 */
-    .spin-fast {
-      animation: spin 0.65s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    /* 앱 스타일 스쿼클 아이콘 */
-    .squircle-icon {
-      border-radius: 15px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    /* 메모장 자동 높이 조절 시 스크롤바 숨김 */
+    textarea.memo-auto {
+      resize: none;
+      overflow-y: hidden;
+      line-height: 1.45;
     }
   </style>
 </head>
 <body class="bg-[#F2F4F7] dark:bg-[#111317] text-[#1E1E23] dark:text-[#F1F3F5] min-h-screen transition-colors duration-200">
 
   <!-- 삼성 인터넷 모바일 최적 폭(500px) 컨테이너 -->
-  <div class="max-w-[500px] mx-auto min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#111317] relative pb-8">
+  <div class="max-w-[500px] mx-auto min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#111317] relative pb-6">
 
     <!-- =====================================================================
-         1. 상단 헤더 & 네이버 다이렉트 검색창 (급상승 롤링 배너 제거됨)
+         1. 상단 헤더 & 네이버 다이렉트 검색창
          ===================================================================== -->
-    <header class="bg-white dark:bg-[#1A1D23] pt-3 pb-3 px-3.5 sticky top-0 z-30 border-b border-gray-200/80 dark:border-gray-800/90 shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
+    <header class="bg-white dark:bg-[#1A1D23] pt-2.5 pb-2.5 px-3 sticky top-0 z-30 border-b border-gray-200/80 dark:border-gray-800/90 shadow-[0_1px_6px_rgba(0,0,0,0.03)]">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-1.5">
           <a href="https://m.naver.com" target="_blank" rel="noopener noreferrer"
              title="네이버 모바일 홈"
-             class="w-6 h-6 rounded-md bg-[#03C75A] flex items-center justify-center text-white font-black text-sm shadow-xs active:scale-95 transition-transform">
+             class="w-5 h-5 rounded bg-[#03C75A] flex items-center justify-center text-white font-black text-xs shadow-2xs active:scale-95 transition-transform">
             N
           </a>
-          <span class="text-[14px] font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
+          <span class="text-[13px] font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
             마이 포털 홈
           </span>
-          <span id="clock-display" class="text-[11.5px] font-semibold text-gray-400 dark:text-gray-500 tnum"></span>
+          <span id="clock-display" class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tnum"></span>
         </div>
 
         <!-- 우측 유틸 버튼 (링크 이동방식 / 다크모드) -->
         <div class="flex items-center gap-1.5">
           <button id="btn-link-target" type="button"
                   onclick="toggleLinkTarget()"
-                  class="px-2 py-1 rounded-md text-[11px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  class="px-2 py-0.5 rounded text-[10.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                   title="검색어 및 아이콘 클릭 시 열기 방식">
             현재창 이동
           </button>
 
           <!-- 다크모드 전환 버튼 -->
           <button type="button" onclick="toggleDarkMode()"
-                  class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
+                  class="p-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
                   aria-label="다크모드 전환">
-            <svg id="icon-sun" class="w-4 h-4 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg id="icon-sun" class="w-3.5 h-3.5 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
             </svg>
-            <svg id="icon-moon" class="w-4 h-4 block dark:hidden text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+            <svg id="icon-moon" class="w-3.5 h-3.5 block dark:hidden text-gray-600" fill="currentColor" viewBox="0 0 20 20">
               <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
             </svg>
           </button>
@@ -167,179 +142,161 @@
       </div>
 
       <!-- 네이버 다이렉트 검색창 -->
-      <form id="naver-search-form" onsubmit="handleDirectSearch(event)" class="naver-search-box rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-3 pr-1.5 py-1">
-        <span class="text-[#03C75A] font-black text-lg mr-2.5 select-none">N</span>
+      <form id="naver-search-form" onsubmit="handleDirectSearch(event)" class="naver-search-box rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-3 pr-1 py-0.5">
+        <span class="text-[#03C75A] font-black text-base mr-2 select-none">N</span>
         <input
           id="naver-search-input"
           type="search"
           placeholder="네이버 검색어를 입력하세요"
           autocomplete="off"
-          class="w-full bg-transparent text-[14.5px] font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none py-1"
+          class="w-full bg-transparent text-[14px] font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none py-1"
         />
-        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1.5 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
+        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
         </button>
-        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-3 py-1.5 text-xs font-extrabold flex items-center gap-1 transition-all shrink-0">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-2.5 py-1 text-[11.5px] font-extrabold flex items-center gap-1 transition-all shrink-0">
           검색
         </button>
       </form>
     </header>
 
-    <!-- 메인 컨텐츠 영역 -->
-    <main class="px-3 pt-2.5 flex-1 flex flex-col gap-2.5">
+    <!-- 메인 컨텐츠 영역 (순서: 날씨 -> 8열 자주가는사이트 -> 멀티라인 메모장 -> 실검 비교) -->
+    <main class="px-2.5 pt-2 flex-1 flex flex-col gap-2">
 
       <!-- ===================================================================
-           2. 자주 가는 사이트 퀵 아이콘 바 (아이콘 + 하단 작은 이름표 + 직접 편집)
+           2. 컴팩트 오창읍 실시간 & 시간대별 날씨 위젯 (검색창 바로 아래 배치)
            =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-3 pt-2.5 pb-3 shadow-xs">
-        <div class="flex items-center justify-between mb-2 px-0.5">
-          <div class="flex items-center gap-1.5">
-            <span class="text-[12px] font-extrabold text-gray-700 dark:text-gray-200">자주 가는 사이트</span>
-            <span class="text-[10.5px] text-gray-400 dark:text-gray-500 font-medium">아이콘 터치 시 바로 이동</span>
-          </div>
-          <button type="button" onclick="openShortcutModal()"
-                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] dark:hover:text-[#03C75A] transition-colors">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            <span>아이콘 편집</span>
-          </button>
-        </div>
-
-        <!-- 퀵 아이콘 그리드 (모바일 한 줄에 6개씩 깔끔하게 배치, 밑에 조그만 글씨) -->
-        <div id="shortcuts-grid" class="grid grid-cols-6 gap-y-2.5 gap-x-1">
-          <!-- JS에서 렌더링 -->
-        </div>
-      </section>
-
-      <!-- ===================================================================
-           3. 충북 청주시 오창읍 실시간 & 시간대별 날씨 위젯
-           =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 p-3 shadow-xs">
-        <!-- 상단: 위치명 + 현위치/오창읍 전환 버튼 + 미세먼지/강수 배지 -->
-        <div class="flex items-center justify-between gap-1 mb-2">
+      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-2 shadow-2xs">
+        <!-- 상단 1줄: 위치 + 현재기온/날씨요약 + 미세먼지/강수 배지 통합 -->
+        <div class="flex items-center justify-between gap-1 mb-1.5">
           <div class="flex items-center gap-1.5 min-w-0">
-            <span class="text-[#03C75A] shrink-0">
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-              </svg>
-            </span>
-            <h2 id="weather-location-title" class="text-[13px] font-extrabold text-gray-900 dark:text-white truncate">
-              충북 청주시 오창읍
+            <span id="weather-current-icon" class="text-[18px] leading-none select-none shrink-0">☀️</span>
+            <span id="weather-current-temp" class="text-[16px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">--°</span>
+            <span id="weather-current-desc" class="text-[11px] font-bold text-gray-600 dark:text-gray-300 truncate">로딩중</span>
+            <span class="text-gray-300 dark:text-gray-700 text-[10px]">|</span>
+            <h2 id="weather-location-title" class="text-[11px] font-extrabold text-gray-700 dark:text-gray-200 truncate">
+              오창읍
             </h2>
-
-            <!-- 현위치(GPS) 버튼 -->
             <button type="button" onclick="useGpsWeather()"
-                    class="px-1.5 py-0.5 rounded text-[10.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-[#E8FAF0] hover:text-[#03C75A] transition-colors shrink-0"
+                    class="px-1 py-0.5 rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] transition-colors shrink-0"
                     title="현재 GPS 위치 날씨 조회">
               📍현위치
             </button>
-            <!-- 오창읍 복귀 버튼 (현위치 모드일 때 표시) -->
             <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
-                    class="hidden px-1.5 py-0.5 rounded text-[10.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
-              오창읍 고정
+                    class="hidden px-1 py-0.5 rounded text-[9.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
+              오창읍
             </button>
           </div>
 
-          <!-- 미세먼지 · 초미세먼지 · 강수확률 배지 -->
+          <!-- 우측: 강수확률 · 미세 · 초미세 배지 -->
           <div class="flex items-center gap-1 shrink-0">
-            <span id="badge-pm10" class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+            <span id="weather-rain-badge" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
+              💧0%
+            </span>
+            <span id="badge-pm10" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
               미세 좋음
             </span>
-            <span id="badge-pm25" class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+            <span id="badge-pm25" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
               초미세 좋음
             </span>
           </div>
         </div>
 
-        <!-- 중단: 현재 기온 & 날씨 요약 -->
-        <div class="flex items-center justify-between bg-[#F8FAFC] dark:bg-[#14171C] rounded-xl px-3 py-2 mb-2 border border-gray-100 dark:border-gray-800/80">
-          <div class="flex items-center gap-2.5">
-            <div id="weather-current-icon" class="text-3xl leading-none select-none">☀️</div>
-            <div>
-              <div class="flex items-baseline gap-1.5">
-                <span id="weather-current-temp" class="text-[22px] font-black text-gray-900 dark:text-white tnum leading-none">--°</span>
-                <span id="weather-current-desc" class="text-[12.5px] font-extrabold text-gray-700 dark:text-gray-200">날씨 불러오는 중</span>
-              </div>
-              <p id="weather-minmax-feel" class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mt-0.5 tnum">
-                최저 --° / 최고 --° · 체감 --°
-              </p>
-            </div>
-          </div>
-
-          <div class="text-right">
-            <div id="weather-rain-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
-              💧 강수 0%
-            </div>
-            <div id="weather-wind-humidity" class="text-[10.5px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 tnum">
-              습도 --% · 바람 --m/s
-            </div>
-          </div>
+        <!-- 중단 보조 한줄: 최저/최고/체감 & 습도/바람 -->
+        <div class="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 font-semibold px-0.5 mb-1.5 tnum">
+          <span id="weather-minmax-feel">최저 --° / 최고 --° · 체감 --°</span>
+          <span id="weather-wind-humidity">습도 --% · 바람 --m/s</span>
         </div>
 
-        <!-- 하단: 시간대별 날씨 (가로 터치 스크롤, 향후 18시간) -->
-        <div id="hourly-weather-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 pb-0.5">
+        <!-- 하단: 슬림형 18시간 시간대별 날씨 스크롤 -->
+        <div id="hourly-weather-strip" class="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
           <!-- JS에서 렌더링 -->
         </div>
       </section>
 
       <!-- ===================================================================
-           4. 실시간 인기검색어 한눈에 비교 (네이버·포털 실검 vs 구글 급상승)
-              - 기본 1~10위 노출 + 11~20위 펼쳐보기
-              - 어떤 키워드를 눌러도 무조건 네이버 통합검색으로 이동
+           3. 자주 가는 사이트 퀵 아이콘 바 (날씨 아래 배치 / 한 줄 8개 그리드)
            =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs overflow-hidden">
-        <!-- 60초 자동갱신 프로그레스 바 -->
-        <div class="w-full h-1 bg-gray-100 dark:bg-gray-800 overflow-hidden">
-          <div id="refresh-progress-bar" class="h-full bg-[#03C75A] transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 pt-2 pb-2.5 shadow-2xs">
+        <div class="flex items-center justify-between mb-1.5 px-0.5">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[11.5px] font-extrabold text-gray-700 dark:text-gray-200">자주 가는 사이트</span>
+            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">한 줄 8개 컴팩트 배치</span>
+          </div>
+          <button type="button" onclick="openShortcutModal()"
+                  class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors">
+            <span>+ 편집</span>
+          </button>
         </div>
 
-        <!-- 카드 헤더: 타이틀 & 갱신 시각 & 즉시 새로고침 -->
-        <div class="px-3.5 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
+        <!-- 퀵 아이콘 그리드: 한 화면(한 줄)에 8개가 들어가도록 grid-cols-8 적용 -->
+        <div id="shortcuts-grid" class="grid grid-cols-8 gap-y-2 gap-x-1">
+          <!-- JS에서 렌더링 -->
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           4. 여러 줄 자동 확장 메모장 (기본 1줄, 엔터/긴 글 입력 시 자동 확장)
+           =================================================================== -->
+      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-3 py-2 shadow-2xs flex items-start gap-2">
+        <span class="text-amber-500 text-xs select-none shrink-0 mt-1" title="자동 저장 메모장">📝</span>
+        <textarea
+          id="quick-memo-input"
+          rows="1"
+          placeholder="빠른 메모 (엔터로 여러 줄 입력 · 자동 저장)"
+          class="memo-auto w-full bg-transparent text-[12.5px] font-medium text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+        ></textarea>
+        <div class="flex items-center gap-1 shrink-0 mt-0.5">
+          <span id="memo-saved-badge" class="text-[9.5px] font-bold text-[#03C75A] opacity-0 transition-opacity">
+            저장됨
+          </span>
+          <button type="button" onclick="clearQuickMemo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-[10.5px] font-bold px-1" title="메모 지우기">
+            지우기
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           5. 실시간 인기검색어 한눈에 비교 (회전/카운트다운/깜빡임 없는 정적 갱신)
+           =================================================================== -->
+      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-2xs overflow-hidden">
+        <!-- 카드 헤더: 눈이 피로한 프로그레스바/스피너/카운트다운 제거, 조용한 시간 표시 -->
+        <div class="px-3 py-2 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
           <div class="flex items-center gap-1.5 min-w-0">
-            <span class="w-2 h-2 rounded-full bg-[#03C75A] animate-pulse shrink-0"></span>
-            <h2 class="text-[13.5px] font-extrabold text-gray-900 dark:text-white truncate">
+            <span class="w-1.5 h-3.5 rounded-full bg-[#03C75A] shrink-0"></span>
+            <h2 class="text-[12.5px] font-extrabold text-gray-900 dark:text-white truncate">
               실시간 인기검색어 비교
             </h2>
-            <span id="updated-time-text" class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tnum truncate">
-              업데이트 중...
-            </span>
           </div>
 
-          <div class="flex items-center gap-1.5 shrink-0">
-            <span class="text-[10.5px] font-bold text-gray-400 dark:text-gray-500 tnum">
-              <strong id="countdown-sec" class="text-[#03C75A]">60</strong>초
+          <div class="flex items-center gap-2 shrink-0">
+            <span id="updated-time-text" class="text-[10.5px] font-medium text-gray-400 dark:text-gray-500 tnum">
+              --:--
             </span>
             <button type="button" onclick="manualRefresh()"
-                    class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-[#E8FAF0] dark:hover:bg-[#03C75A]/20 text-gray-700 dark:text-gray-200 hover:text-[#03C75A] text-[11px] font-bold active:scale-95 transition-all">
-              <svg id="refresh-icon" class="w-3 h-3 text-[#03C75A]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span>갱신</span>
+                    class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10.5px] font-bold transition-colors">
+              새로고침
             </button>
           </div>
         </div>
 
         <!-- 2열 컬럼 헤더 (좌: 네이버·포털 실검 / 우: 구글 급상승) -->
         <div class="grid grid-cols-2 divide-x divide-gray-200/80 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 bg-[#F8FAFC] dark:bg-[#15181E]">
-          <div class="py-2 px-3 flex items-center justify-between">
-            <span class="text-[12px] font-extrabold text-[#03C75A] flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded bg-[#03C75A] text-white text-[10px] font-black inline-flex items-center justify-center">N</span>
+          <div class="py-1.5 px-2.5 flex items-center justify-between">
+            <span class="text-[11.5px] font-extrabold text-[#03C75A] flex items-center gap-1">
+              <span class="w-3.5 h-3.5 rounded-xs bg-[#03C75A] text-white text-[9.5px] font-black inline-flex items-center justify-center">N</span>
               <span>네이버·포털 실검</span>
             </span>
-            <span class="text-[10px] text-gray-400 font-semibold">N검색 이동</span>
+            <span class="text-[9.5px] text-gray-400 font-medium">N검색</span>
           </div>
-          <div class="py-2 px-3 flex items-center justify-between">
-            <span class="text-[12px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded bg-blue-500 text-white text-[10px] font-black inline-flex items-center justify-center">G</span>
+          <div class="py-1.5 px-2.5 flex items-center justify-between">
+            <span class="text-[11.5px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+              <span class="w-3.5 h-3.5 rounded-xs bg-blue-500 text-white text-[9.5px] font-black inline-flex items-center justify-center">G</span>
               <span>구글 급상승</span>
             </span>
-            <span class="text-[10px] text-gray-400 font-semibold">N검색 이동</span>
+            <span class="text-[9.5px] text-gray-400 font-medium">N검색</span>
           </div>
         </div>
 
@@ -351,48 +308,27 @@
           <div id="compare-col-google" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
         </div>
 
-        <!-- 11위 ~ 20위 펼쳐보기 / 접기 토글 버튼 + 등락 테스트 바 -->
-        <div class="border-t border-gray-100 dark:border-gray-800 bg-[#F9FAFB] dark:bg-[#15181E] px-3 py-2 flex items-center justify-between gap-2">
+        <!-- 11위 ~ 20위 펼쳐보기 / 접기 토글 버튼 -->
+        <div class="border-t border-gray-100 dark:border-gray-800 bg-[#F9FAFB] dark:bg-[#15181E] px-2.5 py-1.5">
           <button type="button" id="btn-toggle-expand" onclick="toggleRankExpand()"
-                  class="flex-1 py-1.5 px-3 rounded-xl bg-white dark:bg-[#1F242D] border border-gray-200/90 dark:border-gray-700 text-[12px] font-extrabold text-gray-700 dark:text-gray-200 hover:border-[#03C75A] hover:text-[#03C75A] active:scale-[0.99] transition-all flex items-center justify-center gap-1 shadow-2xs">
+                  class="w-full py-1 px-3 rounded-lg bg-white dark:bg-[#1F242D] border border-gray-200/80 dark:border-gray-700 text-[11.5px] font-extrabold text-gray-600 dark:text-gray-300 hover:border-[#03C75A] hover:text-[#03C75A] transition-colors flex items-center justify-center gap-1">
             <span id="expand-btn-label">11위 ~ 20위 더보기</span>
-            <svg id="expand-btn-arrow" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <svg id="expand-btn-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-
-          <button type="button" onclick="simulateRankFluctuation()"
-                  class="px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-rose-50 dark:bg-rose-950/50 text-[#F43142] dark:text-rose-400 border border-rose-200/70 dark:border-rose-800/60 hover:bg-rose-100 active:scale-95 transition-all shrink-0"
-                  title="순위 등락 및 NEW 진입 애니메이션 테스트">
-            ⚡등락 테스트
-          </button>
         </div>
-      </section>
-
-      <!-- ===================================================================
-           5. 지워지지 않는 한 줄 메모장 (자동 저장)
-           =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-3.5 py-2.5 shadow-xs flex items-center gap-2">
-        <span class="text-amber-500 text-sm select-none shrink-0" title="브라우저에 자동 저장되는 메모장">📝</span>
-        <input
-          id="quick-memo-input"
-          type="text"
-          placeholder="빠른 한 줄 메모 (입력 즉시 자동 저장됩니다)"
-          class="w-full bg-transparent text-[13px] font-medium text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-        />
-        <span id="memo-saved-badge" class="text-[10px] font-bold text-[#03C75A] opacity-0 transition-opacity shrink-0">
-          저장됨
-        </span>
-        <button type="button" onclick="clearQuickMemo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold shrink-0 px-1" title="메모 지우기">
-          지우기
-        </button>
       </section>
 
     </main>
 
     <!-- 하단 안내 푸터 -->
-    <footer class="mt-4 px-4 text-center text-[11px] text-gray-400 dark:text-gray-500 space-y-0.5">
-      <p>모든 인기검색어 터치 시 <strong>네이버 통합검색(search.naver.com)</strong>으로 즉시 이동합니다.</p>
+    <footer class="mt-3 px-4 text-center text-[10.5px] text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
+      <span>모든 검색어 터치 시 네이버 통합검색으로 이동</span>
+      <span>·</span>
+      <button type="button" onclick="simulateRankFluctuation()" class="underline hover:text-gray-600 dark:hover:text-gray-300">
+        등락 표시 테스트
+      </button>
     </footer>
   </div>
 
@@ -508,10 +444,8 @@
   <script>
     /**
      * ============================================================================
-     * [사용자 커스텀 영역 1] 자주 가는 사이트 기본 목록 (DEFAULT_SHORTCUTS)
-     * - 코드에서 직접 수정하거나, 화면 우측 상단 [+ 아이콘 편집] 버튼으로 언제든 수정 가능합니다.
-     * - badge에 이모지나 1~2글자(예: '📱', '아이', '테슬')를 넣으면 디시 갤러리끼리도 아이콘이 겹치지 않습니다.
-     * - badge를 빈 문자열('')로 두면 해당 사이트의 공식 파비콘을 자동으로 불러옵니다.
+     * [사용자 커스텀 영역 1] 자주 가는 사이트 기본 8개 목록 (DEFAULT_SHORTCUTS)
+     * - 한 줄에 8개가 딱 맞게 들어가며, 우측 상단 [+ 편집] 버튼으로 언제든 수정 가능합니다.
      * ============================================================================
      */
     const DEFAULT_SHORTCUTS = [
@@ -533,7 +467,7 @@
         id: 'sc-tesla-gall',
         label: '테슬라갤',
         url: 'https://m.dcinside.com/board/tesla',
-        badge: '⚡',
+        badge: '테슬',
         color: '#E11D48'
       },
       {
@@ -556,6 +490,20 @@
         url: 'https://shopping.naver.com/',
         badge: '🛍️',
         color: '#03C75A'
+      },
+      {
+        id: 'sc-naver-cafe',
+        label: 'N카페',
+        url: 'https://section.cafe.naver.com/',
+        badge: '카페',
+        color: '#0284C7'
+      },
+      {
+        id: 'sc-coupang',
+        label: '쿠팡',
+        url: 'https://m.coupang.com/',
+        badge: '🚀',
+        color: '#7C3AED'
       }
     ];
 
@@ -565,31 +513,28 @@
      * ============================================================================
      */
     const OCHANG_LOCATION = {
-      name: '충북 청주시 오창읍',
-      lat: 36.7126,
-      lon: 127.4316
+      name: '오창읍',
+      lat: 36.7145,
+      lon: 127.4335
     };
 
     const STORAGE_KEYS = {
-      THEME: 'myhome_theme_v2',
-      LINK_TARGET: 'myhome_link_target_v2', // '_top' | '_blank'
-      SHORTCUTS: 'myhome_shortcuts_v2',
-      MEMO: 'myhome_quick_memo_v2',
-      EXPAND_RANKS: 'myhome_expand_ranks_v2',
-      NAVER_SNAPSHOT: 'myhome_prev_naver_v2',
-      GOOGLE_SNAPSHOT: 'myhome_prev_google_v2',
-      NAVER_CACHE: 'myhome_cache_naver_v2',
-      GOOGLE_CACHE: 'myhome_cache_google_v2'
+      THEME: 'myhome_theme_v3',
+      LINK_TARGET: 'myhome_link_target_v3', // '_top' | '_blank'
+      SHORTCUTS: 'myhome_shortcuts_v3',
+      MEMO: 'myhome_quick_memo_v3',
+      EXPAND_RANKS: 'myhome_expand_ranks_v3',
+      NAVER_SNAPSHOT: 'myhome_prev_naver_v3',
+      GOOGLE_SNAPSHOT: 'myhome_prev_google_v3',
+      NAVER_CACHE: 'myhome_cache_naver_v3',
+      GOOGLE_CACHE: 'myhome_cache_google_v3'
     };
 
     const state = {
-      // 삼성 브라우저 홈화면 특성상 기본값을 '_top'(현재창 바로 이동)으로 설정, 버튼으로 '_blank' 전환 가능
       linkTarget: localStorage.getItem(STORAGE_KEYS.LINK_TARGET) || '_top',
       isExpandedRanks: localStorage.getItem(STORAGE_KEYS.EXPAND_RANKS) === 'true',
       shortcuts: [],
       weatherLoc: { ...OCHANG_LOCATION, isGps: false },
-      refreshIntervalSec: 60,
-      remainingSec: 60,
       isFetchingTrends: false,
       naverKeywords: [],
       googleKeywords: []
@@ -750,7 +695,7 @@
         const hasBadge = item.badge && String(item.badge).trim().length > 0;
         const badgeText = String(item.badge || '').trim();
         const isTwoChars = badgeText.length >= 2 && !/\p{Extended_Pictographic}/u.test(badgeText);
-        const fontSizeClass = isTwoChars ? 'text-[13px] font-black tracking-tighter' : 'text-[20px] font-extrabold';
+        const fontSizeClass = isTwoChars ? 'text-[10.5px] font-black tracking-tighter' : 'text-[15px] font-extrabold';
         const bgColor = item.color || '#1E293B';
         const faviconUrl = getFaviconUrl(item.url);
 
@@ -759,15 +704,15 @@
              target="${state.linkTarget}"
              rel="noopener noreferrer"
              onclick="return handleShortcutClick(event, ${JSON.stringify(item.url).replace(/"/g, '&quot;')})"
-             class="flex flex-col items-center justify-start group select-none">
-            <div class="w-11 h-11 squircle-icon flex items-center justify-center text-white transition-transform duration-150 group-hover:scale-105 group-active:scale-95 overflow-hidden"
+             class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white transition-transform duration-150 group-active:scale-95 overflow-hidden"
                  style="background-color: ${escapeHtml(bgColor)};">
               ${hasBadge
                 ? `<span class="${fontSizeClass} leading-none">${escapeHtml(badgeText)}</span>`
-                : `<img src="${escapeHtml(faviconUrl)}" alt="${escapeHtml(item.label)}" class="w-6 h-6 object-contain" onerror="this.outerHTML='<span class=\\'text-xs font-black\\'>${escapeHtml(item.label.slice(0, 2))}</span>'" />`
+                : `<img src="${escapeHtml(faviconUrl)}" alt="${escapeHtml(item.label)}" class="w-4 h-4 object-contain" onerror="this.outerHTML='<span class=\\'text-[10px] font-black\\'>${escapeHtml(item.label.slice(0, 2))}</span>'" />`
               }
             </div>
-            <span class="mt-1 text-[11px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate max-w-[54px] text-center leading-tight">
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate w-full text-center leading-tight tracking-tighter">
               ${escapeHtml(item.label)}
             </span>
           </a>
@@ -1015,10 +960,10 @@
       document.getElementById('weather-current-temp').textContent = `${temp}°`;
       document.getElementById('weather-current-desc').textContent = info.desc;
       document.getElementById('weather-minmax-feel').textContent = `최저 ${minTemp}° / 최고 ${maxTemp}° · 체감 ${feel}°`;
-      document.getElementById('weather-rain-badge').textContent = `💧 강수확률 ${maxRainProb}%`;
+      document.getElementById('weather-rain-badge').textContent = `💧${maxRainProb}%`;
       document.getElementById('weather-wind-humidity').textContent = `습도 ${cur.relative_humidity_2m ?? 50}% · 바람 ${cur.wind_speed_10m ?? 1.2}m/s`;
 
-      // 현재 시각 이후 18시간의 시간대별 날씨 렌더링
+      // 현재 시각 이후 18시간의 시간대별 날씨 (컴팩트 사이즈)
       const times = hourly.time || [];
       const temps = hourly.temperature_2m || [];
       const probs = hourly.precipitation_probability || [];
@@ -1033,6 +978,71 @@
           break;
         }
       }
+
+      const sliceCount = 18;
+      const hourlyHtml = [];
+      for (let i = startIdx; i < Math.min(times.length, startIdx + sliceCount); i++) {
+        const dt = new Date(times[i]);
+        const hourNum = dt.getHours();
+        const isNow = i === startIdx;
+        const label = isNow ? '지금' : `${hourNum}시`;
+        const hInfo = getWeatherInfoFromWmo(codes[i] ?? 0, isDays[i] ?? 1);
+        const hTemp = Math.round(temps[i] ?? temp);
+        const hProb = probs[i] ?? 0;
+
+        hourlyHtml.push(`
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-0.5 rounded-lg ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[9.5px] font-bold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
+            <span class="text-[13px] my-0.5 leading-none select-none">${hInfo.icon}</span>
+            <span class="text-[10.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${hTemp}°</span>
+            <span class="text-[8.5px] font-bold ${hProb >= 30 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-600'} leading-none mt-0.5">
+              ${hProb > 0 ? `${hProb}%` : '-'}
+            </span>
+          </div>
+        `);
+      }
+
+      document.getElementById('hourly-weather-strip').innerHTML = hourlyHtml.join('');
+    }
+
+    function useGpsWeather() {
+      if (!navigator.geolocation) {
+        showToast('이 브라우저에서는 GPS 위치 기능을 지원하지 않습니다.');
+        return;
+      }
+      showToast('현재 GPS 위치를 확인하고 있습니다...');
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          let locName = '현위치';
+
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`);
+            if (res.ok) {
+              const data = await res.json();
+              const addr = data.address || {};
+              const dong = addr.borough || addr.suburb || addr.town || addr.village || addr.city || '현위치';
+              locName = dong.trim();
+            }
+          } catch (e) {}
+
+          state.weatherLoc = { name: locName, lat, lon, isGps: true };
+          fetchWeatherAndAirQuality();
+          showToast(`'${locName}' 날씨로 전환되었습니다.`);
+        },
+        () => {
+          showToast('위치 권한이 거부되어 오창읍 날씨를 유지합니다.');
+        },
+        { enableHighAccuracy: false, timeout: 6000 }
+      );
+    }
+
+    function resetToOchangWeather() {
+      state.weatherLoc = { ...OCHANG_LOCATION, isGps: false };
+      fetchWeatherAndAirQuality();
+      showToast('오창읍 날씨로 고정되었습니다.');
+    }
 
       const sliceCount = 18;
       const hourlyHtml = [];
@@ -1291,10 +1301,6 @@
           ? 'text-[#03C75A] font-black'
           : 'text-gray-400 dark:text-gray-500 font-bold';
 
-        const flashClass = item.flashed
-          ? (item.status === 'new' ? 'row-flash-new' : (item.status === 'up' ? 'row-flash-up' : 'row-flash-down'))
-          : '';
-
         const naverSearchUrl = buildNaverSearchUrl(item.keyword);
 
         return `
@@ -1303,10 +1309,10 @@
              rel="noopener noreferrer"
              title="${escapeHtml(item.keyword)} - 네이버 검색"
              onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
-             class="flex items-center justify-between px-2.5 py-2 hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group ${flashClass}">
+             class="flex items-center justify-between px-2.5 py-1.5 hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group">
             <div class="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
-              <span class="tnum text-[12px] w-4 text-center shrink-0 ${rankColor}">${item.rank}</span>
-              <span class="text-[12.5px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
+              <span class="tnum text-[11.5px] w-4 text-center shrink-0 ${rankColor}">${item.rank}</span>
+              <span class="text-[12px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
                 ${escapeHtml(item.keyword)}
               </span>
             </div>
@@ -1320,14 +1326,13 @@
       colNaver.innerHTML = buildColumnHtml(state.naverKeywords);
       colGoogle.innerHTML = buildColumnHtml(state.googleKeywords);
 
-      // 더보기 / 접기 버튼 상태 업데이트
       const labelEl = document.getElementById('expand-btn-label');
       const arrowEl = document.getElementById('expand-btn-arrow');
       if (state.isExpandedRanks) {
-        labelEl.textContent = '11위 ~ 20위 접기 (1~10위만 보기)';
+        labelEl.textContent = '11위 ~ 20위 접기';
         arrowEl.classList.add('rotate-180');
       } else {
-        labelEl.textContent = '11위 ~ 20위 펼쳐보기';
+        labelEl.textContent = '11위 ~ 20위 더보기';
         arrowEl.classList.remove('rotate-180');
       }
     }
@@ -1340,12 +1345,9 @@
       renderComparisonColumns();
     }
 
-    async function refreshAllTrends(isManual = false) {
+    async function refreshAllTrends() {
       if (state.isFetchingTrends) return;
       state.isFetchingTrends = true;
-
-      const icon = document.getElementById('refresh-icon');
-      if (icon) icon.classList.add('spin-fast');
 
       try {
         const [naverData, googleData] = await Promise.all([
@@ -1359,25 +1361,18 @@
         const now = new Date();
         const hh = String(now.getHours()).padStart(2, '0');
         const mm = String(now.getMinutes()).padStart(2, '0');
-        const ss = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('updated-time-text').textContent = `${hh}:${mm}:${ss} 갱신`;
+        document.getElementById('updated-time-text').textContent = `${hh}:${mm}`;
 
         renderComparisonColumns();
-        if (isManual) {
-          showToast('네이버·구글 실시간 검색어 순위가 갱신되었습니다.');
-        }
       } catch (e) {
         console.error(e);
       } finally {
         state.isFetchingTrends = false;
-        state.remainingSec = state.refreshIntervalSec;
-        updateCountdownUI();
-        if (icon) icon.classList.remove('spin-fast');
       }
     }
 
     function manualRefresh() {
-      refreshAllTrends(true);
+      refreshAllTrends();
       fetchWeatherAndAirQuality();
     }
 
@@ -1426,19 +1421,29 @@
 
     /**
      * ============================================================================
-     * 5. 한 줄 메모장 & 시계 & 다크모드 & 링크타겟 설정
+     * 5. 여러 줄 자동 확장 메모장 & 시계 & 다크모드 & 링크타겟 설정
      * ============================================================================
      */
+    function autoResizeMemo(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.max(22, el.scrollHeight) + 'px';
+    }
+
     function initQuickMemo() {
       const memoInput = document.getElementById('quick-memo-input');
       const badge = document.getElementById('memo-saved-badge');
       try {
         const saved = localStorage.getItem(STORAGE_KEYS.MEMO);
-        if (saved) memoInput.value = saved;
+        if (saved) {
+          memoInput.value = saved;
+          setTimeout(() => autoResizeMemo(memoInput), 0);
+        }
       } catch (e) {}
 
       let memoTimer = null;
       memoInput.addEventListener('input', () => {
+        autoResizeMemo(memoInput);
         try {
           localStorage.setItem(STORAGE_KEYS.MEMO, memoInput.value);
           badge.classList.remove('opacity-0');
@@ -1447,7 +1452,7 @@
           memoTimer = setTimeout(() => {
             badge.classList.remove('opacity-100');
             badge.classList.add('opacity-0');
-          }, 1200);
+          }, 1000);
         } catch (e) {}
       });
     }
@@ -1455,6 +1460,7 @@
     function clearQuickMemo() {
       const memoInput = document.getElementById('quick-memo-input');
       memoInput.value = '';
+      autoResizeMemo(memoInput);
       try {
         localStorage.removeItem(STORAGE_KEYS.MEMO);
       } catch (e) {}
@@ -1589,19 +1595,13 @@
 
       // 3. 오창읍 실시간 날씨 & 미세먼지 + 실시간 인기검색어 병렬 패치
       fetchWeatherAndAirQuality();
-      refreshAllTrends(false);
+      refreshAllTrends();
 
-      // 4. 1초 주기 타이머 (60초 자동 실검 갱신 + 상단 시계)
+      // 4. 시계 업데이트 및 백그라운드 조용한 자동 갱신 (60초 주기, 애니메이션 없음)
+      setInterval(updateHeaderClock, 10000);
       setInterval(() => {
-        updateHeaderClock();
-        if (state.isFetchingTrends) return;
-        state.remainingSec -= 1;
-        if (state.remainingSec <= 0) {
-          refreshAllTrends(false);
-        } else {
-          updateCountdownUI();
-        }
-      }, 1000);
+        refreshAllTrends();
+      }, 60000);
     }
 
     window.addEventListener('DOMContentLoaded', initApp);
