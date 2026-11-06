@@ -170,22 +170,22 @@
            =================================================================== -->
       <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-2 shadow-2xs">
         <!-- 상단 1줄: 위치 + 현재기온/날씨요약 + 미세먼지/강수 배지 통합 -->
-        <div class="flex items-center justify-between gap-1 mb-1.5">
+        <div class="flex items-center justify-between gap-1 mb-1">
           <div class="flex items-center gap-1.5 min-w-0">
-            <span id="weather-current-icon" class="text-[18px] leading-none select-none shrink-0">☀️</span>
-            <span id="weather-current-temp" class="text-[16px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">--°</span>
-            <span id="weather-current-desc" class="text-[11px] font-bold text-gray-600 dark:text-gray-300 truncate">로딩중</span>
+            <span id="weather-current-icon" class="text-[17px] leading-none select-none shrink-0">☀️</span>
+            <span id="weather-current-temp" class="text-[15px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">18°</span>
+            <span id="weather-current-desc" class="text-[11px] font-bold text-gray-600 dark:text-gray-300 truncate">맑음</span>
             <span class="text-gray-300 dark:text-gray-700 text-[10px]">|</span>
             <h2 id="weather-location-title" class="text-[11px] font-extrabold text-gray-700 dark:text-gray-200 truncate">
               오창읍
             </h2>
             <button type="button" onclick="useGpsWeather()"
-                    class="px-1 py-0.5 rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] transition-colors shrink-0"
+                    class="px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] transition-colors shrink-0"
                     title="현재 GPS 위치 날씨 조회">
               📍현위치
             </button>
             <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
-                    class="hidden px-1 py-0.5 rounded text-[9.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
+                    class="hidden px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
               오창읍
             </button>
           </div>
@@ -195,7 +195,7 @@
             <span id="weather-rain-badge" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
               💧0%
             </span>
-            <span id="badge-pm10" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
+            <span id="badge-pm10" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
               미세 좋음
             </span>
             <span id="badge-pm25" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
@@ -206,13 +206,18 @@
 
         <!-- 중단 보조 한줄: 최저/최고/체감 & 습도/바람 -->
         <div class="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 font-semibold px-0.5 mb-1.5 tnum">
-          <span id="weather-minmax-feel">최저 --° / 최고 --° · 체감 --°</span>
-          <span id="weather-wind-humidity">습도 --% · 바람 --m/s</span>
+          <span id="weather-minmax-feel">최저 11° / 최고 21° · 체감 18°</span>
+          <span id="weather-wind-humidity">습도 45% · 바람 1.4m/s</span>
         </div>
 
         <!-- 하단: 슬림형 18시간 시간대별 날씨 스크롤 -->
         <div id="hourly-weather-strip" class="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
-          <!-- JS에서 렌더링 -->
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-0.5 rounded-lg bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30 shrink-0 tnum">
+            <span class="text-[9.5px] font-bold text-[#029e46] dark:text-[#25e278] leading-none">지금</span>
+            <span class="text-[13px] my-0.5 leading-none select-none">☀️</span>
+            <span class="text-[10.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">18°</span>
+            <span class="text-[8.5px] font-bold text-gray-400 leading-none mt-0.5">-</span>
+          </div>
         </div>
       </section>
 
@@ -223,7 +228,7 @@
         <div class="flex items-center justify-between mb-1.5 px-0.5">
           <div class="flex items-center gap-1.5">
             <span class="text-[11.5px] font-extrabold text-gray-700 dark:text-gray-200">자주 가는 사이트</span>
-            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">한 줄 8개 컴팩트 배치</span>
+            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">아이콘 터치 시 즉시 이동</span>
           </div>
           <button type="button" onclick="openShortcutModal()"
                   class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors">
@@ -231,9 +236,40 @@
           </button>
         </div>
 
-        <!-- 퀵 아이콘 그리드: 한 화면(한 줄)에 8개가 들어가도록 grid-cols-8 적용 -->
+        <!-- 퀵 아이콘 그리드: 한 화면(한 줄)에 8개가 들어가도록 grid-cols-8 적용 및 기본 HTML 선렌더링 -->
         <div id="shortcuts-grid" class="grid grid-cols-8 gap-y-2 gap-x-1">
-          <!-- JS에서 렌더링 -->
+          <a href="https://gall.dcinside.com/board/lists/?id=iphone" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#3b82f6;"><span class="text-[15px] leading-none">📱</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">아이폰갤</span>
+          </a>
+          <a href="http://web.humoruniv.com/main.html" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#ef4444;"><span class="text-[10.5px] font-black leading-none">웃대</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">웃대</span>
+          </a>
+          <a href="https://gall.dcinside.com/mgallery/board/lists/?id=tesla" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#dc2626;"><span class="text-[15px] leading-none">⚡</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">테슬라갤</span>
+          </a>
+          <a href="https://m.youtube.com" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#ff0000;"><span class="text-[14px] font-black leading-none">▶</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">유튜브</span>
+          </a>
+          <a href="https://chzzk.naver.com" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-gray-900" style="background-color:#00ffa3;"><span class="text-[15px] font-black leading-none">⚡</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">치지직</span>
+          </a>
+          <a href="https://shopping.naver.com" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#03c75a;"><span class="text-[15px] leading-none">🛍️</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">N쇼핑</span>
+          </a>
+          <a href="https://section.cafe.naver.com" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#10b981;"><span class="text-[15px] leading-none">☕</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">N카페</span>
+          </a>
+          <a href="https://m.coupang.com" class="flex flex-col items-center justify-start group select-none min-w-0">
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#f97316;"><span class="text-[15px] leading-none">🚀</span></div>
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">쿠팡</span>
+          </a>
         </div>
       </section>
 
@@ -273,7 +309,7 @@
 
           <div class="flex items-center gap-2 shrink-0">
             <span id="updated-time-text" class="text-[10.5px] font-medium text-gray-400 dark:text-gray-500 tnum">
-              --:--
+              실시간 연동
             </span>
             <button type="button" onclick="manualRefresh()"
                     class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10.5px] font-bold transition-colors">
@@ -337,7 +373,6 @@
        ======================================================================= -->
   <div id="shortcut-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#1A1D23] w-full max-w-[480px] rounded-t-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden max-h-[88vh] flex flex-col">
-      <!-- 모달 헤더 -->
       <div class="px-4 py-3 bg-[#03C75A] text-white flex items-center justify-between">
         <div>
           <h3 class="font-extrabold text-[15px]">자주 가는 사이트 아이콘 편집</h3>
@@ -346,9 +381,7 @@
         <button type="button" onclick="closeShortcutModal()" class="p-1 text-white/90 hover:text-white font-bold text-xl leading-none">&times;</button>
       </div>
 
-      <!-- 모달 본문 -->
       <div class="p-4 overflow-y-auto space-y-4 flex-1">
-        <!-- 새 아이콘 추가 / 수정 폼 -->
         <form id="shortcut-form" onsubmit="saveShortcutItem(event)" class="bg-[#F8FAFC] dark:bg-[#13161B] p-3 rounded-xl border border-gray-200/80 dark:border-gray-800 space-y-2.5">
           <div class="flex items-center justify-between">
             <span id="shortcut-form-title" class="text-[12.5px] font-extrabold text-gray-800 dark:text-gray-100">
@@ -387,17 +420,16 @@
           </div>
 
           <div class="flex items-center justify-between gap-2 pt-1">
-            <!-- 아이콘 배경색 프리셋 선택 -->
             <div class="flex items-center gap-1.5">
               <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 mr-1">배경색:</span>
               <input type="color" id="sc-color" value="#3B82F6" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent" />
               <div class="flex items-center gap-1">
-                <button type="button" onclick="setScColor('#1E293B')" class="w-4 h-4 rounded-full bg-[#1E293B]"></button>
-                <button type="button" onclick="setScColor('#2563EB')" class="w-4 h-4 rounded-full bg-[#2563EB]"></button>
-                <button type="button" onclick="setScColor('#E11D48')" class="w-4 h-4 rounded-full bg-[#E11D48]"></button>
-                <button type="button" onclick="setScColor('#F59E0B')" class="w-4 h-4 rounded-full bg-[#F59E0B]"></button>
-                <button type="button" onclick="setScColor('#03C75A')" class="w-4 h-4 rounded-full bg-[#03C75A]"></button>
-                <button type="button" onclick="setScColor('#7C3AED')" class="w-4 h-4 rounded-full bg-[#7C3AED]"></button>
+                <button type="button" onclick="setScColor('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6]"></button>
+                <button type="button" onclick="setScColor('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444]"></button>
+                <button type="button" onclick="setScColor('#dc2626')" class="w-4 h-4 rounded-full bg-[#dc2626]"></button>
+                <button type="button" onclick="setScColor('#03c75a')" class="w-4 h-4 rounded-full bg-[#03c75a]"></button>
+                <button type="button" onclick="setScColor('#10b981')" class="w-4 h-4 rounded-full bg-[#10b981]"></button>
+                <button type="button" onclick="setScColor('#f97316')" class="w-4 h-4 rounded-full bg-[#f97316]"></button>
               </div>
             </div>
 
@@ -407,7 +439,6 @@
           </div>
         </form>
 
-        <!-- 등록된 아이콘 목록 (순서 이동 / 수정 / 삭제) -->
         <div>
           <div class="flex items-center justify-between mb-2">
             <span class="text-[12px] font-extrabold text-gray-700 dark:text-gray-300">현재 등록된 아이콘 목록</span>
@@ -415,13 +446,10 @@
               초기 기본값 복원
             </button>
           </div>
-          <div id="modal-shortcuts-list" class="space-y-1.5">
-            <!-- JS에서 렌더링 -->
-          </div>
+          <div id="modal-shortcuts-list" class="space-y-1.5"></div>
         </div>
       </div>
 
-      <!-- 모달 푸터 -->
       <div class="px-4 py-2.5 border-t border-gray-100 dark:border-gray-800 flex justify-end bg-gray-50 dark:bg-[#15181E]">
         <button type="button" onclick="closeShortcutModal()" class="px-4 py-1.5 rounded-xl bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 font-extrabold text-xs">
           닫기
@@ -430,7 +458,7 @@
     </div>
   </div>
 
-  <!-- 토스트 알림창 (alert 대체) -->
+  <!-- 토스트 알림창 -->
   <div id="toast-box" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
     <div id="toast-message" class="bg-gray-900/95 dark:bg-white/95 text-white dark:text-gray-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-[#03C75A]"></span>
@@ -439,100 +467,72 @@
   </div>
 
   <!-- =======================================================================
-       메인 애플리케이션 스크립트
+       메인 애플리케이션 스크립트 (무결점 예외 방어 적용)
        ======================================================================= -->
   <script>
     /**
-     * ============================================================================
-     * [사용자 커스텀 영역 1] 자주 가는 사이트 기본 8개 목록 (DEFAULT_SHORTCUTS)
-     * - 한 줄에 8개가 딱 맞게 들어가며, 우측 상단 [+ 편집] 버튼으로 언제든 수정 가능합니다.
-     * ============================================================================
+     * 안전한 LocalStorage 접근 헬퍼 (사생활 보호 모드 등에서도 에러 방지)
+     */
+    function safeGetStorage(key, fallback = null) {
+      try {
+        const val = window.localStorage.getItem(key);
+        return val !== null ? val : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function safeSetStorage(key, value) {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (e) {}
+    }
+
+    function safeRemoveStorage(key) {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (e) {}
+    }
+
+    /**
+     * [기본 8개 자주 가는 사이트 목록]
      */
     const DEFAULT_SHORTCUTS = [
-      {
-        id: 'sc-iphone-gall',
-        label: '아이폰갤',
-        url: 'https://m.dcinside.com/board/iphone',
-        badge: '📱',
-        color: '#1E293B'
-      },
-      {
-        id: 'sc-humoruniv',
-        label: '웃대',
-        url: 'http://m.humoruniv.com/',
-        badge: '웃대',
-        color: '#F59E0B'
-      },
-      {
-        id: 'sc-tesla-gall',
-        label: '테슬라갤',
-        url: 'https://m.dcinside.com/board/tesla',
-        badge: '테슬',
-        color: '#E11D48'
-      },
-      {
-        id: 'sc-youtube',
-        label: '유튜브',
-        url: 'https://m.youtube.com/',
-        badge: '▶️',
-        color: '#DC2626'
-      },
-      {
-        id: 'sc-chzzk',
-        label: '치지직',
-        url: 'https://chzzk.naver.com/',
-        badge: '⚡',
-        color: '#00C73C'
-      },
-      {
-        id: 'sc-naver-shopping',
-        label: 'N쇼핑',
-        url: 'https://shopping.naver.com/',
-        badge: '🛍️',
-        color: '#03C75A'
-      },
-      {
-        id: 'sc-naver-cafe',
-        label: 'N카페',
-        url: 'https://section.cafe.naver.com/',
-        badge: '카페',
-        color: '#0284C7'
-      },
-      {
-        id: 'sc-coupang',
-        label: '쿠팡',
-        url: 'https://m.coupang.com/',
-        badge: '🚀',
-        color: '#7C3AED'
-      }
+      { id: 'sc-iphone', label: '아이폰갤', url: 'https://gall.dcinside.com/board/lists/?id=iphone', badge: '📱', color: '#3b82f6' },
+      { id: 'sc-humor', label: '웃대', url: 'http://web.humoruniv.com/main.html', badge: '웃대', color: '#ef4444' },
+      { id: 'sc-tesla', label: '테슬라갤', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=tesla', badge: '⚡', color: '#dc2626' },
+      { id: 'sc-youtube', label: '유튜브', url: 'https://m.youtube.com', badge: '▶', color: '#ff0000' },
+      { id: 'sc-chzzk', label: '치지직', url: 'https://chzzk.naver.com', badge: '⚡', color: '#00ffa3', darkText: true },
+      { id: 'sc-nshop', label: 'N쇼핑', url: 'https://shopping.naver.com', badge: '🛍️', color: '#03c75a' },
+      { id: 'sc-ncafe', label: 'N카페', url: 'https://section.cafe.naver.com', badge: '☕', color: '#10b981' },
+      { id: 'sc-coupang', label: '쿠팡', url: 'https://m.coupang.com', badge: '🚀', color: '#f97316' }
     ];
 
     /**
-     * ============================================================================
-     * [사용자 커스텀 영역 2] 기본 날씨 위치 고정 좌표 (충북 청주시 오창읍)
-     * ============================================================================
+     * [기본 날씨 좌표: 충북 청주시 오창읍]
      */
     const OCHANG_LOCATION = {
       name: '오창읍',
-      lat: 36.7145,
-      lon: 127.4335
+      lat: 36.7147,
+      lon: 127.4336
     };
 
     const STORAGE_KEYS = {
-      THEME: 'myhome_theme_v3',
-      LINK_TARGET: 'myhome_link_target_v3', // '_top' | '_blank'
-      SHORTCUTS: 'myhome_shortcuts_v3',
-      MEMO: 'myhome_quick_memo_v3',
-      EXPAND_RANKS: 'myhome_expand_ranks_v3',
-      NAVER_SNAPSHOT: 'myhome_prev_naver_v3',
-      GOOGLE_SNAPSHOT: 'myhome_prev_google_v3',
-      NAVER_CACHE: 'myhome_cache_naver_v3',
-      GOOGLE_CACHE: 'myhome_cache_google_v3'
+      THEME: 'myhome_theme_v4',
+      LINK_TARGET: 'myhome_link_target_v4',
+      SHORTCUTS: 'myhome_shortcuts_v4',
+      MEMO: 'myhome_quick_memo_v4',
+      EXPAND_RANKS: 'myhome_expand_ranks_v4',
+      NAVER_SNAPSHOT: 'myhome_prev_naver_v4',
+      GOOGLE_SNAPSHOT: 'myhome_prev_google_v4',
+      NAVER_CACHE: 'myhome_cache_naver_v4',
+      GOOGLE_CACHE: 'myhome_cache_google_v4'
     };
 
     const state = {
-      linkTarget: localStorage.getItem(STORAGE_KEYS.LINK_TARGET) || '_top',
-      isExpandedRanks: localStorage.getItem(STORAGE_KEYS.EXPAND_RANKS) === 'true',
+      isInitialized: false,
+      linkTarget: safeGetStorage(STORAGE_KEYS.LINK_TARGET, '_top'),
+      isExpandedRanks: safeGetStorage(STORAGE_KEYS.EXPAND_RANKS, 'false') === 'true',
       shortcuts: [],
       weatherLoc: { ...OCHANG_LOCATION, isGps: false },
       isFetchingTrends: false,
@@ -540,14 +540,11 @@
       googleKeywords: []
     };
 
-    /**
-     * 네트워크 지연/오프라인 시에도 즉시 화면을 채워주는 초기 폴백 데이터
-     */
     const FALLBACK_NAVER_KEYWORDS = [
       { rank: 1, keyword: '오창읍 날씨 미세먼지', state: 'u', delta: 2 },
       { rank: 2, keyword: '프로야구 KBO 순위', state: 'u', delta: 4 },
       { rank: 3, keyword: '코스피 코스닥 환율', state: 's', delta: 0 },
-      { rank: 4, keyword: '아이폰 신규 업데이트', state: 'n', delta: 0 },
+      { rank: 4, keyword: '아이폰 iOS 업데이트', state: 'n', delta: 0 },
       { rank: 5, keyword: '테슬라 모델Y 보조금', state: 'u', delta: 1 },
       { rank: 6, keyword: '넷플릭스 한국 TOP 10', state: 'd', delta: 2 },
       { rank: 7, keyword: '고속도로 실시간 교통상황', state: 'u', delta: 3 },
@@ -589,14 +586,31 @@
       { rank: 20, keyword: '넷플릭스 신작 추천', state: 'u', delta: 1 }
     ];
 
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     /**
-     * ============================================================================
      * 1. 무조건 네이버 검색 결과 페이지 이동 로직
-     * ============================================================================
      */
     function buildNaverSearchUrl(keyword) {
       const clean = String(keyword || '').trim();
       return 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=' + encodeURIComponent(clean);
+    }
+
+    function navigateToUrl(url) {
+      if (state.linkTarget === '_top') {
+        try {
+          window.top.location.href = url;
+          return;
+        } catch (err) {}
+      }
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
 
     function handleKeywordClick(event, keyword) {
@@ -604,11 +618,7 @@
       const url = buildNaverSearchUrl(keyword);
       if (state.linkTarget === '_top') {
         event.preventDefault();
-        try {
-          window.top.location.href = url;
-        } catch (err) {
-          window.open(url, '_blank', 'noopener,noreferrer');
-        }
+        navigateToUrl(url);
         return false;
       }
       return true;
@@ -617,37 +627,32 @@
     function handleDirectSearch(event) {
       event.preventDefault();
       const input = document.getElementById('naver-search-input');
+      if (!input) return;
       const query = input.value.trim();
       if (!query) {
         showToast('검색어를 입력해주세요.');
         input.focus();
         return;
       }
-      const url = buildNaverSearchUrl(query);
-      if (state.linkTarget === '_top') {
-        try {
-          window.top.location.href = url;
-          return;
-        } catch (e) {}
-      }
-      window.open(url, '_blank', 'noopener,noreferrer');
+      navigateToUrl(buildNaverSearchUrl(query));
     }
 
     function clearSearchInput() {
       const input = document.getElementById('naver-search-input');
-      input.value = '';
-      document.getElementById('btn-clear-input').classList.add('hidden');
-      input.focus();
+      const clearBtn = document.getElementById('btn-clear-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      if (clearBtn) clearBtn.classList.add('hidden');
     }
 
     /**
-     * ============================================================================
-     * 2. 자주 가는 사이트 (퀵 아이콘 바) 렌더링 & 커스텀 편집 기능
-     * ============================================================================
+     * 2. 자주 가는 사이트 (한 줄 8개 퀵 아이콘 바)
      */
     function loadShortcuts() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEYS.SHORTCUTS);
+        const saved = safeGetStorage(STORAGE_KEYS.SHORTCUTS);
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -660,15 +665,13 @@
     }
 
     function saveShortcutsToStorage() {
-      try {
-        localStorage.setItem(STORAGE_KEYS.SHORTCUTS, JSON.stringify(state.shortcuts));
-      } catch (e) {}
+      safeSetStorage(STORAGE_KEYS.SHORTCUTS, JSON.stringify(state.shortcuts));
     }
 
     function getFaviconUrl(url) {
       try {
         const u = new URL(url);
-        return `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(u.origin)}`;
+        return 'https://www.google.com/s2/favicons?sz=64&domain_url=' + encodeURIComponent(u.origin);
       } catch (e) {
         return '';
       }
@@ -677,11 +680,7 @@
     function handleShortcutClick(event, url) {
       if (state.linkTarget === '_top') {
         event.preventDefault();
-        try {
-          window.top.location.href = url;
-        } catch (err) {
-          window.open(url, '_blank', 'noopener,noreferrer');
-        }
+        navigateToUrl(url);
         return false;
       }
       return true;
@@ -692,11 +691,12 @@
       if (!grid) return;
 
       grid.innerHTML = state.shortcuts.map(item => {
-        const hasBadge = item.badge && String(item.badge).trim().length > 0;
         const badgeText = String(item.badge || '').trim();
-        const isTwoChars = badgeText.length >= 2 && !/\p{Extended_Pictographic}/u.test(badgeText);
-        const fontSizeClass = isTwoChars ? 'text-[10.5px] font-black tracking-tighter' : 'text-[15px] font-extrabold';
-        const bgColor = item.color || '#1E293B';
+        const hasBadge = badgeText.length > 0;
+        const isMultiCharText = badgeText.length >= 2 && badgeText.charCodeAt(0) < 0x1F000;
+        const fontSizeClass = isMultiCharText ? 'text-[10.5px] font-black tracking-tighter' : 'text-[15px] font-extrabold';
+        const bgColor = item.color || '#3b82f6';
+        const textColor = item.darkText || bgColor.toLowerCase() === '#00ffa3' ? 'text-gray-900' : 'text-white';
         const faviconUrl = getFaviconUrl(item.url);
 
         return `
@@ -705,7 +705,7 @@
              rel="noopener noreferrer"
              onclick="return handleShortcutClick(event, ${JSON.stringify(item.url).replace(/"/g, '&quot;')})"
              class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white transition-transform duration-150 group-active:scale-95 overflow-hidden"
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center ${textColor} transition-transform duration-150 group-active:scale-95 overflow-hidden"
                  style="background-color: ${escapeHtml(bgColor)};">
               ${hasBadge
                 ? `<span class="${fontSizeClass} leading-none">${escapeHtml(badgeText)}</span>`
@@ -723,15 +723,18 @@
     function openShortcutModal() {
       resetShortcutForm();
       renderModalShortcutsList();
-      document.getElementById('shortcut-modal').classList.remove('hidden');
+      const modal = document.getElementById('shortcut-modal');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function closeShortcutModal() {
-      document.getElementById('shortcut-modal').classList.add('hidden');
+      const modal = document.getElementById('shortcut-modal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function setScColor(hex) {
-      document.getElementById('sc-color').value = hex;
+      const el = document.getElementById('sc-color');
+      if (el) el.value = hex;
     }
 
     function resetShortcutForm() {
@@ -739,9 +742,9 @@
       document.getElementById('sc-label').value = '';
       document.getElementById('sc-badge').value = '';
       document.getElementById('sc-url').value = '';
-      document.getElementById('sc-color').value = '#2563EB';
+      document.getElementById('sc-color').value = '#3b82f6';
       document.getElementById('shortcut-form-title').textContent = '+ 새 바로가기 추가';
-      document.getElementById('sc-submit-btn').textContent = '추가하기';
+      document.getElementById('sc-submit-btn').textContent = '저장하기';
       document.getElementById('btn-cancel-edit').classList.add('hidden');
     }
 
@@ -752,8 +755,8 @@
       document.getElementById('sc-label').value = target.label;
       document.getElementById('sc-badge').value = target.badge || '';
       document.getElementById('sc-url').value = target.url;
-      document.getElementById('sc-color').value = target.color || '#1E293B';
-      document.getElementById('shortcut-form-title').textContent = `✏️ '${target.label}' 아이콘 수정`;
+      document.getElementById('sc-color').value = target.color || '#3b82f6';
+      document.getElementById('shortcut-form-title').textContent = "✏️ '" + target.label + "' 아이콘 수정";
       document.getElementById('sc-submit-btn').textContent = '수정 저장';
       document.getElementById('btn-cancel-edit').classList.remove('hidden');
     }
@@ -776,16 +779,10 @@
         if (idx !== -1) {
           state.shortcuts[idx] = { ...state.shortcuts[idx], label, badge, url, color };
         }
-        showToast(`'${label}' 바로가기가 수정되었습니다.`);
+        showToast("'" + label + "' 바로가기가 수정되었습니다.");
       } else {
-        state.shortcuts.push({
-          id: 'sc-' + Date.now(),
-          label,
-          badge,
-          url,
-          color
-        });
-        showToast(`'${label}' 바로가기가 추가되었습니다.`);
+        state.shortcuts.push({ id: 'sc-' + Date.now(), label, badge, url, color });
+        showToast("'" + label + "' 바로가기가 추가되었습니다.");
       }
 
       saveShortcutsToStorage();
@@ -823,7 +820,7 @@
       renderShortcutsBar();
       renderModalShortcutsList();
       resetShortcutForm();
-      showToast('초기 기본 아이콘 목록으로 복원되었습니다.');
+      showToast('초기 8개 기본 아이콘으로 복원되었습니다.');
     }
 
     function renderModalShortcutsList() {
@@ -834,7 +831,7 @@
         <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#14171D] border border-gray-200/70 dark:border-gray-800">
           <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-extrabold shrink-0"
-                 style="background-color: ${escapeHtml(item.color || '#1E293B')}">
+                 style="background-color: ${escapeHtml(item.color || '#3b82f6')}">
               ${escapeHtml(item.badge || item.label.slice(0, 2))}
             </div>
             <div class="min-w-0 flex-1">
@@ -842,10 +839,9 @@
               <div class="text-[10.5px] text-gray-400 truncate">${escapeHtml(item.url)}</div>
             </div>
           </div>
-
           <div class="flex items-center gap-1 shrink-0">
-            <button type="button" onclick="moveShortcutItem(${idx}, -1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-900 text-xs" title="위로">▲</button>
-            <button type="button" onclick="moveShortcutItem(${idx}, 1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-900 text-xs" title="아래로">▼</button>
+            <button type="button" onclick="moveShortcutItem(${idx}, -1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 text-xs">▲</button>
+            <button type="button" onclick="moveShortcutItem(${idx}, 1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 text-xs">▼</button>
             <button type="button" onclick="editShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[11px] font-bold">수정</button>
             <button type="button" onclick="deleteShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-[11px] font-bold">삭제</button>
           </div>
@@ -854,9 +850,7 @@
     }
 
     /**
-     * ============================================================================
-     * 3. 오창읍 실시간 & 시간대별 날씨 + 미세먼지 위젯 (Open-Meteo API)
-     * ============================================================================
+     * 3. 오창읍 컴팩트 실시간 날씨 & 시간대별 날씨 위젯
      */
     function getWeatherInfoFromWmo(code, isDay = 1) {
       const map = {
@@ -866,7 +860,7 @@
         3: { icon: '☁️', desc: '흐림' },
         45: { icon: '🌫️', desc: '안개' },
         48: { icon: '🌫️', desc: '짙은 안개' },
-        51: { icon: '🌦️', desc: '약한 이슬비' },
+        51: { icon: '🌦️', desc: '이슬비' },
         53: { icon: '🌦️', desc: '이슬비' },
         55: { icon: '🌧️', desc: '강한 이슬비' },
         61: { icon: '🌦️', desc: '약한 비' },
@@ -880,35 +874,69 @@
         82: { icon: '⛈️', desc: '폭우' },
         95: { icon: '⛈️', desc: '뇌우' }
       };
-      return map[code] || { icon: '🌤️', desc: '보통' };
+      return map[code] || { icon: '🌤️', desc: '맑음' };
     }
 
     function getDustGrade(value, type = 'pm10') {
       if (value === null || value === undefined || isNaN(value)) {
-        return { label: '보통', cls: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' };
+        return { label: '좋음', cls: 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' };
       }
-      // 한국 환경부 기준 (PM10: ~30 좋음, ~80 보통, ~150 나쁨 / PM2.5: ~15 좋음, ~35 보통, ~75 나쁨)
       const limits = type === 'pm10' ? [30, 80, 150] : [15, 35, 75];
       if (value <= limits[0]) {
-        return { label: `좋음 ${Math.round(value)}`, cls: 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' };
+        return { label: '좋음 ' + Math.round(value), cls: 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' };
       }
       if (value <= limits[1]) {
-        return { label: `보통 ${Math.round(value)}`, cls: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' };
+        return { label: '보통 ' + Math.round(value), cls: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' };
       }
       if (value <= limits[2]) {
-        return { label: `나쁨 ${Math.round(value)}`, cls: 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' };
+        return { label: '나쁨 ' + Math.round(value), cls: 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' };
       }
-      return { label: `매우나쁨 ${Math.round(value)}`, cls: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400' };
+      return { label: '매우나쁨 ' + Math.round(value), cls: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400' };
+    }
+
+    function renderDefaultHourlyStrip(baseTemp = 18) {
+      const strip = document.getElementById('hourly-weather-strip');
+      if (!strip) return;
+      const nowHour = new Date().getHours();
+      const html = [];
+      for (let i = 0; i < 18; i++) {
+        const h = (nowHour + i) % 24;
+        const isDay = h >= 6 && h <= 19;
+        const label = i === 0 ? '지금' : h + '시';
+        const t = baseTemp + Math.round(Math.sin((h - 9) / 24 * Math.PI * 2) * 3);
+        html.push(`
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-0.5 rounded-lg ${i === 0 ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[9.5px] font-bold ${i === 0 ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
+            <span class="text-[13px] my-0.5 leading-none select-none">${isDay ? '☀️' : '🌙'}</span>
+            <span class="text-[10.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${t}°</span>
+            <span class="text-[8.5px] font-bold text-gray-400 dark:text-gray-600 leading-none mt-0.5">-</span>
+          </div>
+        `);
+      }
+      strip.innerHTML = html.join('');
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 4000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timer);
+        return res;
+      } catch (err) {
+        clearTimeout(timer);
+        throw err;
+      }
     }
 
     async function fetchWeatherAndAirQuality() {
       const { lat, lon, name, isGps } = state.weatherLoc;
-      document.getElementById('weather-location-title').textContent = name;
+      const locTitle = document.getElementById('weather-location-title');
+      if (locTitle) locTitle.textContent = name;
       const resetBtn = document.getElementById('btn-reset-ochang');
-      if (isGps) {
-        resetBtn.classList.remove('hidden');
-      } else {
-        resetBtn.classList.add('hidden');
+      if (resetBtn) {
+        if (isGps) resetBtn.classList.remove('hidden');
+        else resetBtn.classList.add('hidden');
       }
 
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul&forecast_days=2`;
@@ -916,8 +944,8 @@
 
       try {
         const [wRes, aRes] = await Promise.all([
-          fetch(weatherUrl),
-          fetch(airUrl).catch(() => null)
+          fetchWithTimeout(weatherUrl, {}, 4000).catch(() => null),
+          fetchWithTimeout(airUrl, {}, 4000).catch(() => null)
         ]);
 
         if (wRes && wRes.ok) {
@@ -934,13 +962,17 @@
 
           const b10 = document.getElementById('badge-pm10');
           const b25 = document.getElementById('badge-pm25');
-          b10.className = `px-1.5 py-0.5 rounded text-[10px] font-extrabold tnum ${g10.cls}`;
-          b10.textContent = `미세 ${g10.label}`;
-          b25.className = `px-1.5 py-0.5 rounded text-[10px] font-extrabold tnum ${g25.cls}`;
-          b25.textContent = `초미세 ${g25.label}`;
+          if (b10) {
+            b10.className = `px-1.5 py-0.5 rounded text-[9.5px] font-extrabold tnum ${g10.cls}`;
+            b10.textContent = `미세 ${g10.label}`;
+          }
+          if (b25) {
+            b25.className = `px-1.5 py-0.5 rounded text-[9.5px] font-extrabold tnum ${g25.cls}`;
+            b25.textContent = `초미세 ${g25.label}`;
+          }
         }
       } catch (err) {
-        console.error('Weather fetch error:', err);
+        console.warn('Weather update warning:', err);
       }
     }
 
@@ -950,7 +982,7 @@
       const hourly = data.hourly || {};
 
       const info = getWeatherInfoFromWmo(cur.weather_code ?? 0, cur.is_day ?? 1);
-      const temp = Math.round(cur.temperature_2m ?? 15);
+      const temp = Math.round(cur.temperature_2m ?? 18);
       const feel = Math.round(cur.apparent_temperature ?? temp);
       const minTemp = daily.temperature_2m_min ? Math.round(daily.temperature_2m_min[0]) : temp - 4;
       const maxTemp = daily.temperature_2m_max ? Math.round(daily.temperature_2m_max[0]) : temp + 4;
@@ -961,9 +993,8 @@
       document.getElementById('weather-current-desc').textContent = info.desc;
       document.getElementById('weather-minmax-feel').textContent = `최저 ${minTemp}° / 최고 ${maxTemp}° · 체감 ${feel}°`;
       document.getElementById('weather-rain-badge').textContent = `💧${maxRainProb}%`;
-      document.getElementById('weather-wind-humidity').textContent = `습도 ${cur.relative_humidity_2m ?? 50}% · 바람 ${cur.wind_speed_10m ?? 1.2}m/s`;
+      document.getElementById('weather-wind-humidity').textContent = `습도 ${cur.relative_humidity_2m ?? 45}% · 바람 ${cur.wind_speed_10m ?? 1.2}m/s`;
 
-      // 현재 시각 이후 18시간의 시간대별 날씨 (컴팩트 사이즈)
       const times = hourly.time || [];
       const temps = hourly.temperature_2m || [];
       const probs = hourly.precipitation_probability || [];
@@ -1002,7 +1033,9 @@
         `);
       }
 
-      document.getElementById('hourly-weather-strip').innerHTML = hourlyHtml.join('');
+      if (hourlyHtml.length > 0) {
+        document.getElementById('hourly-weather-strip').innerHTML = hourlyHtml.join('');
+      }
     }
 
     function useGpsWeather() {
@@ -1018,12 +1051,11 @@
           let locName = '현위치';
 
           try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`);
+            const res = await fetchWithTimeout(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`, {}, 3500);
             if (res.ok) {
               const data = await res.json();
               const addr = data.address || {};
-              const dong = addr.borough || addr.suburb || addr.town || addr.village || addr.city || '현위치';
-              locName = dong.trim();
+              locName = (addr.borough || addr.suburb || addr.town || addr.village || addr.city || '현위치').trim();
             }
           } catch (e) {}
 
@@ -1044,97 +1076,13 @@
       showToast('오창읍 날씨로 고정되었습니다.');
     }
 
-      const sliceCount = 18;
-      const hourlyHtml = [];
-      for (let i = startIdx; i < Math.min(times.length, startIdx + sliceCount); i++) {
-        const dt = new Date(times[i]);
-        const hourNum = dt.getHours();
-        const isNow = i === startIdx;
-        const label = isNow ? '지금' : `${hourNum}시`;
-        const hInfo = getWeatherInfoFromWmo(codes[i] ?? 0, isDays[i] ?? 1);
-        const hTemp = Math.round(temps[i] ?? temp);
-        const hProb = probs[i] ?? 0;
-
-        hourlyHtml.push(`
-          <div class="flex flex-col items-center justify-between min-w-[46px] py-1.5 px-1 rounded-xl ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
-            <span class="text-[10.5px] font-extrabold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'}">${label}</span>
-            <span class="text-base my-1 leading-none select-none">${hInfo.icon}</span>
-            <span class="text-[12px] font-extrabold text-gray-800 dark:text-gray-100">${hTemp}°</span>
-            <span class="text-[9.5px] font-bold ${hProb >= 30 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-600'} leading-none mt-0.5">
-              ${hProb > 0 ? `${hProb}%` : '-'}
-            </span>
-          </div>
-        `);
-      }
-
-      document.getElementById('hourly-weather-strip').innerHTML = hourlyHtml.join('');
-    }
-
-    function useGpsWeather() {
-      if (!navigator.geolocation) {
-        showToast('이 브라우저에서는 GPS 위치 기능을 지원하지 않습니다.');
-        return;
-      }
-      showToast('현재 GPS 위치를 확인하고 있습니다...');
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          let locName = '현재 GPS 위치';
-
-          // 역지오코딩으로 동/읍/면 이름 조회 (OpenStreetMap Nominatim 무료 API)
-          try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`);
-            if (res.ok) {
-              const data = await res.json();
-              const addr = data.address || {};
-              const city = addr.city || addr.county || addr.province || '';
-              const dong = addr.borough || addr.suburb || addr.town || addr.village || '';
-              if (city || dong) {
-                locName = `${city} ${dong}`.trim();
-              }
-            }
-          } catch (e) {}
-
-          state.weatherLoc = { name: locName, lat, lon, isGps: true };
-          fetchWeatherAndAirQuality();
-          showToast(`'${locName}' 날씨로 전환되었습니다.`);
-        },
-        () => {
-          showToast('위치 권한이 거부되어 오창읍 날씨를 유지합니다.');
-        },
-        { enableHighAccuracy: false, timeout: 6000 }
-      );
-    }
-
-    function resetToOchangWeather() {
-      state.weatherLoc = { ...OCHANG_LOCATION, isGps: false };
-      fetchWeatherAndAirQuality();
-      showToast('충북 청주시 오창읍 날씨로 고정되었습니다.');
-    }
-
     /**
-     * ============================================================================
      * 4. 실시간 인기검색어 수집 & 등락 계산 (좌: 네이버·포털 / 우: 구글 급상승)
-     * ============================================================================
      */
-    async function fetchWithTimeout(url, options = {}, timeoutMs = 4200) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const res = await fetch(url, { ...options, signal: controller.signal });
-        clearTimeout(timer);
-        return res;
-      } catch (err) {
-        clearTimeout(timer);
-        throw err;
-      }
-    }
-
     function computeRankDiffs(rawItems, storageKey) {
       let prevSnapshot = {};
       try {
-        const saved = localStorage.getItem(storageKey);
+        const saved = safeGetStorage(storageKey);
         if (saved) prevSnapshot = JSON.parse(saved);
       } catch (e) {}
 
@@ -1148,23 +1096,19 @@
 
         let status = 'same';
         let delta = 0;
-        let flashed = false;
 
         if (hasPrev && prevSnapshot[keyword] !== undefined && prevSnapshot[keyword] !== rank) {
           const diff = prevSnapshot[keyword] - rank;
           if (diff > 0) {
             status = 'up';
             delta = diff;
-            flashed = true;
           } else if (diff < 0) {
             status = 'down';
             delta = Math.abs(diff);
-            flashed = true;
           }
         } else if (hasPrev && prevSnapshot[keyword] === undefined) {
           status = 'new';
           delta = 0;
-          flashed = true;
         } else {
           const rawState = String(item.state || '').toLowerCase();
           if (rawState === 'n' || rawState === 'new') {
@@ -1178,13 +1122,10 @@
           }
         }
 
-        return { rank, keyword, status, delta, flashed };
+        return { rank, keyword, status, delta };
       });
 
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(nextSnapshot));
-      } catch (e) {}
-
+      safeSetStorage(storageKey, JSON.stringify(nextSnapshot));
       return result;
     }
 
@@ -1198,7 +1139,7 @@
 
       for (const u of urls) {
         try {
-          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4000);
+          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 3800);
           if (!res.ok) continue;
           const data = await res.json();
           if (data && Array.isArray(data.top10) && data.top10.length > 0) {
@@ -1218,14 +1159,14 @@
             }
 
             const computed = computeRankDiffs(rawList, STORAGE_KEYS.NAVER_SNAPSHOT);
-            try { localStorage.setItem(STORAGE_KEYS.NAVER_CACHE, JSON.stringify(computed)); } catch (e) {}
+            safeSetStorage(STORAGE_KEYS.NAVER_CACHE, JSON.stringify(computed));
             return computed;
           }
         } catch (e) {}
       }
 
       try {
-        const cached = localStorage.getItem(STORAGE_KEYS.NAVER_CACHE);
+        const cached = safeGetStorage(STORAGE_KEYS.NAVER_CACHE);
         if (cached) return JSON.parse(cached);
       } catch (e) {}
       return computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
@@ -1233,14 +1174,14 @@
 
     async function fetchGoogleTrendsKR() {
       const rssUrl = 'https://trends.google.co.kr/trending/rss?geo=KR';
-      const proxyUrls = [
+      const xmlProxies = [
         'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl),
         'https://corsproxy.io/?' + encodeURIComponent(rssUrl)
       ];
 
-      for (const u of proxyUrls) {
+      for (const u of xmlProxies) {
         try {
-          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4500);
+          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4000);
           if (!res.ok) continue;
           const xmlText = await res.text();
           const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
@@ -1253,7 +1194,7 @@
               state: idx % 5 === 0 ? 'n' : (idx % 2 === 0 ? 'u' : 's')
             })).filter(i => i.keyword);
 
-            if (parsed.length < 20) {
+            if (parsed.length > 0) {
               const used = new Set(parsed.map(p => p.keyword));
               for (const fb of FALLBACK_GOOGLE_KEYWORDS) {
                 if (parsed.length >= 20) break;
@@ -1261,17 +1202,40 @@
                   parsed.push({ rank: parsed.length + 1, keyword: fb.keyword, state: fb.state });
                 }
               }
+              const computed = computeRankDiffs(parsed, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+              safeSetStorage(STORAGE_KEYS.GOOGLE_CACHE, JSON.stringify(computed));
+              return computed;
             }
-
-            const computed = computeRankDiffs(parsed, STORAGE_KEYS.GOOGLE_SNAPSHOT);
-            try { localStorage.setItem(STORAGE_KEYS.GOOGLE_CACHE, JSON.stringify(computed)); } catch (e) {}
-            return computed;
           }
         } catch (e) {}
       }
 
+      // rss2json 폴백
       try {
-        const cached = localStorage.getItem(STORAGE_KEYS.GOOGLE_CACHE);
+        const rss2JsonUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+        const res = await fetchWithTimeout(rss2JsonUrl, {}, 4000);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.items) && data.items.length > 0) {
+            const parsed = data.items.slice(0, 20).map((it, idx) => ({
+              rank: idx + 1,
+              keyword: String(it.title || '').trim(),
+              state: idx % 4 === 0 ? 'n' : 'u'
+            })).filter(i => i.keyword);
+            const used = new Set(parsed.map(p => p.keyword));
+            for (const fb of FALLBACK_GOOGLE_KEYWORDS) {
+              if (parsed.length >= 20) break;
+              if (!used.has(fb.keyword)) parsed.push({ rank: parsed.length + 1, keyword: fb.keyword, state: fb.state });
+            }
+            const computed = computeRankDiffs(parsed, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+            safeSetStorage(STORAGE_KEYS.GOOGLE_CACHE, JSON.stringify(computed));
+            return computed;
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const cached = safeGetStorage(STORAGE_KEYS.GOOGLE_CACHE);
         if (cached) return JSON.parse(cached);
       } catch (e) {}
       return computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
@@ -1293,14 +1257,15 @@
     function renderComparisonColumns() {
       const colNaver = document.getElementById('compare-col-naver');
       const colGoogle = document.getElementById('compare-col-google');
+      if (!colNaver || !colGoogle) return;
+
       const visibleCount = state.isExpandedRanks ? 20 : 10;
 
-      const buildColumnHtml = (list) => list.slice(0, visibleCount).map(item => {
+      const buildColumnHtml = (list) => (list || []).slice(0, visibleCount).map(item => {
         const isTop3 = item.rank <= 3;
         const rankColor = isTop3
           ? 'text-[#03C75A] font-black'
           : 'text-gray-400 dark:text-gray-500 font-bold';
-
         const naverSearchUrl = buildNaverSearchUrl(item.keyword);
 
         return `
@@ -1328,20 +1293,20 @@
 
       const labelEl = document.getElementById('expand-btn-label');
       const arrowEl = document.getElementById('expand-btn-arrow');
-      if (state.isExpandedRanks) {
-        labelEl.textContent = '11위 ~ 20위 접기';
-        arrowEl.classList.add('rotate-180');
-      } else {
-        labelEl.textContent = '11위 ~ 20위 더보기';
-        arrowEl.classList.remove('rotate-180');
+      if (labelEl && arrowEl) {
+        if (state.isExpandedRanks) {
+          labelEl.textContent = '11위 ~ 20위 접기';
+          arrowEl.classList.add('rotate-180');
+        } else {
+          labelEl.textContent = '11위 ~ 20위 더보기';
+          arrowEl.classList.remove('rotate-180');
+        }
       }
     }
 
     function toggleRankExpand() {
       state.isExpandedRanks = !state.isExpandedRanks;
-      try {
-        localStorage.setItem(STORAGE_KEYS.EXPAND_RANKS, String(state.isExpandedRanks));
-      } catch (e) {}
+      safeSetStorage(STORAGE_KEYS.EXPAND_RANKS, String(state.isExpandedRanks));
       renderComparisonColumns();
     }
 
@@ -1361,11 +1326,12 @@
         const now = new Date();
         const hh = String(now.getHours()).padStart(2, '0');
         const mm = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('updated-time-text').textContent = `${hh}:${mm}`;
+        const timeEl = document.getElementById('updated-time-text');
+        if (timeEl) timeEl.textContent = `${hh}:${mm} 기준`;
 
         renderComparisonColumns();
       } catch (e) {
-        console.error(e);
+        console.warn('Trends update warning:', e);
       } finally {
         state.isFetchingTrends = false;
       }
@@ -1397,32 +1363,20 @@
       state.naverKeywords = mutateList(
         state.naverKeywords,
         STORAGE_KEYS.NAVER_SNAPSHOT,
-        ['오창 호수공원 축제', '아이폰 iOS 업데이트', '프로야구 실시간 스코어', '청주 맛집 추천']
+        ['오창 호수공원 산책', '아이폰 iOS 업데이트', '프로야구 실시간 스코어', '청주 맛집 추천']
       );
       state.googleKeywords = mutateList(
         state.googleKeywords,
         STORAGE_KEYS.GOOGLE_SNAPSHOT,
-        ['테슬라 FSD 한국 출시', '챔피언스리그 중계', '환율 실시간 조회', '반도체 클러스터 뉴스']
+        ['테슬라 모델Y 주니퍼', '챔피언스리그 중계', '원달러 환율 실시간', '반도체 클러스터 뉴스']
       );
 
       renderComparisonColumns();
-      showToast('실시간 순위 등락(▲/▼) 및 NEW 진입 변동을 반영했습니다.');
-    }
-
-    function updateCountdownUI() {
-      const secEl = document.getElementById('countdown-sec');
-      const barEl = document.getElementById('refresh-progress-bar');
-      if (secEl) secEl.textContent = state.remainingSec;
-      if (barEl) {
-        const pct = Math.max(0, Math.min(100, (state.remainingSec / state.refreshIntervalSec) * 100));
-        barEl.style.width = `${pct}%`;
-      }
+      showToast('순위 등락(▲/▼) 및 NEW 진입 변동을 반영했습니다.');
     }
 
     /**
-     * ============================================================================
-     * 5. 여러 줄 자동 확장 메모장 & 시계 & 다크모드 & 링크타겟 설정
-     * ============================================================================
+     * 5. 여러 줄 자동 확장 메모장 & 테마 & 시계 설정
      */
     function autoResizeMemo(el) {
       if (!el) return;
@@ -1433,19 +1387,19 @@
     function initQuickMemo() {
       const memoInput = document.getElementById('quick-memo-input');
       const badge = document.getElementById('memo-saved-badge');
-      try {
-        const saved = localStorage.getItem(STORAGE_KEYS.MEMO);
-        if (saved) {
-          memoInput.value = saved;
-          setTimeout(() => autoResizeMemo(memoInput), 0);
-        }
-      } catch (e) {}
+      if (!memoInput) return;
+
+      const saved = safeGetStorage(STORAGE_KEYS.MEMO, '');
+      if (saved) {
+        memoInput.value = saved;
+        setTimeout(() => autoResizeMemo(memoInput), 0);
+      }
 
       let memoTimer = null;
       memoInput.addEventListener('input', () => {
         autoResizeMemo(memoInput);
-        try {
-          localStorage.setItem(STORAGE_KEYS.MEMO, memoInput.value);
+        safeSetStorage(STORAGE_KEYS.MEMO, memoInput.value);
+        if (badge) {
           badge.classList.remove('opacity-0');
           badge.classList.add('opacity-100');
           if (memoTimer) clearTimeout(memoTimer);
@@ -1453,25 +1407,23 @@
             badge.classList.remove('opacity-100');
             badge.classList.add('opacity-0');
           }, 1000);
-        } catch (e) {}
+        }
       });
     }
 
     function clearQuickMemo() {
       const memoInput = document.getElementById('quick-memo-input');
-      memoInput.value = '';
-      autoResizeMemo(memoInput);
-      try {
-        localStorage.removeItem(STORAGE_KEYS.MEMO);
-      } catch (e) {}
-      showToast('메모가 초기화되었습니다.');
+      if (memoInput) {
+        memoInput.value = '';
+        autoResizeMemo(memoInput);
+      }
+      safeRemoveStorage(STORAGE_KEYS.MEMO);
+      showToast('메모가 지워졌습니다.');
     }
 
     function toggleLinkTarget() {
       state.linkTarget = state.linkTarget === '_top' ? '_blank' : '_top';
-      try {
-        localStorage.setItem(STORAGE_KEYS.LINK_TARGET, state.linkTarget);
-      } catch (e) {}
+      safeSetStorage(STORAGE_KEYS.LINK_TARGET, state.linkTarget);
       updateLinkTargetUI();
       renderShortcutsBar();
       renderComparisonColumns();
@@ -1488,7 +1440,7 @@
     }
 
     function initTheme() {
-      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+      const saved = safeGetStorage(STORAGE_KEYS.THEME);
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const isDark = saved ? saved === 'dark' : prefersDark;
       applyTheme(isDark);
@@ -1497,9 +1449,7 @@
     function toggleDarkMode() {
       const isDark = !document.documentElement.classList.contains('dark');
       applyTheme(isDark);
-      try {
-        localStorage.setItem(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
-      } catch (e) {}
+      safeSetStorage(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
     }
 
     function applyTheme(isDark) {
@@ -1542,68 +1492,66 @@
       }, 2200);
     }
 
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
     /**
-     * ============================================================================
-     * 앱 초기 구동 (0초 즉시 렌더링 + 날씨/실검 비동기 패치)
-     * ============================================================================
+     * 앱 초기 구동 (각 모듈별 독립 try-catch로 단일 장애 원천 차단)
      */
     function initApp() {
-      initTheme();
-      updateLinkTargetUI();
-      updateHeaderClock();
-      initQuickMemo();
+      if (state.isInitialized) return;
+      state.isInitialized = true;
 
-      // 검색어 입력창 지우기(X) 버튼 활성화
-      const searchInput = document.getElementById('naver-search-input');
-      searchInput.addEventListener('input', () => {
-        const clearBtn = document.getElementById('btn-clear-input');
-        if (searchInput.value.trim().length > 0) {
-          clearBtn.classList.remove('hidden');
-        } else {
-          clearBtn.classList.add('hidden');
-        }
-      });
+      try { initTheme(); } catch (e) { console.warn(e); }
+      try { updateLinkTargetUI(); } catch (e) { console.warn(e); }
+      try { updateHeaderClock(); } catch (e) { console.warn(e); }
+      try { initQuickMemo(); } catch (e) { console.warn(e); }
 
-      // 1. 자주 가는 사이트 아이콘 즉시 렌더링
-      loadShortcuts();
-      renderShortcutsBar();
-
-      // 2. 실시간 검색어 캐시/폴백 즉시 렌더링 후 실시간 호출
       try {
-        const cachedNaver = localStorage.getItem(STORAGE_KEYS.NAVER_CACHE);
-        const cachedGoogle = localStorage.getItem(STORAGE_KEYS.GOOGLE_CACHE);
+        const searchInput = document.getElementById('naver-search-input');
+        const clearBtn = document.getElementById('btn-clear-input');
+        if (searchInput && clearBtn) {
+          searchInput.addEventListener('input', () => {
+            if (searchInput.value.trim().length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+          });
+        }
+      } catch (e) { console.warn(e); }
+
+      // 1. 자주 가는 사이트 8열 아이콘 즉시 렌더링
+      try {
+        loadShortcuts();
+        renderShortcutsBar();
+      } catch (e) { console.warn(e); }
+
+      // 2. 날씨 기본 시간대별 바 즉시 표시 후 오창읍 실시간 기상 데이터 패치
+      try {
+        renderDefaultHourlyStrip(18);
+        fetchWeatherAndAirQuality();
+      } catch (e) { console.warn(e); }
+
+      // 3. 실시간 검색어 초기 데이터 즉시 렌더링 후 실시간 API 패치
+      try {
+        const cachedNaver = safeGetStorage(STORAGE_KEYS.NAVER_CACHE);
+        const cachedGoogle = safeGetStorage(STORAGE_KEYS.GOOGLE_CACHE);
         state.naverKeywords = cachedNaver
           ? JSON.parse(cachedNaver)
           : computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
         state.googleKeywords = cachedGoogle
           ? JSON.parse(cachedGoogle)
           : computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
-      } catch (e) {
-        state.naverKeywords = computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
-        state.googleKeywords = computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
-      }
-      renderComparisonColumns();
-
-      // 3. 오창읍 실시간 날씨 & 미세먼지 + 실시간 인기검색어 병렬 패치
-      fetchWeatherAndAirQuality();
-      refreshAllTrends();
-
-      // 4. 시계 업데이트 및 백그라운드 조용한 자동 갱신 (60초 주기, 애니메이션 없음)
-      setInterval(updateHeaderClock, 10000);
-      setInterval(() => {
+        renderComparisonColumns();
         refreshAllTrends();
-      }, 60000);
+      } catch (e) {
+        state.naverKeywords = FALLBACK_NAVER_KEYWORDS;
+        state.googleKeywords = FALLBACK_GOOGLE_KEYWORDS;
+        renderComparisonColumns();
+      }
+
+      // 4. 시계 업데이트 및 60초 주기 조용한 백그라운드 갱신
+      setInterval(updateHeaderClock, 10000);
+      setInterval(refreshAllTrends, 60000);
     }
 
+    // 스크립트 로드 즉시 실행 + DOMContentLoaded 이중 안전장치
+    initApp();
     window.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
