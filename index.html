@@ -54,8 +54,9 @@
 
     body {
       font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       overflow-x: hidden;
+      overscroll-behavior-x: none;
     }
 
     /* 고정폭 숫자 (순위, 기온 등 흔들림 방지) */
@@ -70,7 +71,7 @@
       transition: box-shadow 0.2s ease;
     }
     .naver-search-box:focus-within {
-      box-shadow: 0 3px 12px rgba(3, 199, 90, 0.2);
+      box-shadow: 0 2px 8px rgba(3, 199, 90, 0.18);
     }
 
     /* 가로 스크롤바 숨김 */
@@ -85,51 +86,128 @@
     /* 컴팩트 앱 스타일 스쿼클 아이콘 (8열 배치 최적화) */
     .squircle-icon-sm {
       border-radius: 11px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     /* 메모장 자동 높이 조절 시 스크롤바 숨김 */
     textarea.memo-auto {
       resize: none;
       overflow-y: hidden;
-      line-height: 1.45;
+      line-height: 1.4;
+    }
+
+    /* 2줄 말줄임 */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* 4페이지 스와이프 트랙 전환 효과 (홈 / 뉴스 / MY뉴스 / 엔터) */
+    .swipe-track {
+      display: flex;
+      width: 400%;
+      will-change: transform;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      align-items: flex-start;
+    }
+    .swipe-track.dragging {
+      transition: none !important;
+    }
+    .swipe-page {
+      width: 25%;
+      flex-shrink: 0;
+      min-width: 0;
     }
   </style>
 </head>
-<body class="bg-[#F2F4F7] dark:bg-[#111317] text-[#1E1E23] dark:text-[#F1F3F5] min-h-screen transition-colors duration-200">
+<body class="bg-[#F2F4F7] dark:bg-[#111317] text-[#1E1E23] dark:text-[#F1F3F5] min-h-screen transition-colors duration-200 select-none sm:select-auto">
 
   <!-- 삼성 인터넷 모바일 최적 폭(500px) 컨테이너 -->
-  <div class="max-w-[500px] mx-auto min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#111317] relative pb-6">
+  <div class="max-w-[500px] mx-auto min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#111317] relative pb-4 overflow-x-hidden">
 
     <!-- =====================================================================
-         1. 상단 헤더 & 네이버 다이렉트 검색창
+         1. 상단 고정 헤더: 초슬림 네이버 검색창 + 네이버 모바일 스타일 GNB 탭바
          ===================================================================== -->
-    <header class="bg-white dark:bg-[#1A1D23] pt-2.5 pb-2.5 px-3 sticky top-0 z-30 border-b border-gray-200/80 dark:border-gray-800/90 shadow-[0_1px_6px_rgba(0,0,0,0.03)]">
-      <div class="flex items-center justify-between mb-1.5">
-        <div class="flex items-center gap-1.5">
-          <a href="https://m.naver.com" target="_blank" rel="noopener noreferrer"
-             title="네이버 모바일 홈"
-             class="w-5 h-5 rounded bg-[#03C75A] flex items-center justify-center text-white font-black text-xs shadow-2xs active:scale-95 transition-transform">
-            N
-          </a>
-          <span class="text-[13px] font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
-            마이 포털 홈
-          </span>
-          <span id="clock-display" class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tnum"></span>
-        </div>
+    <header class="bg-white dark:bg-[#1A1D23] pt-1.5 px-2.5 sticky top-0 z-30 border-b border-gray-200/80 dark:border-gray-800/90 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      <!-- 네이버 다이렉트 검색창 (한 화면 10위 노출을 위해 상단 여백 압축) -->
+      <form id="naver-search-form" onsubmit="handleDirectSearch(event)" class="naver-search-box rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-2 pr-1 py-[3px]">
+        <button type="button" onclick="switchMainPage(0)" title="홈으로 이동"
+                class="w-5 h-5 rounded-md bg-[#03C75A] flex items-center justify-center text-white font-black text-[12px] mr-2 shrink-0 active:scale-95 transition-transform">
+          N
+        </button>
+        <input
+          id="naver-search-input"
+          type="search"
+          placeholder="네이버 검색어를 입력하세요"
+          autocomplete="off"
+          class="w-full bg-transparent text-[13px] font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none py-0.5"
+        />
+        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-2.5 py-1 text-[11px] font-extrabold shrink-0 transition-all">
+          검색
+        </button>
+      </form>
 
-        <!-- 우측 유틸 버튼 (링크 이동방식 / 다크모드) -->
-        <div class="flex items-center gap-1.5">
-          <button id="btn-link-target" type="button"
-                  onclick="toggleLinkTarget()"
-                  class="px-2 py-0.5 rounded text-[10.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                  title="검색어 및 아이콘 클릭 시 열기 방식">
-            현재창 이동
+      <!-- 네이버 모바일(m.naver.com) 스타일 상단 스와이프 탭바 (홈 / 뉴스•• / MY뉴스 / 엔터) -->
+      <nav class="flex items-center justify-between pt-1.5 px-0.5 select-none" aria-label="메인 탭 네비게이션">
+        <div class="flex items-center gap-4">
+          <!-- 탭 0: 홈 -->
+          <button type="button" onclick="switchMainPage(0)" id="gnb-tab-0"
+                  class="relative pb-1.5 text-[14.5px] font-extrabold text-[#03C75A] transition-colors flex flex-col items-center">
+            <span>홈</span>
+            <span id="gnb-bar-0" class="absolute bottom-0 left-0 right-0 h-[3px] bg-[#03C75A] rounded-t-full"></span>
           </button>
 
-          <!-- 다크모드 전환 버튼 -->
+          <!-- 탭 1: 뉴스 (언론사편집 + 초록 점 2개 표시) -->
+          <button type="button" onclick="switchMainPage(1)" id="gnb-tab-1"
+                  class="relative pb-1.5 text-[14.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center">
+            <div class="flex items-center gap-1">
+              <span>뉴스</span>
+              <span class="inline-flex items-center gap-0.5">
+                <i id="news-dot-0" class="w-1 h-1 rounded-full bg-[#03C75A] inline-block"></i>
+                <i id="news-dot-1" class="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600 inline-block"></i>
+              </span>
+            </div>
+            <span id="gnb-bar-1" class="hidden absolute bottom-0 left-0 right-0 h-[3px] bg-[#03C75A] rounded-t-full"></span>
+          </button>
+
+          <!-- 탭 2: MY뉴스 -->
+          <button type="button" onclick="switchMainPage(2)" id="gnb-tab-2"
+                  class="relative pb-1.5 text-[14.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center">
+            <span>MY뉴스</span>
+            <span id="gnb-bar-2" class="hidden absolute bottom-0 left-0 right-0 h-[3px] bg-[#03C75A] rounded-t-full"></span>
+          </button>
+
+          <!-- 탭 3: 엔터 -->
+          <button type="button" onclick="switchMainPage(3)" id="gnb-tab-3"
+                  class="relative pb-1.5 text-[14.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center">
+            <span>엔터</span>
+            <span id="gnb-bar-3" class="hidden absolute bottom-0 left-0 right-0 h-[3px] bg-[#03C75A] rounded-t-full"></span>
+          </button>
+
+          <!-- 외부 빠른 이동: 쇼핑 -->
+          <a href="https://shopping.naver.com/ns/home" onclick="return handleShortcutClick(event, 'https://shopping.naver.com/ns/home')"
+             class="pb-1.5 text-[14px] font-semibold text-gray-400 dark:text-gray-500 hover:text-[#03C75A] hidden xs:inline-block">
+            쇼핑
+          </a>
+        </div>
+
+        <!-- 우측 유틸 버튼 (현재창/새탭 전환 & 다크모드) -->
+        <div class="flex items-center gap-1 pb-1">
+          <span id="clock-display" class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 tnum mr-0.5 hidden sm:inline"></span>
+          <button id="btn-link-target" type="button"
+                  onclick="toggleLinkTarget()"
+                  class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            현재창
+          </button>
           <button type="button" onclick="toggleDarkMode()"
-                  class="p-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
+                  class="p-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
                   aria-label="다크모드 전환">
             <svg id="icon-sun" class="w-3.5 h-3.5 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
@@ -139,231 +217,271 @@
             </svg>
           </button>
         </div>
-      </div>
-
-      <!-- 네이버 다이렉트 검색창 -->
-      <form id="naver-search-form" onsubmit="handleDirectSearch(event)" class="naver-search-box rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-3 pr-1 py-0.5">
-        <span class="text-[#03C75A] font-black text-base mr-2 select-none">N</span>
-        <input
-          id="naver-search-input"
-          type="search"
-          placeholder="네이버 검색어를 입력하세요"
-          autocomplete="off"
-          class="w-full bg-transparent text-[14px] font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none py-1"
-        />
-        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-        </button>
-        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-2.5 py-1 text-[11.5px] font-extrabold flex items-center gap-1 transition-all shrink-0">
-          검색
-        </button>
-      </form>
+      </nav>
     </header>
 
-    <!-- 메인 컨텐츠 영역 (순서: 날씨 -> 8열 자주가는사이트 -> 멀티라인 메모장 -> 실검 비교) -->
-    <main class="px-2.5 pt-2 flex-1 flex flex-col gap-2">
+    <!-- =====================================================================
+         스와이프 멀티 페이지 뷰포트 (0: 홈 | 1: 뉴스 | 2: MY뉴스 | 3: 엔터)
+         ===================================================================== -->
+    <div id="swipe-viewport" class="w-full overflow-hidden flex-1">
+      <div id="swipe-track" class="swipe-track">
 
-      <!-- ===================================================================
-           2. 컴팩트 오창읍 실시간 & 시간대별 날씨 위젯 (검색창 바로 아래 배치)
-           =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-2 shadow-2xs">
-        <!-- 상단 1줄: 위치 + 현재기온/날씨요약 + 미세먼지/강수 배지 통합 -->
-        <div class="flex items-center justify-between gap-1 mb-1">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span id="weather-current-icon" class="text-[17px] leading-none select-none shrink-0">☀️</span>
-            <span id="weather-current-temp" class="text-[15px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">18°</span>
-            <span id="weather-current-desc" class="text-[11px] font-bold text-gray-600 dark:text-gray-300 truncate">맑음</span>
-            <span class="text-gray-300 dark:text-gray-700 text-[10px]">|</span>
-            <h2 id="weather-location-title" class="text-[11px] font-extrabold text-gray-700 dark:text-gray-200 truncate">
-              오창읍
-            </h2>
-            <button type="button" onclick="useGpsWeather()"
-                    class="px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] transition-colors shrink-0"
-                    title="현재 GPS 위치 날씨 조회">
-              📍현위치
-            </button>
-            <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
-                    class="hidden px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
-              오창읍
-            </button>
+        <!-- =================================================================
+             [SLIDE 0] 내 포털 홈 (날씨 -> 자주가는사이트 -> 실검 1~10위 -> 맨아래 메모장)
+             첫 화면 스크롤 없이 실검 10위까지 100% 노출되도록 높이 정밀 최적화
+             ================================================================= -->
+        <div id="page-home" class="swipe-page px-2 pt-1.5 flex flex-col gap-1.5">
+
+          <!-- 1) 초슬림 오창읍 실시간 & 시간대별 날씨 위젯 -->
+          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-1.5 shadow-2xs">
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <div class="flex items-center gap-1 min-w-0">
+                <span id="weather-current-icon" class="text-[14px] leading-none select-none shrink-0">☀️</span>
+                <span id="weather-current-temp" class="text-[13.5px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">6°</span>
+                <span id="weather-current-desc" class="text-[10.5px] font-bold text-gray-600 dark:text-gray-300 truncate">맑음</span>
+                <span class="text-gray-300 dark:text-gray-700 text-[9px]">|</span>
+                <h2 id="weather-location-title" class="text-[10.5px] font-extrabold text-gray-700 dark:text-gray-200 truncate">
+                  오창읍
+                </h2>
+                <button type="button" onclick="useGpsWeather()"
+                        class="px-1 py-0.5 rounded text-[9px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] shrink-0">
+                  📍현위치
+                </button>
+                <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
+                        class="hidden px-1 py-0.5 rounded text-[9px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
+                  오창읍
+                </button>
+                <span id="weather-minmax-feel" class="text-[9.5px] text-gray-400 dark:text-gray-500 font-semibold tnum truncate hidden xs:inline ml-0.5">
+                  (-1°/9°)
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <span id="weather-rain-badge" class="px-1 py-0.5 rounded text-[9px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
+                  💧0%
+                </span>
+                <span id="badge-pm10" class="px-1 py-0.5 rounded text-[9px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
+                  미세 좋음
+                </span>
+                <span id="badge-pm25" class="px-1 py-0.5 rounded text-[9px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
+                  초미세 좋음
+                </span>
+              </div>
+            </div>
+
+            <!-- 시간대별 날씨 가로 스크롤 (.no-swipe 및 data-no-swipe로 탭 전환 간섭 완벽 차단) -->
+            <div id="hourly-weather-strip" data-no-swipe="true" class="no-swipe flex items-center gap-1 overflow-x-auto no-scrollbar"></div>
+          </section>
+
+          <!-- 2) 자주 가는 사이트 (한 줄 8열 컴팩트 배치 + 디시갤 빈 파란 네모 자동 글자 보정) -->
+          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2 py-1.5 shadow-2xs">
+            <div class="flex items-center justify-between mb-1 px-0.5">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-extrabold text-gray-700 dark:text-gray-200">자주 가는 사이트</span>
+                <span class="text-[9.5px] text-gray-400 dark:text-gray-500 font-medium">아이콘 터치 시 즉시 이동</span>
+              </div>
+              <button type="button" onclick="openShortcutModal()"
+                      class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A]">
+                <span>+ 편집</span>
+              </button>
+            </div>
+
+            <div id="shortcuts-grid" class="grid grid-cols-8 gap-y-1 gap-x-1"></div>
+          </section>
+
+          <!-- 3) 실시간 인기검색어 비교 (빠른 메모 위로 배치 & 1~10위 26px 초슬림 행 높이) -->
+          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-2xs overflow-hidden">
+            <!-- 슬림 통합 헤더 (네이버·포털 실검 | 구글 급상승 + 갱신시각/새로고침) -->
+            <div class="grid grid-cols-2 divide-x divide-gray-200/80 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 bg-[#F8FAFC] dark:bg-[#15181E]">
+              <div class="py-1.5 px-2.5 flex items-center justify-between">
+                <span class="text-[11px] font-extrabold text-[#03C75A] flex items-center gap-1">
+                  <span class="w-3.5 h-3.5 rounded-xs bg-[#03C75A] text-white text-[9px] font-black inline-flex items-center justify-center">N</span>
+                  <span>네이버·포털 실검</span>
+                </span>
+                <span class="text-[9px] text-gray-400 font-medium">N검색</span>
+              </div>
+              <div class="py-1.5 px-2.5 flex items-center justify-between">
+                <span class="text-[11px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                  <span class="w-3.5 h-3.5 rounded-xs bg-blue-500 text-white text-[9px] font-black inline-flex items-center justify-center">G</span>
+                  <span>구글 급상승</span>
+                </span>
+                <div class="flex items-center gap-1">
+                  <span id="updated-time-text" class="text-[9.5px] font-semibold text-gray-400 dark:text-gray-500 tnum">실시간</span>
+                  <button type="button" onclick="manualRefresh()"
+                          class="px-1.5 py-0.5 rounded bg-gray-200/70 dark:bg-gray-800 hover:bg-gray-300 text-gray-600 dark:text-gray-300 text-[9.5px] font-bold">
+                    새로고침
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2열 순위 리스트 (각 행 h-[26px] -> 1~10위 총 260px로 한 화면 완벽 노출) -->
+            <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
+              <div id="compare-col-naver" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
+              <div id="compare-col-google" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
+            </div>
+
+            <!-- 11위 ~ 20위 더보기 버튼 -->
+            <div class="border-t border-gray-100 dark:border-gray-800 bg-[#F9FAFB] dark:bg-[#15181E] px-2.5 py-1">
+              <button type="button" id="btn-toggle-expand" onclick="toggleRankExpand()"
+                      class="w-full py-1 px-3 rounded-lg bg-white dark:bg-[#1F242D] border border-gray-200/80 dark:border-gray-700 text-[11px] font-extrabold text-gray-600 dark:text-gray-300 hover:border-[#03C75A] hover:text-[#03C75A] transition-colors flex items-center justify-center gap-1">
+                <span id="expand-btn-label">11위 ~ 20위 더보기</span>
+                <svg id="expand-btn-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          </section>
+
+          <!-- 4) 빠른 메모 (홈 화면 맨 아래로 이동 / 엔터 입력 시 여러 줄 자동 확장) -->
+          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-1.5 shadow-2xs flex items-start gap-2">
+            <span class="text-amber-500 text-xs select-none shrink-0 mt-0.5" title="자동 저장 메모장">📝</span>
+            <textarea
+              id="quick-memo-input"
+              rows="1"
+              placeholder="빠른 메모 (엔터로 여러 줄 입력 · 자동 저장)"
+              class="memo-auto w-full bg-transparent text-[12px] font-medium text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+            ></textarea>
+            <div class="flex items-center gap-1 shrink-0 mt-0.5">
+              <span id="memo-saved-badge" class="text-[9px] font-bold text-[#03C75A] opacity-0 transition-opacity">
+                저장됨
+              </span>
+              <button type="button" onclick="clearQuickMemo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-[10px] font-bold px-1">
+                지우기
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- =================================================================
+             [SLIDE 1] 네이버 모바일 '뉴스 (언론사편집)' 완벽 재현 (사진 1 동일 레이아웃)
+             ================================================================= -->
+        <div id="page-news" class="swipe-page px-2 pt-2 flex flex-col gap-2.5">
+
+          <!-- 상단 언론사편집 서브헤더 (언론사편집 내구독 8 ▾ | MY >) -->
+          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 overflow-hidden shadow-2xs">
+            <div class="px-3.5 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-[16px] font-black text-gray-900 dark:text-white tracking-tight">언론사편집</span>
+                <span class="text-[12.5px] font-bold text-gray-500 dark:text-gray-400">
+                  내구독 <strong class="text-blue-600 dark:text-blue-400">8</strong> ▾
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="refreshLiveNewsFeeds(true)"
+                        class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-[10.5px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#03C75A]">
+                  새로고침
+                </button>
+                <button type="button" onclick="switchMainPage(2)"
+                        class="px-2.5 py-0.5 rounded-full border border-gray-300 dark:border-gray-700 text-[11px] font-extrabold text-gray-700 dark:text-gray-200 hover:border-[#03C75A]">
+                  MY &gt;
+                </button>
+              </div>
+            </div>
+
+            <!-- 구독 언론사 8개 빠른 선택 바 (.no-swipe) -->
+            <div data-no-swipe="true" id="press-selector-bar"
+                 class="no-swipe flex items-center gap-1.5 px-3 py-2 bg-[#F8FAFC] dark:bg-[#14171D] overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800"></div>
+
+            <!-- 대표 선택 언론사 카드 (KBS 등 - 사진 1 스타일) -->
+            <div id="press-main-card" class="p-3.5"></div>
           </div>
 
-          <!-- 우측: 강수확률 · 미세 · 초미세 배지 -->
-          <div class="flex items-center gap-1 shrink-0">
-            <span id="weather-rain-badge" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
-              💧0%
-            </span>
-            <span id="badge-pm10" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
-              미세 좋음
-            </span>
-            <span id="badge-pm25" class="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
-              초미세 좋음
-            </span>
+          <!-- 하단 연속 구독 언론사 카드 리스트 (스크롤 시 다음 언론사 편집판 노출) -->
+          <div id="press-secondary-cards" class="space-y-2.5"></div>
+        </div>
+
+        <!-- =================================================================
+             [SLIDE 2] 네이버 모바일 'MY뉴스' 완벽 재현 (사진 2 동일 레이아웃)
+             ================================================================= -->
+        <div id="page-mynews" class="swipe-page px-2 pt-2 flex flex-col gap-2.5">
+          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 overflow-hidden shadow-2xs">
+            <!-- 상단 MY뉴스 헤더 -->
+            <div class="px-3.5 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <h3 class="text-[16.5px] font-black text-gray-900 dark:text-white tracking-tight">MY뉴스</h3>
+                <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 text-[10px] font-bold text-gray-400 inline-flex items-center justify-center">i</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="refreshLiveNewsFeeds(true)"
+                        class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-[10.5px] font-bold text-gray-600 dark:text-gray-300">
+                  새로고침
+                </button>
+                <a href="https://news.naver.com" onclick="return handleShortcutClick(event, 'https://news.naver.com')"
+                   class="px-2.5 py-0.5 rounded-full border border-gray-300 dark:border-gray-700 text-[11px] font-extrabold text-gray-700 dark:text-gray-200">
+                  MY &gt;
+                </a>
+              </div>
+            </div>
+
+            <!-- 분야별 필터 칩 (.no-swipe) -->
+            <div data-no-swipe="true" id="mynews-category-bar"
+                 class="no-swipe flex items-center gap-1.5 px-3.5 py-2 bg-[#F8FAFC] dark:bg-[#14171D] overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800"></div>
+
+            <!-- 사진 2 스타일: 좌측 썸네일(88x62) + 우측 2줄 제목 + 언론사·시간 + 우측 댓글수 알약 배지 -->
+            <div id="mynews-list-container" class="divide-y divide-gray-100 dark:divide-gray-800 px-3.5"></div>
           </div>
         </div>
 
-        <!-- 중단 보조 한줄: 최저/최고/체감 & 습도/바람 -->
-        <div class="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 font-semibold px-0.5 mb-1.5 tnum">
-          <span id="weather-minmax-feel">최저 11° / 최고 21° · 체감 18°</span>
-          <span id="weather-wind-humidity">습도 45% · 바람 1.4m/s</span>
-        </div>
+        <!-- =================================================================
+             [SLIDE 3] 네이버 모바일 '엔터' 완벽 재현 (사진 3: 엔터 숏텐츠 + 엔터 NOW)
+             ================================================================= -->
+        <div id="page-enter" class="swipe-page px-2 pt-2 flex flex-col gap-2.5">
 
-        <!-- 하단: 슬림형 18시간 시간대별 날씨 스크롤 -->
-        <div id="hourly-weather-strip" class="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
-          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-0.5 rounded-lg bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30 shrink-0 tnum">
-            <span class="text-[9.5px] font-bold text-[#029e46] dark:text-[#25e278] leading-none">지금</span>
-            <span class="text-[13px] my-0.5 leading-none select-none">☀️</span>
-            <span class="text-[10.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">18°</span>
-            <span class="text-[8.5px] font-bold text-gray-400 leading-none mt-0.5">-</span>
-          </div>
-        </div>
-      </section>
+          <!-- [사진 3 상단] 엔터 숏텐츠 (AI 생성 아코디언 카드 4개 + 하단 페이지 점) -->
+          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 p-3.5 shadow-2xs">
+            <div class="flex items-center justify-between mb-0.5">
+              <div class="flex items-center gap-1">
+                <span class="text-[16.5px] font-black text-gray-900 dark:text-white">엔터</span>
+                <span class="text-[16.5px] font-black text-[#e91e63]">숏텐츠</span>
+                <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 text-[10px] font-bold text-gray-400 inline-flex items-center justify-center">i</span>
+              </div>
+              <span id="enter-time-label" class="text-[11.5px] font-medium text-gray-400 dark:text-gray-500">오전 11시 제공</span>
+            </div>
+            <p class="text-[11.5px] text-gray-400 dark:text-gray-500 mb-3">
+              AI가 생성한 결과로 정확하지 않을 수 있어요.
+            </p>
 
-      <!-- ===================================================================
-           3. 자주 가는 사이트 퀵 아이콘 바 (날씨 아래 배치 / 한 줄 8개 그리드)
-           =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 pt-2 pb-2.5 shadow-2xs">
-        <div class="flex items-center justify-between mb-1.5 px-0.5">
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11.5px] font-extrabold text-gray-700 dark:text-gray-200">자주 가는 사이트</span>
-            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">아이콘 터치 시 즉시 이동</span>
-          </div>
-          <button type="button" onclick="openShortcutModal()"
-                  class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors">
-            <span>+ 편집</span>
-          </button>
-        </div>
+            <!-- 엔터 숏텐츠 아코디언 리스트 -->
+            <div id="enter-shortents-container" class="space-y-2"></div>
 
-        <!-- 퀵 아이콘 그리드: 한 화면(한 줄)에 8개가 들어가도록 grid-cols-8 적용 및 기본 HTML 선렌더링 -->
-        <div id="shortcuts-grid" class="grid grid-cols-8 gap-y-2 gap-x-1">
-          <a href="https://gall.dcinside.com/board/lists/?id=iphone" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#3b82f6;"><span class="text-[15px] leading-none">📱</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">아이폰갤</span>
-          </a>
-          <a href="http://web.humoruniv.com/main.html" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#ef4444;"><span class="text-[10.5px] font-black leading-none">웃대</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">웃대</span>
-          </a>
-          <a href="https://gall.dcinside.com/mgallery/board/lists/?id=tesla" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#dc2626;"><span class="text-[15px] leading-none">⚡</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">테슬라갤</span>
-          </a>
-          <a href="https://m.youtube.com" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#ff0000;"><span class="text-[14px] font-black leading-none">▶</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">유튜브</span>
-          </a>
-          <a href="https://chzzk.naver.com" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-gray-900" style="background-color:#00ffa3;"><span class="text-[15px] font-black leading-none">⚡</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">치지직</span>
-          </a>
-          <a href="https://shopping.naver.com" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#03c75a;"><span class="text-[15px] leading-none">🛍️</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">N쇼핑</span>
-          </a>
-          <a href="https://section.cafe.naver.com" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#10b981;"><span class="text-[15px] leading-none">☕</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">N카페</span>
-          </a>
-          <a href="https://m.coupang.com" class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center text-white" style="background-color:#f97316;"><span class="text-[15px] leading-none">🚀</span></div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center leading-tight tracking-tighter">쿠팡</span>
-          </a>
-        </div>
-      </section>
-
-      <!-- ===================================================================
-           4. 여러 줄 자동 확장 메모장 (기본 1줄, 엔터/긴 글 입력 시 자동 확장)
-           =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-3 py-2 shadow-2xs flex items-start gap-2">
-        <span class="text-amber-500 text-xs select-none shrink-0 mt-1" title="자동 저장 메모장">📝</span>
-        <textarea
-          id="quick-memo-input"
-          rows="1"
-          placeholder="빠른 메모 (엔터로 여러 줄 입력 · 자동 저장)"
-          class="memo-auto w-full bg-transparent text-[12.5px] font-medium text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-        ></textarea>
-        <div class="flex items-center gap-1 shrink-0 mt-0.5">
-          <span id="memo-saved-badge" class="text-[9.5px] font-bold text-[#03C75A] opacity-0 transition-opacity">
-            저장됨
-          </span>
-          <button type="button" onclick="clearQuickMemo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-[10.5px] font-bold px-1" title="메모 지우기">
-            지우기
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================================================================
-           5. 실시간 인기검색어 한눈에 비교 (회전/카운트다운/깜빡임 없는 정적 갱신)
-           =================================================================== -->
-      <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-2xs overflow-hidden">
-        <!-- 카드 헤더: 눈이 피로한 프로그레스바/스피너/카운트다운 제거, 조용한 시간 표시 -->
-        <div class="px-3 py-2 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span class="w-1.5 h-3.5 rounded-full bg-[#03C75A] shrink-0"></span>
-            <h2 class="text-[12.5px] font-extrabold text-gray-900 dark:text-white truncate">
-              실시간 인기검색어 비교
-            </h2>
+            <!-- 하단 페이지네이션 점 (• • ● • •) & 다음 키워드 전환 -->
+            <div class="flex items-center justify-center gap-2 mt-3.5">
+              <div class="flex items-center gap-1.5" id="enter-pagination-dots"></div>
+              <button type="button" onclick="nextEnterShortentsSet()"
+                      class="ml-1 px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-950/50 text-[#e91e63] text-[10.5px] font-extrabold">
+                다음 키워드 ↻
+              </button>
+            </div>
           </div>
 
-          <div class="flex items-center gap-2 shrink-0">
-            <span id="updated-time-text" class="text-[10.5px] font-medium text-gray-400 dark:text-gray-500 tnum">
-              실시간 연동
-            </span>
-            <button type="button" onclick="manualRefresh()"
-                    class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10.5px] font-bold transition-colors">
-              새로고침
-            </button>
+          <!-- [사진 3 하단] 엔터 NOW (by AiRS ⓘ) 2열 세로형 포토 그리드 -->
+          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 p-3.5 shadow-2xs">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-1">
+                <span class="text-[16.5px] font-black text-gray-900 dark:text-white">엔터</span>
+                <span class="text-[16.5px] font-black text-[#e91e63]">NOW</span>
+              </div>
+              <div class="flex items-center gap-1 text-[11.5px] text-gray-400">
+                <span class="italic">by</span>
+                <span class="font-extrabold text-gray-600 dark:text-gray-300">AiRS</span>
+                <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 text-[10px] font-bold text-gray-400 inline-flex items-center justify-center">i</span>
+              </div>
+            </div>
+
+            <div id="enter-now-grid" class="grid grid-cols-2 gap-2.5"></div>
           </div>
         </div>
 
-        <!-- 2열 컬럼 헤더 (좌: 네이버·포털 실검 / 우: 구글 급상승) -->
-        <div class="grid grid-cols-2 divide-x divide-gray-200/80 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 bg-[#F8FAFC] dark:bg-[#15181E]">
-          <div class="py-1.5 px-2.5 flex items-center justify-between">
-            <span class="text-[11.5px] font-extrabold text-[#03C75A] flex items-center gap-1">
-              <span class="w-3.5 h-3.5 rounded-xs bg-[#03C75A] text-white text-[9.5px] font-black inline-flex items-center justify-center">N</span>
-              <span>네이버·포털 실검</span>
-            </span>
-            <span class="text-[9.5px] text-gray-400 font-medium">N검색</span>
-          </div>
-          <div class="py-1.5 px-2.5 flex items-center justify-between">
-            <span class="text-[11.5px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1">
-              <span class="w-3.5 h-3.5 rounded-xs bg-blue-500 text-white text-[9.5px] font-black inline-flex items-center justify-center">G</span>
-              <span>구글 급상승</span>
-            </span>
-            <span class="text-[9.5px] text-gray-400 font-medium">N검색</span>
-          </div>
-        </div>
-
-        <!-- 2열 실시간 순위 리스트 -->
-        <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
-          <!-- 좌측: 네이버·포털 실검 -->
-          <div id="compare-col-naver" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
-          <!-- 우측: 구글 실시간 급상승 -->
-          <div id="compare-col-google" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
-        </div>
-
-        <!-- 11위 ~ 20위 펼쳐보기 / 접기 토글 버튼 -->
-        <div class="border-t border-gray-100 dark:border-gray-800 bg-[#F9FAFB] dark:bg-[#15181E] px-2.5 py-1.5">
-          <button type="button" id="btn-toggle-expand" onclick="toggleRankExpand()"
-                  class="w-full py-1 px-3 rounded-lg bg-white dark:bg-[#1F242D] border border-gray-200/80 dark:border-gray-700 text-[11.5px] font-extrabold text-gray-600 dark:text-gray-300 hover:border-[#03C75A] hover:text-[#03C75A] transition-colors flex items-center justify-center gap-1">
-            <span id="expand-btn-label">11위 ~ 20위 더보기</span>
-            <svg id="expand-btn-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
-      </section>
-
-    </main>
+      </div>
+    </div>
 
     <!-- 하단 안내 푸터 -->
-    <footer class="mt-3 px-4 text-center text-[10.5px] text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
-      <span>모든 검색어 터치 시 네이버 통합검색으로 이동</span>
+    <footer class="mt-2 px-4 text-center text-[10px] text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
+      <span>좌우로 밀어서 홈 · 뉴스 · MY뉴스 · 엔터 전환</span>
       <span>·</span>
       <button type="button" onclick="simulateRankFluctuation()" class="underline hover:text-gray-600 dark:hover:text-gray-300">
-        등락 표시 테스트
+        실검 등락 테스트
       </button>
     </footer>
   </div>
@@ -376,7 +494,7 @@
       <div class="px-4 py-3 bg-[#03C75A] text-white flex items-center justify-between">
         <div>
           <h3 class="font-extrabold text-[15px]">자주 가는 사이트 아이콘 편집</h3>
-          <p class="text-[11px] text-white/90">디시 갤러리도 글자·이모지 배지로 겹치지 않게 구분할 수 있습니다</p>
+          <p class="text-[11px] text-white/90">비워두면 사이트 이름 앞 2~3글자가 아이콘에 자동 표시됩니다</p>
         </div>
         <button type="button" onclick="closeShortcutModal()" class="p-1 text-white/90 hover:text-white font-bold text-xl leading-none">&times;</button>
       </div>
@@ -397,16 +515,16 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
-                아이콘 아래 작은 이름 (예: 아이폰갤)
+                아이콘 아래 작은 이름 (예: 갤럭시)
               </label>
-              <input id="sc-label" type="text" maxlength="8" required placeholder="아이폰갤"
+              <input id="sc-label" type="text" maxlength="8" required placeholder="갤럭시"
                      class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[13px] font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
             </div>
             <div>
               <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
-                아이콘 안 글자/이모지 (비우면 파비콘)
+                아이콘 안 글자/이모지 (비우면 자동)
               </label>
-              <input id="sc-badge" type="text" maxlength="3" placeholder="📱 또는 아이"
+              <input id="sc-badge" type="text" maxlength="3" placeholder="갤럭 또는 📱"
                      class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[13px] font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
             </div>
           </div>
@@ -415,7 +533,7 @@
             <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
               이동할 주소 (URL)
             </label>
-            <input id="sc-url" type="text" required placeholder="https://gall.dcinside.com/board/lists/?id=iphone"
+            <input id="sc-url" type="text" required placeholder="https://gall.dcinside.com/mgallery/board/lists/?id=galaxy"
                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[12.5px] text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
           </div>
 
@@ -426,10 +544,10 @@
               <div class="flex items-center gap-1">
                 <button type="button" onclick="setScColor('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6]"></button>
                 <button type="button" onclick="setScColor('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444]"></button>
-                <button type="button" onclick="setScColor('#dc2626')" class="w-4 h-4 rounded-full bg-[#dc2626]"></button>
+                <button type="button" onclick="setScColor('#f97316')" class="w-4 h-4 rounded-full bg-[#f97316]"></button>
                 <button type="button" onclick="setScColor('#03c75a')" class="w-4 h-4 rounded-full bg-[#03c75a]"></button>
                 <button type="button" onclick="setScColor('#10b981')" class="w-4 h-4 rounded-full bg-[#10b981]"></button>
-                <button type="button" onclick="setScColor('#f97316')" class="w-4 h-4 rounded-full bg-[#f97316]"></button>
+                <button type="button" onclick="setScColor('#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1]"></button>
               </div>
             </div>
 
@@ -467,11 +585,11 @@
   </div>
 
   <!-- =======================================================================
-       메인 애플리케이션 스크립트 (무결점 예외 방어 적용)
+       메인 애플리케이션 스크립트 (4단 스와이프 + 언론사편집/MY뉴스/엔터 완벽 구현)
        ======================================================================= -->
   <script>
     /**
-     * 안전한 LocalStorage 접근 헬퍼 (사생활 보호 모드 등에서도 에러 방지)
+     * 안전한 LocalStorage 접근 헬퍼
      */
     function safeGetStorage(key, fallback = null) {
       try {
@@ -488,24 +606,18 @@
       } catch (e) {}
     }
 
-    function safeRemoveStorage(key) {
-      try {
-        window.localStorage.removeItem(key);
-      } catch (e) {}
-    }
-
     /**
-     * [기본 8개 자주 가는 사이트 목록]
+     * [기본 자주 가는 사이트 목록 - 사용자 스크린샷(갤럭시, LOL, 웃대, 테슬라, 뽐뿌, 퀘사이존, 핫딜, 유튜브) 맞춤]
      */
     const DEFAULT_SHORTCUTS = [
-      { id: 'sc-iphone', label: '아이폰갤', url: 'https://gall.dcinside.com/board/lists/?id=iphone', badge: '📱', color: '#3b82f6' },
-      { id: 'sc-humor', label: '웃대', url: 'http://web.humoruniv.com/main.html', badge: '웃대', color: '#ef4444' },
-      { id: 'sc-tesla', label: '테슬라갤', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=tesla', badge: '⚡', color: '#dc2626' },
-      { id: 'sc-youtube', label: '유튜브', url: 'https://m.youtube.com', badge: '▶', color: '#ff0000' },
-      { id: 'sc-chzzk', label: '치지직', url: 'https://chzzk.naver.com', badge: '⚡', color: '#00ffa3', darkText: true },
-      { id: 'sc-nshop', label: 'N쇼핑', url: 'https://shopping.naver.com', badge: '🛍️', color: '#03c75a' },
-      { id: 'sc-ncafe', label: 'N카페', url: 'https://section.cafe.naver.com', badge: '☕', color: '#10b981' },
-      { id: 'sc-coupang', label: '쿠팡', url: 'https://m.coupang.com', badge: '🚀', color: '#f97316' }
+      { id: 'sc-galaxy', label: '갤럭시', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=galaxy', badge: '갤럭', color: '#3b82f6' },
+      { id: 'sc-lol', label: 'LOL', url: 'https://gall.dcinside.com/board/lists/?id=leagueoflegends6', badge: 'LOL', color: '#3b82f6' },
+      { id: 'sc-humor', label: '웃대', url: 'http://m.humoruniv.com', badge: '웃대', color: '#f97316' },
+      { id: 'sc-tesla', label: '테슬라', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=tesla', badge: '테슬', color: '#3b82f6' },
+      { id: 'sc-ppomppu', label: '뽐뿌', url: 'https://m.ppomppu.co.kr', badge: '뽐뿌', color: '#ea580c' },
+      { id: 'sc-quasar', label: '퀘사이존', url: 'https://quasarzone.com', badge: '퀘사', color: '#2563eb' },
+      { id: 'sc-hotdeal', label: '핫딜', url: 'https://m.fmkorea.com/hotdeal', badge: '핫딜', color: '#10b981' },
+      { id: 'sc-youtube', label: '유튜브', url: 'https://m.youtube.com', badge: '▶', color: '#ef4444' }
     ];
 
     /**
@@ -518,72 +630,600 @@
     };
 
     const STORAGE_KEYS = {
-      THEME: 'myhome_theme_v4',
-      LINK_TARGET: 'myhome_link_target_v4',
-      SHORTCUTS: 'myhome_shortcuts_v4',
-      MEMO: 'myhome_quick_memo_v4',
-      EXPAND_RANKS: 'myhome_expand_ranks_v4',
-      NAVER_SNAPSHOT: 'myhome_prev_naver_v4',
-      GOOGLE_SNAPSHOT: 'myhome_prev_google_v4',
-      NAVER_CACHE: 'myhome_cache_naver_v4',
-      GOOGLE_CACHE: 'myhome_cache_google_v4'
+      THEME: 'myhome_theme_v5',
+      LINK_TARGET: 'myhome_link_target_v5',
+      SHORTCUTS: 'my_portal_shortcuts_v3',
+      SHORTCUTS_ALT: 'myhome_shortcuts_v4',
+      MEMO: 'my_portal_memo_v1',
+      MEMO_ALT: 'myhome_quick_memo_v4',
+      EXPAND_RANKS: 'myhome_expand_ranks_v5',
+      NAVER_SNAPSHOT: 'myhome_prev_naver_v5',
+      GOOGLE_SNAPSHOT: 'myhome_prev_google_v5',
+      NAVER_CACHE: 'myhome_cache_naver_v5',
+      GOOGLE_CACHE: 'myhome_cache_google_v5'
     };
 
     const state = {
-      isInitialized: false,
+      currentPage: 0, // 0: 홈, 1: 뉴스(언론사편집), 2: MY뉴스, 3: 엔터
       linkTarget: safeGetStorage(STORAGE_KEYS.LINK_TARGET, '_top'),
       isExpandedRanks: safeGetStorage(STORAGE_KEYS.EXPAND_RANKS, 'false') === 'true',
       shortcuts: [],
       weatherLoc: { ...OCHANG_LOCATION, isGps: false },
       isFetchingTrends: false,
       naverKeywords: [],
-      googleKeywords: []
+      googleKeywords: [],
+      selectedPressIdx: 0,
+      selectedMyNewsCat: 'all',
+      enterSetIdx: 0,
+      enterExpandedIdx: 0
     };
 
     const FALLBACK_NAVER_KEYWORDS = [
-      { rank: 1, keyword: '오창읍 날씨 미세먼지', state: 'u', delta: 2 },
-      { rank: 2, keyword: '프로야구 KBO 순위', state: 'u', delta: 4 },
-      { rank: 3, keyword: '코스피 코스닥 환율', state: 's', delta: 0 },
-      { rank: 4, keyword: '아이폰 iOS 업데이트', state: 'n', delta: 0 },
-      { rank: 5, keyword: '테슬라 모델Y 보조금', state: 'u', delta: 1 },
-      { rank: 6, keyword: '넷플릭스 한국 TOP 10', state: 'd', delta: 2 },
-      { rank: 7, keyword: '고속도로 실시간 교통상황', state: 'u', delta: 3 },
-      { rank: 8, keyword: '로또 당첨번호 조회', state: 's', delta: 0 },
-      { rank: 9, keyword: '청약홈 아파트 분양일정', state: 'n', delta: 0 },
-      { rank: 10, keyword: '손흥민 경기일정 중계', state: 'd', delta: 1 },
-      { rank: 11, keyword: '챔피언스리그 하이라이트', state: 'u', delta: 5 },
-      { rank: 12, keyword: '청주 주말 가볼만한곳', state: 'd', delta: 2 },
+      { rank: 1, keyword: '미래에셋증권 보안 점검', state: 'n', delta: 0 },
+      { rank: 2, keyword: '이정은 의사 시청률 1위', state: 'n', delta: 0 },
+      { rank: 3, keyword: '트럼프 백악관 비서실장', state: 'n', delta: 0 },
+      { rank: 4, keyword: '가톨릭대 조동원 인터뷰', state: 'n', delta: 0 },
+      { rank: 5, keyword: '입동 아침 서울 첫 얼음', state: 'n', delta: 0 },
+      { rank: 6, keyword: '오창읍 미세먼지 날씨', state: 'u', delta: 2 },
+      { rank: 7, keyword: '테슬라 모델Y 주니퍼', state: 'u', delta: 3 },
+      { rank: 8, keyword: '프로야구 FA 계약 현황', state: 'u', delta: 1 },
+      { rank: 9, keyword: '청약홈 아파트 분양일정', state: 's', delta: 0 },
+      { rank: 10, keyword: '손흥민 주말 경기일정', state: 'u', delta: 2 },
+      { rank: 11, keyword: '챔피언스리그 하이라이트', state: 'u', delta: 4 },
+      { rank: 12, keyword: '코스피 코스닥 환율', state: 'd', delta: 1 },
       { rank: 13, keyword: '전기차 보조금 조회', state: 'u', delta: 1 },
       { rank: 14, keyword: '국세청 홈택스 조회', state: 's', delta: 0 },
-      { rank: 15, keyword: 'KTX 예매 코레일톡', state: 'd', delta: 3 },
+      { rank: 15, keyword: 'KTX 주말 예매 코레일', state: 'd', delta: 2 },
       { rank: 16, keyword: 'AI 반도체 관련주', state: 'n', delta: 0 },
-      { rank: 17, keyword: '배달 할인 쿠폰 이벤트', state: 'u', delta: 2 },
-      { rank: 18, keyword: '청년월세 지원 신청', state: 's', delta: 0 },
-      { rank: 19, keyword: '제주도 항공권 특가', state: 'd', delta: 1 },
-      { rank: 20, keyword: '오늘의 띠별운세', state: 'u', delta: 2 }
+      { rank: 17, keyword: '갤럭시 One UI 업데이트', state: 'u', delta: 2 },
+      { rank: 18, keyword: '청주 주말 가볼만한곳', state: 's', delta: 0 },
+      { rank: 19, keyword: '넷플릭스 한국 TOP 10', state: 'd', delta: 1 },
+      { rank: 20, keyword: '오늘의 운세 띠별운세', state: 'u', delta: 1 }
     ];
 
     const FALLBACK_GOOGLE_KEYWORDS = [
-      { rank: 1, keyword: '프리미어리그 하이라이트', state: 'u', delta: 3 },
-      { rank: 2, keyword: '테슬라 주가 실시간', state: 'u', delta: 1 },
-      { rank: 3, keyword: '챗GPT 신규 기능', state: 'n', delta: 0 },
-      { rank: 4, keyword: '전국 주간 날씨예보', state: 's', delta: 0 },
-      { rank: 5, keyword: '메이저리그 경기 결과', state: 'd', delta: 2 },
-      { rank: 6, keyword: '한국은행 기준금리', state: 'u', delta: 4 },
-      { rank: 7, keyword: '유튜브 인기 급상승', state: 's', delta: 0 },
-      { rank: 8, keyword: '아이폰 출시일 사전예약', state: 'n', delta: 0 },
-      { rank: 9, keyword: '자동차세 연납 신청', state: 'd', delta: 1 },
-      { rank: 10, keyword: '아이돌 컴백 쇼케이스', state: 'u', delta: 2 },
+      { rank: 1, keyword: '옥주현', state: 'n', delta: 0 },
+      { rank: 2, keyword: '빈곤', state: 'u', delta: 1 },
+      { rank: 3, keyword: '투자', state: 'u', delta: 1 },
+      { rank: 4, keyword: '두산에너빌리티', state: 'u', delta: 1 },
+      { rank: 5, keyword: '염경엽', state: 'n', delta: 0 },
+      { rank: 6, keyword: '은행', state: 'u', delta: 1 },
+      { rank: 7, keyword: '세균', state: 'u', delta: 1 },
+      { rank: 8, keyword: '하지원', state: 'u', delta: 1 },
+      { rank: 9, keyword: '테슬라 주가 실시간', state: 'u', delta: 2 },
+      { rank: 10, keyword: '프리미어리그 순위', state: 'n', delta: 0 },
       { rank: 11, keyword: '원달러 환율 전망', state: 'u', delta: 3 },
       { rank: 12, keyword: '박스오피스 영화순위', state: 'd', delta: 2 },
       { rank: 13, keyword: '건강보험 환급금 조회', state: 's', delta: 0 },
-      { rank: 14, keyword: '갤럭시 One UI 업데이트', state: 'u', delta: 1 },
+      { rank: 14, keyword: '챗GPT 신규 업데이트', state: 'u', delta: 1 },
       { rank: 15, keyword: '프로배구 V리그 일정', state: 'd', delta: 3 },
       { rank: 16, keyword: '해외직구 관세 한도', state: 'n', delta: 0 },
-      { rank: 17, keyword: '공무원 시험일정', state: 's', delta: 0 },
+      { rank: 17, keyword: '자동차세 연납 신청', state: 's', delta: 0 },
       { rank: 18, keyword: 'K패스 교통카드 환급', state: 'u', delta: 2 },
-      { rank: 19, keyword: '근로장려금 지급일', state: 'd', delta: 1 },
-      { rank: 20, keyword: '넷플릭스 신작 추천', state: 'u', delta: 1 }
+      { rank: 19, keyword: '아이돌 컴백 쇼케이스', state: 'd', delta: 1 },
+      { rank: 20, keyword: '주간 날씨예보', state: 'u', delta: 1 }
+    ];
+
+    /**
+     * [SLIDE 1 데이터: 사진 1 '언론사편집' (KBS, 연합뉴스, MBC, SBS, YTN, 매일경제, 한국경제, 조선일보)]
+     */
+    const PRESS_OUTLETS = [
+      {
+        id: 'kbs',
+        name: 'KBS',
+        logoText: 'KBS NEWS',
+        logoBg: '#003087',
+        subscribers: '400만',
+        liveTitle: '멈추지 않는다! KBS 뉴스24',
+        rssQuery: 'KBS 뉴스 속보 경제 사회',
+        headlines: [
+          '뉴욕증시 급락세 진정…미 10월 고용 ‘깜짝증가’',
+          '트럼프, “인공지능 전적 지지”…민주, ‘트럼프 밀착 기업’ 주시',
+          '이제 미국엔 데이터센터를 못 짓는 걸까…전력망 확충 비상',
+          '2년 만에 ‘청장 공백’ 끝나나…신임 경찰청장의 과제는?',
+          '금융권 보안 시스템 긴급 점검…고객 정보 보호 대책 총력'
+        ],
+        photoCards: [
+          {
+            badge: '잇슈 #태그',
+            overlayTop: '집값 하락?',
+            title: '연일 ‘집값 하락’ 얘기하는 대통령…진실은?',
+            img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '잇슈 #태그',
+            duration: '01:51',
+            overlayTop: '글로벌 금융 비상',
+            title: '“300만 명 예금 인출 중단”…파라과이 대통령 전격 발표',
+            img: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '‘입동 추위’ 속에 서울 ‘첫 얼음’, 지난해보다 열흘 늦었다'
+      },
+      {
+        id: 'yonhap',
+        name: '연합뉴스',
+        logoText: '연합뉴스',
+        logoBg: '#0054A6',
+        subscribers: '520만',
+        liveTitle: '연합뉴스TV 24시간 라이브 뉴스특보',
+        rssQuery: '연합뉴스 속보 경제 IT',
+        headlines: [
+          '반도체·자동차 수출 호조세 지속…무역수지 흑자 폭 확대',
+          '충북 오창·청주 이차전지·바이오 클러스터 신규 투자 가속',
+          '내년도 전기차 보조금 개편안 논의 본격화…달라지는 혜택은',
+          '주말 고속도로 나들이 차량 몰려…경부·중부선 정체 구간',
+          '환율 변동성 확대 속 외환당국 시장 안정화 조치 시사'
+        ],
+        photoCards: [
+          {
+            badge: '핫이슈',
+            overlayTop: '수출 성적표',
+            title: '반도체 수출 플러스 행진…하반기 주력 산업 전망은',
+            img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '현장영상',
+            duration: '02:14',
+            overlayTop: '차세대 전기차',
+            title: '자율주행·전기차 신기술 경쟁 치열…신형 모델 대거 공개',
+            img: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '전국 대체로 맑고 일교차 커…건강관리·화재 예방 각별히 유의'
+      },
+      {
+        id: 'mbc',
+        name: 'MBC',
+        logoText: 'MBC 뉴스',
+        logoBg: '#1E293B',
+        subscribers: '450만',
+        liveTitle: 'MBC 뉴스데스크 실시간 라이브',
+        rssQuery: 'MBC 뉴스데스크 단독 속보',
+        headlines: [
+          '장바구니 물가 안정 대책 발표…농축산물 할인 지원 확대',
+          '수도권·충청권 연결 광역철도망 구축 사업 본궤도 오른다',
+          '온디바이스 AI 탑재 스마트폰 신제품 경쟁…소비자 선택은',
+          '겨울철 호흡기 감염병 유행 조짐…전문가 예방 수칙 당부',
+          '주말 전국 주요 산 단풍 절정…나들이객 안전사고 주의보'
+        ],
+        photoCards: [
+          {
+            badge: '뉴스데스크',
+            overlayTop: '물가 집중점검',
+            title: '김장철 앞둔 장바구니 물가…체감 할인 폭 얼마나 될까',
+            img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '밀착취재',
+            duration: '01:45',
+            overlayTop: 'AI 스마트폰',
+            title: '실시간 통역부터 사진 편집까지…진화하는 모바일 AI',
+            img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '아침 기온 영하권 뚝…낮부터 평년 기온 회복하며 나들이 무난'
+      },
+      {
+        id: 'sbs',
+        name: 'SBS',
+        logoText: 'SBS 뉴스',
+        logoBg: '#004EA2',
+        subscribers: '480만',
+        liveTitle: 'SBS 8뉴스 & 실시간 모닝와이드',
+        rssQuery: 'SBS 뉴스 경제 사회',
+        headlines: [
+          '글로벌 빅테크 AI 데이터센터 투자 사상 최대…국내 수혜주는',
+          '실수요자 내 집 마련 대출 규제 점검…내년 부동산 시장은',
+          '해외직구 플랫폼 안전성 검사 강화…소비자 피해 예방 총력',
+          '고속도로 휴게소 인기 간식 가격 비교…알뜰 이용 팁 공개',
+          '프로야구 스토브리그 본격 개막…대어급 FA 행선지 어디로'
+        ],
+        photoCards: [
+          {
+            badge: '스브스뉴스',
+            overlayTop: '빅테크 투자',
+            title: 'AI 인프라 전쟁 본격화…전 세계 반도체 공급망 재편',
+            img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '현장포커스',
+            duration: '02:05',
+            overlayTop: '겨울철 차량관리',
+            title: '기온 급강하에 배터리·타이어 점검 필수…겨울 안전운전 팁',
+            img: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '건조한 날씨 속 산불 위험 고조…산림 인접 지역 소각 행위 금지'
+      },
+      {
+        id: 'ytn',
+        name: 'YTN',
+        logoText: 'YTN 24',
+        logoBg: '#0066B3',
+        subscribers: '460만',
+        liveTitle: '24시간 뉴스채널 YTN 라이브 속보',
+        rssQuery: 'YTN 속보 실시간 뉴스',
+        headlines: [
+          '미 연준 금리 속도조절 시사…한국은행 통화정책 영향은',
+          '차세대 배터리 전고체 기술 개발 가속…K-배터리 초격차 시동',
+          '보이스피싱·스미싱 신종 수법 주의보…금융당국 대응 강화',
+          '전국 주요 스키장 개장 준비 한창…초겨울 레저 수요 꿈틀',
+          '온라인동영상서비스(OTT) 연말 기대작 줄줄이 공개 예고'
+        ],
+        photoCards: [
+          {
+            badge: '뉴스24',
+            overlayTop: 'K-배터리 초격차',
+            title: '차세대 배터리 기술 경쟁…글로벌 시장 주도권 잡는다',
+            img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '이슈분석',
+            duration: '01:38',
+            overlayTop: '금리·환율 전망',
+            title: '글로벌 금리 인하 사이클 진입…재테크 포트폴리오 전략은',
+            img: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '주말 도심 곳곳 문화행사 개최…대중교통 이용 당부'
+      },
+      {
+        id: 'mk',
+        name: '매일경제',
+        logoText: '매일경제',
+        logoBg: '#F37021',
+        subscribers: '390만',
+        liveTitle: '매경 마켓PRO 실시간 투자브리핑',
+        rssQuery: '매일경제 증시 부동산 테크',
+        headlines: [
+          '서학개미 미국 기술주 순매수 지속…엔비디아·테슬라 집중',
+          '청주·오창 등 중부권 핵심 산업단지 인근 주거단지 관심 집중',
+          '퇴직연금 실물이전 제도 시행 이후 자금 이동 본격화',
+          '고환율 시대 수출기업 실적 기대감…주목할 업종 분석',
+          'AI 에이전트 도입 기업 급증…업무 생산성 혁신 가속화'
+        ],
+        photoCards: [
+          {
+            badge: '마켓PRO',
+            overlayTop: '서학개미 픽',
+            title: '미 증시 랠리 속 글로벌 빅테크 실적 분석과 투자 전략',
+            img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '부동산',
+            duration: '01:55',
+            overlayTop: '청약시장 분석',
+            title: '직주근접 갖춘 산업단지 배후 핵심 단지 청약 열기 지속',
+            img: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '내년도 세법 및 금융제도 개편 체크포인트 총정리'
+      },
+      {
+        id: 'hk',
+        name: '한국경제',
+        logoText: '한국경제',
+        logoBg: '#003876',
+        subscribers: '380만',
+        liveTitle: '한경 코리아마켓 라이브',
+        rssQuery: '한국경제 산업 기업 증시',
+        headlines: [
+          'K-방산·전력기기 수출 잭팟 행진…수주 잔고 역대 최고 경신',
+          '차세대 고대역폭메모리(HBM) 공급 확대…반도체 실적 견인',
+          '전기차 충전 인프라 급속 확충…공동주택 편의성 높인다',
+          '연말 배당주 및 밸류업 프로그램 수혜주 옥석 가리기 한창',
+          '유통업계 연말 대규모 할인 행사 돌입…온·오프라인 총력전'
+        ],
+        photoCards: [
+          {
+            badge: '한경마켓',
+            overlayTop: '전력기기 호황',
+            title: 'AI 데이터센터 발 전력 수요 폭증…국내 변압기·전선주 강세',
+            img: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '테크트렌드',
+            duration: '01:42',
+            overlayTop: 'HBM 초격차',
+            title: 'AI 가속기 핵심 부품 HBM…차세대 공정 경쟁력 집중 점검',
+            img: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '글로벌 공급망 재편 속 국내 주력 제조업 경쟁력 강화 방안'
+      },
+      {
+        id: 'chosun',
+        name: '조선일보',
+        logoText: '조선일보',
+        logoBg: '#B91C1C',
+        subscribers: '430만',
+        liveTitle: '조선일보 실시간 주요뉴스 브리핑',
+        rssQuery: '조선일보 주요뉴스 사회 경제',
+        headlines: [
+          '초고령사회 진입 눈앞…은퇴 후 자산관리·건강관리 핵심은',
+          '디지털 교과서·AI 교육 시대…학부모가 알아야 할 교육 정보',
+          '가을·겨울 환절기 심뇌혈관 질환 주의보…아침 운동 요령',
+          '국내외 저비용항공사(LCC) 동계 노선 증편…여행객 선택 폭 확대',
+          '전통시장·골목상권 활력 불어넣는 지역 상생 프로젝트 확산'
+        ],
+        photoCards: [
+          {
+            badge: '헬스조선',
+            overlayTop: '환절기 건강',
+            title: '기온 뚝 떨어진 아침…혈관 건강 지키는 생활 속 습관',
+            img: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=400&q=75'
+          },
+          {
+            badge: '트래블',
+            duration: '01:29',
+            overlayTop: '겨울 여행지',
+            title: '합리적 비용으로 떠나는 근거리 해외·국내 겨울 휴양지',
+            img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=75'
+          }
+        ],
+        footerHeadline: '주말 기온 일시 회복…다음 주 중반 다시 쌀쌀한 날씨 전망'
+      }
+    ];
+
+    /**
+     * [SLIDE 2 데이터: 사진 2 'MY뉴스' (좌측 썸네일 + 2줄 제목 + 언론사·날짜 + 파란 댓글 캡슐)]
+     */
+    const MY_NEWS_CATEGORIES = [
+      { id: 'all', label: '종합', query: '속보 종합 뉴스' },
+      { id: 'economy', label: '경제', query: '경제 증시 부동산 환율' },
+      { id: 'it', label: 'IT/과학', query: 'IT 반도체 인공지능 스마트폰 테슬라' },
+      { id: 'society', label: '사회', query: '사회 생활 날씨 교통' },
+      { id: 'politics', label: '정치', query: '정치 국회 정책' },
+      { id: 'world', label: '세계', query: '국제 미국 글로벌 뉴스' }
+    ];
+
+    let MY_NEWS_ITEMS = [
+      {
+        title: "'성남라인' 이용철 법무장관 지명…여야 인사 검증 공방 예고",
+        press: '뉴스1',
+        time: '11월 7일 10:41',
+        comments: 38,
+        cat: 'politics',
+        img: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: "대통령, '성장확산 방점' 예산안 시정연설…사진으로 돌아보는 한 주",
+        press: '세계일보',
+        time: '11월 7일 10:41',
+        comments: 24,
+        cat: 'politics',
+        img: 'https://images.unsplash.com/photo-1575320181282-9afab399332c?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: "쓰레기 수거차 뒤서 '꽝'…새벽 작업 현장 안전수칙 준수 시급",
+        press: '디지털타임스',
+        time: '11월 6일 20:42',
+        comments: 33,
+        cat: 'society',
+        img: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: '"무섭다며 번호도 바꿨는데"…스토킹 피해 예방 보호조치 대폭 강화',
+        press: '한국일보',
+        time: '11월 6일 11:28',
+        comments: 53,
+        cat: 'society',
+        img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: '차세대 전기차·이차전지 시장 재편 속 K-배터리 초격차 기술 시동',
+        press: '매일경제',
+        time: '11월 7일 10:15',
+        comments: 64,
+        cat: 'economy',
+        img: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: '온디바이스 AI 스마트폰·차세대 반도체 칩셋 성능 대폭 향상',
+        press: '전자신문',
+        time: '11월 7일 09:50',
+        comments: 47,
+        cat: 'it',
+        img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: '미 고용지표 호조에 뉴욕증시 반등…글로벌 빅테크 투자 심리 회복',
+        press: '한국경제',
+        time: '11월 7일 09:32',
+        comments: 82,
+        cat: 'world',
+        img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=240&q=75'
+      },
+      {
+        title: '환경미화·현장 근로자 안전 장비 및 작업 환경 개선 대책 마련',
+        press: '문화일보',
+        time: '11월 6일 20:35',
+        comments: 33,
+        cat: 'society',
+        img: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=240&q=75'
+      }
+    ];
+
+    /**
+     * [SLIDE 3 데이터: 사진 3 '엔터 숏텐츠' (5페이지 세트) & '엔터 NOW' (2열 포토 카드)]
+     */
+    const ENTER_SHORTENTS_SETS = [
+      [
+        {
+          keyword: '비서진 이서진 강남과 내기 승리',
+          summary: '"형 3조 아니었어?" 이서진 놀리던 강남 싱가포르서 1500달러 결제 화제',
+          timeAgo: '9시간 전',
+          img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '옆자리 프란체스카 11월 공개',
+          summary: '새로운 케미와 유쾌한 에피소드로 돌아오는 기대작 11월 전격 공개',
+          timeAgo: '6시간 전',
+          img: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '조진웅 출연 드라마 12월 첫방송',
+          summary: '강렬한 연기 변신 예고한 신작 드라마 12월 편성 확정 및 티저 공개',
+          timeAgo: '5시간 전',
+          img: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '모자쓴고양이 조정석 첫 더빙 참여',
+          summary: '특유의 재치 넘치는 목소리 연기로 완성한 애니메이션 더빙 현장 공개',
+          timeAgo: '4시간 전',
+          img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=200&q=75'
+        }
+      ],
+      [
+        {
+          keyword: '주말 예능 시청률 1위 하이라이트',
+          summary: '안방극장 웃음 사로잡은 금주 최고의 명장면과 화제의 게스트 총정리',
+          timeAgo: '2시간 전',
+          img: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '아이돌 신곡 음원차트 올킬 달성',
+          summary: '컴백과 동시에 국내외 주요 음원 차트 1위 석권하며 글로벌 인기 입증',
+          timeAgo: '3시간 전',
+          img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '한국 영화 박스오피스 예매율 급등',
+          summary: '개봉 첫 주말 관객 입소문 타며 실시간 예매율 압도적 1위 기록',
+          timeAgo: '4시간 전',
+          img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '화제의 웹예능 조회수 300만 돌파',
+          summary: '솔직 담백한 토크로 공개 직후 유튜브 인기 급상승 동영상 상위권 진입',
+          timeAgo: '5시간 전',
+          img: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=200&q=75'
+        }
+      ],
+      [
+        {
+          keyword: '연말 시상식 라인업 1차 공개',
+          summary: '올 한 해를 빛낸 주역들이 총출동하는 연말 가요·연기 시상식 라인업 발표',
+          timeAgo: '1시간 전',
+          img: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '글로벌 OTT 오리지널 시리즈 호평',
+          summary: '탄탄한 스토리와 연출력으로 해외 비평 사이트서 높은 평점 기록 중',
+          timeAgo: '3시간 전',
+          img: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '전국투어 콘서트 전석 매진 기염',
+          summary: '티켓 오픈과 동시에 전 회차 매진 기록하며 추가 공연 문의 쇄도',
+          timeAgo: '6시간 전',
+          img: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '스타 화보 비하인드 컷 깜짝 공개',
+          summary: '가을·겨울 시즌 분위기 물씬 풍기는 화보 촬영장 비하인드 스틸 공개',
+          timeAgo: '7시간 전',
+          img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=75'
+        }
+      ],
+      [
+        {
+          keyword: '금토드라마 자체 최고 시청률 경신',
+          summary: '클라이맥스 향해 달려가는 전개와 배우들의 열연으로 시청률 고공행진',
+          timeAgo: '2시간 전',
+          img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '화제의 OST 음원 차트 역주행',
+          summary: '드라마 명장면에 삽입된 감성 보컬 OST가 입소문 타며 차트 상위권 안착',
+          timeAgo: '4시간 전',
+          img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '예능 대세 스타 광고계 블루칩 등극',
+          summary: '특유의 친근하고 유쾌한 매력으로 식품·패션·IT 업계 모델 발탁 이어져',
+          timeAgo: '5시간 전',
+          img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '뮤지컬 대작 티켓 오픈 동시 1위',
+          summary: '화려한 캐스팅 라인업 공개 직후 예매 사이트 랭킹 1위 석권',
+          timeAgo: '8시간 전',
+          img: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=200&q=75'
+        }
+      ],
+      [
+        {
+          keyword: '스타 유튜브 채널 실버버튼·골드버튼',
+          summary: '일상 브이로그와 진솔한 토크 콘텐츠로 구독자 급증하며 인기 몰이',
+          timeAgo: '3시간 전',
+          img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '글로벌 영화제 초청작 현지 기립박수',
+          summary: '해외 유수 영화제 공식 상영 직후 현지 언론과 관객들의 찬사 쏟아져',
+          timeAgo: '5시간 전',
+          img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '아이돌 월드투어 추가 공연 확정',
+          summary: '북미·유럽·아시아 주요 도시 스타디움 투어 매진 행렬에 추가 회차 오픈',
+          timeAgo: '6시간 전',
+          img: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=200&q=75'
+        },
+        {
+          keyword: '새 시즌 돌아오는 레전드 추리 예능',
+          summary: '더욱 치밀해진 세트와 세계관으로 무장한 추리 예능 신규 시즌 예고편 화제',
+          timeAgo: '9시간 전',
+          img: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=200&q=75'
+        }
+      ]
+    ];
+
+    let ENTER_NOW_ITEMS = [
+      {
+        channel: 'Channel A',
+        subCaption: '자막이 이어어',
+        title: '깊어가는 가을 감성 무대…출연진 깜짝 듀엣 호흡에 현장 감동 물결',
+        press: '스포츠동아',
+        img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=450&q=75'
+      },
+      {
+        channel: 'MBC',
+        subCaption: '포토월 현장',
+        title: '화사한 핑크빛 스타일링으로 시선 집중…공식석상 환한 미소 화제',
+        press: 'OSEN',
+        img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=450&q=75'
+      },
+      {
+        channel: 'tvN',
+        subCaption: '최고 시청률',
+        title: '예상치 못한 반전 전개에 자체 최고 시청률 경신…주말극 독주 체제',
+        press: '엑스포츠뉴스',
+        img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=450&q=75'
+      },
+      {
+        channel: 'SBS',
+        subCaption: '리얼 예능',
+        title: '절친 스타들의 리얼 여행기…웃음 터진 현지 에피소드 비하인드 공개',
+        press: '마이데일리',
+        img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=450&q=75'
+      },
+      {
+        channel: 'JTBC',
+        subCaption: '라이브 무대',
+        title: '폭발적인 가창력과 무대 매너로 관객 사로잡은 레전드 라이브 클립',
+        press: '스타뉴스',
+        img: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=450&q=75'
+      },
+      {
+        channel: '넷플릭스',
+        subCaption: '글로벌 TOP',
+        title: '공개 직후 글로벌 비영어권 시리즈 상위권 안착…해외 시청자 호평',
+        press: '일간스포츠',
+        img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=450&q=75'
+      }
     ];
 
     function escapeHtml(str) {
@@ -593,6 +1233,124 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+    }
+
+    /**
+     * 0. 4단 스와이프 네비게이션 (0: 홈 <-> 1: 뉴스 <-> 2: MY뉴스 <-> 3: 엔터)
+     */
+    function switchMainPage(pageIdx) {
+      const clamped = Math.max(0, Math.min(3, pageIdx));
+      state.currentPage = clamped;
+
+      const track = document.getElementById('swipe-track');
+      if (track) {
+        track.classList.remove('dragging');
+        track.style.transform = `translate3d(-${clamped * 25}%, 0, 0)`;
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const tab = document.getElementById(`gnb-tab-${i}`);
+        const bar = document.getElementById(`gnb-bar-${i}`);
+        if (!tab || !bar) continue;
+        if (i === clamped) {
+          tab.className = 'relative pb-1.5 text-[14.5px] font-extrabold text-[#03C75A] transition-colors flex flex-col items-center';
+          bar.classList.remove('hidden');
+        } else {
+          tab.className = 'relative pb-1.5 text-[14.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center';
+          bar.classList.add('hidden');
+        }
+      }
+
+      // 뉴스 • MY뉴스 상단 점 표시 동기화
+      const dot0 = document.getElementById('news-dot-0');
+      const dot1 = document.getElementById('news-dot-1');
+      if (dot0 && dot1) {
+        if (clamped === 2) {
+          dot0.className = 'w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600 inline-block';
+          dot1.className = 'w-1 h-1 rounded-full bg-[#03C75A] inline-block';
+        } else {
+          dot0.className = 'w-1 h-1 rounded-full bg-[#03C75A] inline-block';
+          dot1.className = 'w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600 inline-block';
+        }
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initSwipeNavigation() {
+      const viewport = document.getElementById('swipe-viewport');
+      const track = document.getElementById('swipe-track');
+      if (!viewport || !track) return;
+
+      let startX = 0;
+      let startY = 0;
+      let deltaX = 0;
+      let isSwiping = false;
+      let isIgnored = false;
+
+      viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        const targetEl = e.target;
+        if (targetEl && targetEl.closest('[data-no-swipe="true"], .no-swipe, input, textarea')) {
+          isIgnored = true;
+          return;
+        }
+        isIgnored = false;
+        isSwiping = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        deltaX = 0;
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', (e) => {
+        if (isIgnored || e.touches.length !== 1) return;
+        const curX = e.touches[0].clientX;
+        const curY = e.touches[0].clientY;
+        const dx = curX - startX;
+        const dy = curY - startY;
+
+        if (!isSwiping) {
+          // 세로 스크롤 중에는 좌우 스와이프 절대 간섭 금지
+          if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx) * 0.7) {
+            isIgnored = true;
+            return;
+          }
+          if (Math.abs(dx) > 18 && Math.abs(dx) > Math.abs(dy) * 1.6) {
+            isSwiping = true;
+            track.classList.add('dragging');
+          }
+        }
+
+        if (isSwiping) {
+          deltaX = dx;
+          const width = viewport.clientWidth || 380;
+          let resistance = 1;
+          if ((state.currentPage === 0 && deltaX > 0) || (state.currentPage === 3 && deltaX < 0)) {
+            resistance = 0.25;
+          }
+          const offsetPercent = -(state.currentPage * 25) + ((deltaX * resistance) / width) * 25;
+          track.style.transform = `translate3d(${offsetPercent}%, 0, 0)`;
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchend', () => {
+        if (isIgnored || !isSwiping) {
+          track.classList.remove('dragging');
+          return;
+        }
+        if (Math.abs(deltaX) > 55) {
+          if (deltaX < -55 && state.currentPage < 3) {
+            switchMainPage(state.currentPage + 1);
+          } else if (deltaX > 55 && state.currentPage > 0) {
+            switchMainPage(state.currentPage - 1);
+          } else {
+            switchMainPage(state.currentPage);
+          }
+        } else {
+          switchMainPage(state.currentPage);
+        }
+        isSwiping = false;
+      }, { passive: true });
     }
 
     /**
@@ -648,24 +1406,57 @@
     }
 
     /**
-     * 2. 자주 가는 사이트 (한 줄 8개 퀵 아이콘 바)
+     * 2. 자주 가는 사이트 (8열 그리드 & 디시갤 파란 빈 네모 완벽 방지)
      */
+    function getAutoBadgeText(label) {
+      const clean = String(label || '').trim();
+      if (!clean) return '바로';
+      // 영문 약어(LOL 등)는 최대 3글자, 한글(갤럭시, 테슬라 등)은 2글자로 깔끔하게 추출
+      if (/^[A-Za-z0-9]+$/.test(clean)) {
+        return clean.slice(0, 3).toUpperCase();
+      }
+      return clean.slice(0, 2);
+    }
+
+    function normalizeShortcutList(list) {
+      return list.map((item, idx) => {
+        const label = String(item.label || item.name || ('사이트' + (idx + 1))).trim();
+        const url = String(item.url || 'https://m.naver.com').trim();
+        let badge = String(item.badge || item.iconText || item.icon || '').trim();
+        const isSharedFaviconSite = /dcinside\.com|fmkorea\.com/i.test(url);
+        if (!badge && isSharedFaviconSite) {
+          badge = getAutoBadgeText(label);
+        }
+        return {
+          id: item.id || ('sc-' + idx + '-' + Date.now()),
+          label,
+          url,
+          badge,
+          color: item.color || '#3b82f6',
+          darkText: Boolean(item.darkText)
+        };
+      });
+    }
+
     function loadShortcuts() {
       try {
-        const saved = safeGetStorage(STORAGE_KEYS.SHORTCUTS);
+        const saved = safeGetStorage(STORAGE_KEYS.SHORTCUTS) || safeGetStorage(STORAGE_KEYS.SHORTCUTS_ALT);
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            state.shortcuts = parsed;
+            state.shortcuts = normalizeShortcutList(parsed);
+            saveShortcutsToStorage();
             return;
           }
         }
       } catch (e) {}
-      state.shortcuts = JSON.parse(JSON.stringify(DEFAULT_SHORTCUTS));
+      state.shortcuts = normalizeShortcutList(DEFAULT_SHORTCUTS);
     }
 
     function saveShortcutsToStorage() {
-      safeSetStorage(STORAGE_KEYS.SHORTCUTS, JSON.stringify(state.shortcuts));
+      const str = JSON.stringify(state.shortcuts);
+      safeSetStorage(STORAGE_KEYS.SHORTCUTS, str);
+      safeSetStorage(STORAGE_KEYS.SHORTCUTS_ALT, str);
     }
 
     function getFaviconUrl(url) {
@@ -692,9 +1483,12 @@
 
       grid.innerHTML = state.shortcuts.map(item => {
         const badgeText = String(item.badge || '').trim();
+        const fallbackText = getAutoBadgeText(item.label);
         const hasBadge = badgeText.length > 0;
-        const isMultiCharText = badgeText.length >= 2 && badgeText.charCodeAt(0) < 0x1F000;
-        const fontSizeClass = isMultiCharText ? 'text-[10.5px] font-black tracking-tighter' : 'text-[15px] font-extrabold';
+        const isMultiChar = badgeText.length >= 2 && badgeText.charCodeAt(0) < 0x1F000;
+        const fontSizeClass = badgeText.length >= 3
+          ? 'text-[10.5px] font-black tracking-tighter'
+          : (isMultiChar ? 'text-[11.5px] font-black tracking-tighter' : 'text-[14px] font-extrabold');
         const bgColor = item.color || '#3b82f6';
         const textColor = item.darkText || bgColor.toLowerCase() === '#00ffa3' ? 'text-gray-900' : 'text-white';
         const faviconUrl = getFaviconUrl(item.url);
@@ -705,14 +1499,14 @@
              rel="noopener noreferrer"
              onclick="return handleShortcutClick(event, ${JSON.stringify(item.url).replace(/"/g, '&quot;')})"
              class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center ${textColor} transition-transform duration-150 group-active:scale-95 overflow-hidden"
+            <div class="w-9 h-9 squircle-icon-sm flex items-center justify-center ${textColor} transition-transform duration-150 group-active:scale-95 overflow-hidden px-0.5"
                  style="background-color: ${escapeHtml(bgColor)};">
               ${hasBadge
-                ? `<span class="${fontSizeClass} leading-none">${escapeHtml(badgeText)}</span>`
-                : `<img src="${escapeHtml(faviconUrl)}" alt="${escapeHtml(item.label)}" class="w-4 h-4 object-contain" onerror="this.outerHTML='<span class=\\'text-[10px] font-black\\'>${escapeHtml(item.label.slice(0, 2))}</span>'" />`
+                ? `<span class="${fontSizeClass} leading-none text-center break-keep">${escapeHtml(badgeText)}</span>`
+                : `<img src="${escapeHtml(faviconUrl)}" alt="${escapeHtml(item.label)}" class="w-4 h-4 object-contain" onerror="this.outerHTML='<span class=\\'text-[11px] font-black leading-none\\'>${escapeHtml(fallbackText)}</span>'" />`
               }
             </div>
-            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate w-full text-center leading-tight tracking-tighter">
+            <span class="mt-0.5 text-[10px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate w-full text-center leading-tight tracking-tighter">
               ${escapeHtml(item.label)}
             </span>
           </a>
@@ -765,13 +1559,16 @@
       event.preventDefault();
       const editId = document.getElementById('sc-edit-id').value.trim();
       const label = document.getElementById('sc-label').value.trim();
-      const badge = document.getElementById('sc-badge').value.trim();
+      let badge = document.getElementById('sc-badge').value.trim();
       let url = document.getElementById('sc-url').value.trim();
       const color = document.getElementById('sc-color').value;
 
       if (!label || !url) return;
       if (!/^https?:\/\//i.test(url)) {
         url = 'https://' + url;
+      }
+      if (!badge && /dcinside\.com|fmkorea\.com/i.test(url)) {
+        badge = getAutoBadgeText(label);
       }
 
       if (editId) {
@@ -815,12 +1612,12 @@
     }
 
     function restoreDefaultShortcuts() {
-      state.shortcuts = JSON.parse(JSON.stringify(DEFAULT_SHORTCUTS));
+      state.shortcuts = normalizeShortcutList(DEFAULT_SHORTCUTS);
       saveShortcutsToStorage();
       renderShortcutsBar();
       renderModalShortcutsList();
       resetShortcutForm();
-      showToast('초기 8개 기본 아이콘으로 복원되었습니다.');
+      showToast('기본 아이콘 목록으로 복원되었습니다.');
     }
 
     function renderModalShortcutsList() {
@@ -830,9 +1627,9 @@
       container.innerHTML = state.shortcuts.map((item, idx) => `
         <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#14171D] border border-gray-200/70 dark:border-gray-800">
           <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-extrabold shrink-0"
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-extrabold shrink-0"
                  style="background-color: ${escapeHtml(item.color || '#3b82f6')}">
-              ${escapeHtml(item.badge || item.label.slice(0, 2))}
+              ${escapeHtml(item.badge || getAutoBadgeText(item.label))}
             </div>
             <div class="min-w-0 flex-1">
               <div class="text-[13px] font-extrabold text-gray-800 dark:text-gray-100 truncate">${escapeHtml(item.label)}</div>
@@ -894,22 +1691,21 @@
       return { label: '매우나쁨 ' + Math.round(value), cls: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400' };
     }
 
-    function renderDefaultHourlyStrip(baseTemp = 18) {
+    function renderDefaultHourlyStrip(baseTemp = 6) {
       const strip = document.getElementById('hourly-weather-strip');
       if (!strip) return;
       const nowHour = new Date().getHours();
       const html = [];
       for (let i = 0; i < 18; i++) {
         const h = (nowHour + i) % 24;
-        const isDay = h >= 6 && h <= 19;
+        const isDay = h >= 6 && h <= 18;
         const label = i === 0 ? '지금' : h + '시';
-        const t = baseTemp + Math.round(Math.sin((h - 9) / 24 * Math.PI * 2) * 3);
+        const t = baseTemp + Math.round(Math.sin((h - 8) / 24 * Math.PI * 2) * 3);
         html.push(`
-          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-0.5 rounded-lg ${i === 0 ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
-            <span class="text-[9.5px] font-bold ${i === 0 ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
-            <span class="text-[13px] my-0.5 leading-none select-none">${isDay ? '☀️' : '🌙'}</span>
-            <span class="text-[10.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${t}°</span>
-            <span class="text-[8.5px] font-bold text-gray-400 dark:text-gray-600 leading-none mt-0.5">-</span>
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-0.5 px-1 rounded-lg ${i === 0 ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[9px] font-bold ${i === 0 ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
+            <span class="text-[11.5px] my-0.5 leading-none select-none">${isDay ? '☀️' : '🌙'}</span>
+            <span class="text-[10px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${t}°</span>
           </div>
         `);
       }
@@ -963,17 +1759,15 @@
           const b10 = document.getElementById('badge-pm10');
           const b25 = document.getElementById('badge-pm25');
           if (b10) {
-            b10.className = `px-1.5 py-0.5 rounded text-[9.5px] font-extrabold tnum ${g10.cls}`;
+            b10.className = `px-1 py-0.5 rounded text-[9px] font-extrabold tnum ${g10.cls}`;
             b10.textContent = `미세 ${g10.label}`;
           }
           if (b25) {
-            b25.className = `px-1.5 py-0.5 rounded text-[9.5px] font-extrabold tnum ${g25.cls}`;
+            b25.className = `px-1 py-0.5 rounded text-[9px] font-extrabold tnum ${g25.cls}`;
             b25.textContent = `초미세 ${g25.label}`;
           }
         }
-      } catch (err) {
-        console.warn('Weather update warning:', err);
-      }
+      } catch (err) {}
     }
 
     function renderWeatherWidget(data) {
@@ -982,8 +1776,7 @@
       const hourly = data.hourly || {};
 
       const info = getWeatherInfoFromWmo(cur.weather_code ?? 0, cur.is_day ?? 1);
-      const temp = Math.round(cur.temperature_2m ?? 18);
-      const feel = Math.round(cur.apparent_temperature ?? temp);
+      const temp = Math.round(cur.temperature_2m ?? 6);
       const minTemp = daily.temperature_2m_min ? Math.round(daily.temperature_2m_min[0]) : temp - 4;
       const maxTemp = daily.temperature_2m_max ? Math.round(daily.temperature_2m_max[0]) : temp + 4;
       const maxRainProb = daily.precipitation_probability_max ? daily.precipitation_probability_max[0] : 0;
@@ -991,13 +1784,11 @@
       document.getElementById('weather-current-icon').textContent = info.icon;
       document.getElementById('weather-current-temp').textContent = `${temp}°`;
       document.getElementById('weather-current-desc').textContent = info.desc;
-      document.getElementById('weather-minmax-feel').textContent = `최저 ${minTemp}° / 최고 ${maxTemp}° · 체감 ${feel}°`;
+      document.getElementById('weather-minmax-feel').textContent = `(${minTemp}°/${maxTemp}°)`;
       document.getElementById('weather-rain-badge').textContent = `💧${maxRainProb}%`;
-      document.getElementById('weather-wind-humidity').textContent = `습도 ${cur.relative_humidity_2m ?? 45}% · 바람 ${cur.wind_speed_10m ?? 1.2}m/s`;
 
       const times = hourly.time || [];
       const temps = hourly.temperature_2m || [];
-      const probs = hourly.precipitation_probability || [];
       const codes = hourly.weather_code || [];
       const isDays = hourly.is_day || [];
 
@@ -1019,16 +1810,12 @@
         const label = isNow ? '지금' : `${hourNum}시`;
         const hInfo = getWeatherInfoFromWmo(codes[i] ?? 0, isDays[i] ?? 1);
         const hTemp = Math.round(temps[i] ?? temp);
-        const hProb = probs[i] ?? 0;
 
         hourlyHtml.push(`
-          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-0.5 rounded-lg ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
-            <span class="text-[9.5px] font-bold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
-            <span class="text-[13px] my-0.5 leading-none select-none">${hInfo.icon}</span>
-            <span class="text-[10.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${hTemp}°</span>
-            <span class="text-[8.5px] font-bold ${hProb >= 30 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-600'} leading-none mt-0.5">
-              ${hProb > 0 ? `${hProb}%` : '-'}
-            </span>
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-0.5 px-1 rounded-lg ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[9px] font-bold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
+            <span class="text-[11.5px] my-0.5 leading-none select-none">${hInfo.icon}</span>
+            <span class="text-[10px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${hTemp}°</span>
           </div>
         `);
       }
@@ -1049,7 +1836,6 @@
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
           let locName = '현위치';
-
           try {
             const res = await fetchWithTimeout(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ko`, {}, 3500);
             if (res.ok) {
@@ -1058,7 +1844,6 @@
               locName = (addr.borough || addr.suburb || addr.town || addr.village || addr.city || '현위치').trim();
             }
           } catch (e) {}
-
           state.weatherLoc = { name: locName, lat, lon, isGps: true };
           fetchWeatherAndAirQuality();
           showToast(`'${locName}' 날씨로 전환되었습니다.`);
@@ -1077,7 +1862,7 @@
     }
 
     /**
-     * 4. 실시간 인기검색어 수집 & 등락 계산 (좌: 네이버·포털 / 우: 구글 급상승)
+     * 4. 실시간 인기검색어 수집 & 등락 계산 (1~10위 26px 높이로 한 화면 완벽 노출)
      */
     function computeRankDiffs(rawItems, storageKey) {
       let prevSnapshot = {};
@@ -1210,7 +1995,6 @@
         } catch (e) {}
       }
 
-      // rss2json 폴백
       try {
         const rss2JsonUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
         const res = await fetchWithTimeout(rss2JsonUrl, {}, 4000);
@@ -1243,15 +2027,15 @@
 
     function renderDeltaBadgeCompact(item) {
       if (item.status === 'new') {
-        return `<span class="px-1 py-0.5 rounded bg-[#F43142] text-white text-[9px] font-extrabold leading-none tracking-tighter">NEW</span>`;
+        return `<span class="px-1 py-[1px] rounded bg-[#F43142] text-white text-[8.5px] font-extrabold leading-none tracking-tighter">NEW</span>`;
       }
       if (item.status === 'up') {
-        return `<span class="text-[#F43142] font-extrabold text-[10.5px] tnum whitespace-nowrap">▲${item.delta || 1}</span>`;
+        return `<span class="text-[#F43142] font-extrabold text-[10px] tnum whitespace-nowrap">▲${item.delta || 1}</span>`;
       }
       if (item.status === 'down') {
-        return `<span class="text-[#2B78F6] font-extrabold text-[10.5px] tnum whitespace-nowrap">▼${item.delta || 1}</span>`;
+        return `<span class="text-[#2B78F6] font-extrabold text-[10px] tnum whitespace-nowrap">▼${item.delta || 1}</span>`;
       }
-      return `<span class="text-gray-300 dark:text-gray-600 font-bold text-[10.5px] px-1">-</span>`;
+      return `<span class="text-gray-300 dark:text-gray-600 font-bold text-[10px] px-1">-</span>`;
     }
 
     function renderComparisonColumns() {
@@ -1261,6 +2045,7 @@
 
       const visibleCount = state.isExpandedRanks ? 20 : 10;
 
+      // 각 행 높이 h-[26px] 고정 -> 10개 행 총 260px로 첫 화면에 10위까지 완벽 노출
       const buildColumnHtml = (list) => (list || []).slice(0, visibleCount).map(item => {
         const isTop3 = item.rank <= 3;
         const rankColor = isTop3
@@ -1274,10 +2059,10 @@
              rel="noopener noreferrer"
              title="${escapeHtml(item.keyword)} - 네이버 검색"
              onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
-             class="flex items-center justify-between px-2.5 py-1.5 hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group">
+             class="flex items-center justify-between h-[26px] px-2 hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group">
             <div class="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
-              <span class="tnum text-[11.5px] w-4 text-center shrink-0 ${rankColor}">${item.rank}</span>
-              <span class="text-[12px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
+              <span class="tnum text-[11px] w-3.5 text-center shrink-0 ${rankColor}">${item.rank}</span>
+              <span class="text-[11.5px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
                 ${escapeHtml(item.keyword)}
               </span>
             </div>
@@ -1327,12 +2112,10 @@
         const hh = String(now.getHours()).padStart(2, '0');
         const mm = String(now.getMinutes()).padStart(2, '0');
         const timeEl = document.getElementById('updated-time-text');
-        if (timeEl) timeEl.textContent = `${hh}:${mm} 기준`;
+        if (timeEl) timeEl.textContent = `${hh}:${mm}`;
 
         renderComparisonColumns();
-      } catch (e) {
-        console.warn('Trends update warning:', e);
-      } finally {
+      } catch (e) {} finally {
         state.isFetchingTrends = false;
       }
     }
@@ -1363,7 +2146,7 @@
       state.naverKeywords = mutateList(
         state.naverKeywords,
         STORAGE_KEYS.NAVER_SNAPSHOT,
-        ['오창 호수공원 산책', '아이폰 iOS 업데이트', '프로야구 실시간 스코어', '청주 맛집 추천']
+        ['오창 호수공원 날씨', '갤럭시 One UI 팁', '프로야구 실시간 스코어', '청주 주말 맛집']
       );
       state.googleKeywords = mutateList(
         state.googleKeywords,
@@ -1376,108 +2159,502 @@
     }
 
     /**
-     * 5. 여러 줄 자동 확장 메모장 & 테마 & 시계 설정
+     * 5. [SLIDE 1: 뉴스 (언론사편집)] & [SLIDE 2: MY뉴스] 렌더링 및 실시간 뉴스 RSS 연동
      */
-    function autoResizeMemo(el) {
+    function buildPressCardHtml(press, dateStr) {
+      const headlinesHtml = (press.headlines || []).slice(0, 5).map(hl => {
+        const searchUrl = buildNaverSearchUrl(hl);
+        return `
+          <a href="${searchUrl}"
+             target="${state.linkTarget}"
+             rel="noopener noreferrer"
+             onclick="return handleKeywordClick(event, ${JSON.stringify(hl).replace(/"/g, '&quot;')})"
+             class="block py-2.5 text-[14.5px] font-medium text-gray-900 dark:text-gray-100 hover:text-[#03C75A] truncate leading-snug">
+            ${escapeHtml(hl)}
+          </a>
+        `;
+      }).join('');
+
+      const photoCardsHtml = (press.photoCards || []).slice(0, 2).map(card => {
+        const searchUrl = buildNaverSearchUrl(card.title);
+        return `
+          <a href="${searchUrl}"
+             target="${state.linkTarget}"
+             rel="noopener noreferrer"
+             onclick="return handleKeywordClick(event, ${JSON.stringify(card.title).replace(/"/g, '&quot;')})"
+             class="flex flex-col group min-w-0">
+            <div class="relative w-full aspect-16/10 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 mb-2">
+              <img src="${escapeHtml(card.img)}" alt="${escapeHtml(card.title)}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                   onerror="this.src='https://placehold.co/400x250/1e293b/ffffff?text=NEWS'" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent"></div>
+              <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-[#ef4444] text-white text-[10px] font-extrabold leading-none">
+                ${escapeHtml(card.badge || '잇슈 #태그')}
+              </span>
+              ${card.duration ? `
+                <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-white text-[10px] font-bold tnum">
+                  ▶ ${escapeHtml(card.duration)}
+                </span>
+              ` : ''}
+              ${card.overlayTop ? `
+                <span class="absolute bottom-2 left-2 text-amber-300 font-black text-[12px] drop-shadow">
+                  ${escapeHtml(card.overlayTop)}
+                </span>
+              ` : ''}
+            </div>
+            <p class="text-[13.5px] font-semibold text-gray-800 dark:text-gray-100 leading-[1.35] line-clamp-2 group-hover:text-[#03C75A]">
+              ${escapeHtml(card.title)}
+            </p>
+          </a>
+        `;
+      }).join('');
+
+      const footerUrl = buildNaverSearchUrl(press.footerHeadline || press.name);
+
+      return `
+        <!-- 언론사 헤더 (원형 로고 + 언론사명 + 핑크 구독 배지 + 업데이트 시각) -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-11 h-11 rounded-full flex flex-col items-center justify-center text-white font-black text-[10px] leading-tight text-center px-1 shadow-xs shrink-0"
+                 style="background-color: ${escapeHtml(press.logoBg)}">
+              ${escapeHtml(press.logoText)}
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[17px] font-black text-gray-900 dark:text-white leading-none">${escapeHtml(press.name)}</span>
+                <span class="px-1.5 py-0.5 rounded-full border border-pink-300 dark:border-pink-800 bg-pink-50/70 dark:bg-pink-950/40 text-[#e91e63] text-[10px] font-extrabold leading-none">
+                  ✪ ${escapeHtml(press.subscribers)}
+                </span>
+              </div>
+              <div class="text-[11.5px] text-gray-400 dark:text-gray-500 font-medium mt-1 tnum">
+                ${dateStr}
+              </div>
+            </div>
+          </div>
+          <a href="${buildNaverSearchUrl(press.name + ' 뉴스')}"
+             target="${state.linkTarget}"
+             onclick="return handleKeywordClick(event, '${escapeHtml(press.name)} 뉴스')"
+             class="p-1.5 text-gray-400 hover:text-gray-600 text-lg font-bold leading-none">⋮</a>
+        </div>
+
+        <!-- LIVE 배너 박스 (사진 1 완벽 재현) -->
+        <a href="${buildNaverSearchUrl(press.liveTitle)}"
+           target="${state.linkTarget}"
+           onclick="return handleKeywordClick(event, ${JSON.stringify(press.liveTitle).replace(/"/g, '&quot;')})"
+           class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700/80 bg-[#F9FAFB] dark:bg-[#14171D] mb-2 hover:border-[#03C75A] transition-colors">
+          <span class="px-2 py-0.5 rounded-full bg-[#ef4444] text-white text-[10.5px] font-black tracking-tight shrink-0">LIVE</span>
+          <span class="text-[13.5px] font-extrabold text-gray-900 dark:text-gray-100 truncate">
+            ${escapeHtml(press.liveTitle)}
+          </span>
+        </a>
+
+        <!-- 5개 주요 헤드라인 리스트 -->
+        <div class="divide-y divide-gray-100 dark:divide-gray-800 mb-3">
+          ${headlinesHtml}
+        </div>
+
+        <!-- 2열 포토·영상 이슈 카드 (잇슈 #태그) -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1 pb-3 border-b border-gray-100 dark:border-gray-800">
+          ${photoCardsHtml}
+        </div>
+
+        <!-- 하단 한 줄 뉴스 -->
+        <a href="${footerUrl}"
+           target="${state.linkTarget}"
+           onclick="return handleKeywordClick(event, ${JSON.stringify(press.footerHeadline).replace(/"/g, '&quot;')})"
+           class="block pt-2.5 text-[14px] font-medium text-gray-800 dark:text-gray-200 hover:text-[#03C75A] truncate">
+          ${escapeHtml(press.footerHeadline)}
+        </a>
+      `;
+    }
+
+    function selectPressOutlet(idx) {
+      state.selectedPressIdx = idx;
+      renderNewsTab();
+    }
+
+    function renderNewsTab() {
+      const selectorBar = document.getElementById('press-selector-bar');
+      const mainCard = document.getElementById('press-main-card');
+      const secondaryContainer = document.getElementById('press-secondary-cards');
+      if (!selectorBar || !mainCard || !secondaryContainer) return;
+
+      selectorBar.innerHTML = PRESS_OUTLETS.map((p, idx) => {
+        const active = idx === state.selectedPressIdx;
+        return `
+          <button type="button" onclick="selectPressOutlet(${idx})"
+                  class="px-3 py-1 rounded-full text-[12px] font-extrabold shrink-0 transition-colors ${active ? 'bg-[#03C75A] text-white shadow-2xs' : 'bg-white dark:bg-[#1E222B] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700'}">
+            ${escapeHtml(p.name)}
+          </button>
+        `;
+      }).join('');
+
+      const now = new Date();
+      const dateStr = `${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      const curPress = PRESS_OUTLETS[state.selectedPressIdx] || PRESS_OUTLETS[0];
+      mainCard.innerHTML = buildPressCardHtml(curPress, dateStr);
+
+      // 하단에 다른 구독 언론사 카드 2개 추가 노출 (실제 네이버 언론사편집처럼 연속 스크롤)
+      const nextOutlets = [
+        PRESS_OUTLETS[(state.selectedPressIdx + 1) % PRESS_OUTLETS.length],
+        PRESS_OUTLETS[(state.selectedPressIdx + 2) % PRESS_OUTLETS.length]
+      ];
+      secondaryContainer.innerHTML = nextOutlets.map(p => `
+        <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 p-3.5 shadow-2xs">
+          ${buildPressCardHtml(p, dateStr)}
+        </div>
+      `).join('');
+    }
+
+    function selectMyNewsCategory(catId) {
+      state.selectedMyNewsCat = catId;
+      renderMyNewsTab();
+    }
+
+    function renderMyNewsTab() {
+      const catBar = document.getElementById('mynews-category-bar');
+      const listContainer = document.getElementById('mynews-list-container');
+      if (!catBar || !listContainer) return;
+
+      catBar.innerHTML = MY_NEWS_CATEGORIES.map(c => {
+        const active = c.id === state.selectedMyNewsCat;
+        return `
+          <button type="button" onclick="selectMyNewsCategory('${c.id}')"
+                  class="px-3 py-1 rounded-full text-[12px] font-extrabold shrink-0 transition-colors ${active ? 'bg-[#03C75A] text-white' : 'bg-white dark:bg-[#1E222B] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700'}">
+            ${escapeHtml(c.label)}
+          </button>
+        `;
+      }).join('');
+
+      const filtered = state.selectedMyNewsCat === 'all'
+        ? MY_NEWS_ITEMS
+        : MY_NEWS_ITEMS.filter(item => item.cat === state.selectedMyNewsCat);
+      const displayList = filtered.length > 0 ? filtered : MY_NEWS_ITEMS;
+
+      // 사진 2: 좌측 썸네일(88x62) + 우측 2줄 기사 제목 + 하단 언론사·날짜 + 우측 파란 테두리 댓글수 캡슐
+      listContainer.innerHTML = displayList.map(item => {
+        const searchUrl = item.link || buildNaverSearchUrl(item.title);
+        return `
+          <a href="${escapeHtml(searchUrl)}"
+             target="${state.linkTarget}"
+             rel="noopener noreferrer"
+             onclick="return handleShortcutClick(event, ${JSON.stringify(searchUrl).replace(/"/g, '&quot;')})"
+             class="flex items-center gap-3 py-3 group">
+            <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.title)}"
+                 class="w-[88px] h-[62px] rounded-lg object-cover bg-gray-100 dark:bg-gray-800 shrink-0"
+                 onerror="this.src='https://placehold.co/176x124/334155/ffffff?text=MY+NEWS'" />
+            <div class="flex-1 min-w-0">
+              <h4 class="text-[14.5px] font-medium text-gray-900 dark:text-gray-100 leading-[1.35] line-clamp-2 group-hover:text-[#03C75A]">
+                ${escapeHtml(item.title)}
+              </h4>
+              <div class="flex items-center justify-between mt-1.5">
+                <span class="text-[12px] text-gray-400 dark:text-gray-500 font-medium truncate">
+                  ${escapeHtml(item.press)} · ${escapeHtml(item.time)}
+                </span>
+                <span class="px-2 py-[1px] rounded-full border border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 text-[11px] font-bold tnum shrink-0">
+                  ${item.comments || 33}
+                </span>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 구글 뉴스 한국어 RSS 실시간 파싱으로 뉴스/MY뉴스 최신 헤드라인 자동 보강
+     */
+    async function refreshLiveNewsFeeds(showNotification = false) {
+      const rssUrl = 'https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko';
+      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl);
+
+      try {
+        const res = await fetchWithTimeout(proxyUrl, { cache: 'no-store' }, 4200);
+        if (res.ok) {
+          const xmlText = await res.text();
+          const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
+          const items = Array.from(xmlDoc.querySelectorAll('item'));
+
+          if (items.length >= 5) {
+            const parsedNews = items.slice(0, 12).map((it, idx) => {
+              const rawTitle = it.querySelector('title')?.textContent?.trim() || '';
+              const lastDash = rawTitle.lastIndexOf(' - ');
+              const cleanTitle = lastDash > 0 ? rawTitle.slice(0, lastDash).trim() : rawTitle;
+              const pressName = lastDash > 0 ? rawTitle.slice(lastDash + 3).trim() : '주요언론';
+              return { title: cleanTitle, press: pressName, idx };
+            }).filter(i => i.title);
+
+            if (parsedNews.length >= 5) {
+              // 현재 선택된 언론사 헤드라인 최신화
+              PRESS_OUTLETS[0].headlines = parsedNews.slice(0, 5).map(n => n.title);
+              if (parsedNews.length >= 10) {
+                PRESS_OUTLETS[1].headlines = parsedNews.slice(5, 10).map(n => n.title);
+              }
+
+              // MY뉴스 상단에도 실시간 뉴스 반영
+              const thumbPool = [
+                'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=240&q=75',
+                'https://images.unsplash.com/photo-1575320181282-9afab399332c?auto=format&fit=crop&w=240&q=75',
+                'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=240&q=75',
+                'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=75',
+                'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=240&q=75',
+                'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=240&q=75'
+              ];
+              const now = new Date();
+              const timeLabel = `${now.getMonth() + 1}월 ${now.getDate()}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+              const liveMyNews = parsedNews.slice(0, 6).map((n, i) => ({
+                title: n.title,
+                press: n.press,
+                time: timeLabel,
+                comments: 25 + ((i * 17) % 65),
+                cat: i % 2 === 0 ? 'economy' : 'society',
+                img: thumbPool[i % thumbPool.length]
+              }));
+
+              MY_NEWS_ITEMS = [...liveMyNews, ...MY_NEWS_ITEMS.slice(0, 4)];
+              renderNewsTab();
+              renderMyNewsTab();
+            }
+          }
+        }
+      } catch (e) {}
+
+      if (showNotification) {
+        showToast('실시간 뉴스 헤드라인을 갱신했습니다.');
+      }
+    }
+
+    /**
+     * 6. [SLIDE 3: 엔터 (엔터 숏텐츠 & 엔터 NOW)] 렌더링 (사진 3 완벽 재현)
+     */
+    function toggleEnterAccordion(idx) {
+      state.enterExpandedIdx = idx;
+      renderEnterTab();
+    }
+
+    function selectEnterSet(setIdx) {
+      state.enterSetIdx = setIdx % ENTER_SHORTENTS_SETS.length;
+      state.enterExpandedIdx = 0;
+      renderEnterTab();
+    }
+
+    function nextEnterShortentsSet() {
+      state.enterSetIdx = (state.enterSetIdx + 1) % ENTER_SHORTENTS_SETS.length;
+      state.enterExpandedIdx = 0;
+      renderEnterTab();
+    }
+
+    function renderEnterTab() {
+      const shortentsBox = document.getElementById('enter-shortents-container');
+      const dotsBox = document.getElementById('enter-pagination-dots');
+      const nowGrid = document.getElementById('enter-now-grid');
+      const timeLabel = document.getElementById('enter-time-label');
+      if (!shortentsBox || !dotsBox || !nowGrid) return;
+
+      const curHour = new Date().getHours();
+      const ampm = curHour < 12 ? '오전' : '오후';
+      const dispHour = curHour % 12 === 0 ? 12 : curHour % 12;
+      if (timeLabel) timeLabel.textContent = `${ampm} ${dispHour}시 제공`;
+
+      const currentSet = ENTER_SHORTENTS_SETS[state.enterSetIdx] || ENTER_SHORTENTS_SETS[0];
+
+      // 사진 3: 선택된 카드는 핑크 테두리 + 연분홍 요약 박스 확장, 나머지는 회색 바 + 우측 썸네일 + 아래화살표 버튼
+      shortentsBox.innerHTML = currentSet.map((item, idx) => {
+        const isExpanded = idx === state.enterExpandedIdx;
+        const searchUrl = buildNaverSearchUrl(item.keyword);
+
+        if (isExpanded) {
+          return `
+            <div class="rounded-2xl overflow-hidden border border-[#f48fb1] bg-[#fdf2f7] dark:bg-[#2a1721] shadow-2xs transition-all">
+              <a href="${searchUrl}"
+                 target="${state.linkTarget}"
+                 onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
+                 class="flex items-center gap-2.5 px-3.5 py-3 bg-white dark:bg-[#1E222A] rounded-b-xl border-b border-[#f48fb1]/40">
+                <span class="text-[#e91e63] text-[15px] font-black leading-none shrink-0">🔍</span>
+                <span class="text-[14.5px] font-extrabold text-gray-900 dark:text-white truncate">
+                  ${escapeHtml(item.keyword)}
+                </span>
+              </a>
+              <a href="${searchUrl}"
+                 target="${state.linkTarget}"
+                 onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
+                 class="flex items-center justify-between gap-3 px-3.5 py-3">
+                <p class="text-[13.5px] font-medium text-gray-800 dark:text-gray-200 leading-[1.4] line-clamp-2 flex-1">
+                  ${escapeHtml(item.summary)}
+                  <span class="text-gray-400 dark:text-gray-400 text-[12px] ml-1">${escapeHtml(item.timeAgo)}</span>
+                </p>
+                <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.keyword)}"
+                     class="w-14 h-14 rounded-xl object-cover shrink-0 border border-white/60 shadow-2xs"
+                     onerror="this.src='https://placehold.co/112x112/ec4899/ffffff?text=ENT'" />
+              </a>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-[#F4F5F7] dark:bg-[#14171D] hover:bg-gray-200/70 dark:hover:bg-gray-800 transition-colors">
+            <a href="${searchUrl}"
+               target="${state.linkTarget}"
+               onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
+               class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+              <span class="text-[#e91e63] text-[15px] font-black leading-none shrink-0">🔍</span>
+              <span class="text-[14.5px] font-extrabold text-gray-900 dark:text-gray-100 truncate">
+                ${escapeHtml(item.keyword)}
+              </span>
+            </a>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.keyword)}"
+                   onclick="toggleEnterAccordion(${idx})"
+                   class="w-9 h-9 rounded-lg object-cover cursor-pointer"
+                   onerror="this.src='https://placehold.co/72x72/ec4899/ffffff?text=E'" />
+              <button type="button" onclick="toggleEnterAccordion(${idx})"
+                      aria-label="내용 펼치기"
+                      class="w-7 h-9 rounded-lg bg-gray-200/80 dark:bg-gray-800 text-gray-500 dark:text-gray-400 flex items-center justify-center text-xs font-bold">
+                ▾
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 페이지네이션 점 5개 (• • ● • •)
+      dotsBox.innerHTML = ENTER_SHORTENTS_SETS.map((_, idx) => {
+        const active = idx === state.enterSetIdx;
+        return `
+          <button type="button" onclick="selectEnterSet(${idx})"
+                  aria-label="엔터 숏텐츠 ${idx + 1}페이지"
+                  class="w-2 h-2 rounded-full transition-colors ${active ? 'bg-gray-700 dark:bg-white scale-110' : 'bg-gray-300 dark:bg-gray-700'}"></button>
+        `;
+      }).join('');
+
+      // 사진 3 하단: 엔터 NOW 2열 세로형 포토 카드
+      nowGrid.innerHTML = ENTER_NOW_ITEMS.map(item => {
+        const searchUrl = buildNaverSearchUrl(item.title);
+        return `
+          <a href="${searchUrl}"
+             target="${state.linkTarget}"
+             onclick="return handleKeywordClick(event, ${JSON.stringify(item.title).replace(/"/g, '&quot;')})"
+             class="group flex flex-col">
+            <div class="relative w-full aspect-3/4 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 mb-2 shadow-2xs">
+              <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.title)}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                   onerror="this.src='https://placehold.co/300x400/db2777/ffffff?text=ENTER+NOW'" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20"></div>
+              <span class="absolute top-2.5 right-2.5 text-white/90 text-[10.5px] font-extrabold drop-shadow">
+                ${escapeHtml(item.channel)}
+              </span>
+              <div class="absolute bottom-2.5 left-2.5 right-2.5">
+                <span class="inline-block px-1.5 py-0.5 rounded bg-pink-600/90 text-white text-[9.5px] font-bold mb-1">
+                  ${escapeHtml(item.press)}
+                </span>
+                <p class="text-white text-[12.5px] font-extrabold leading-snug line-clamp-2 drop-shadow">
+                  ${escapeHtml(item.title)}
+                </p>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 7. 여러 줄 자동 확장 메모장 (홈 화면 최하단 배치)
+     */
+    function autoResizeMemoTextarea(el) {
       if (!el) return;
       el.style.height = 'auto';
-      el.style.height = Math.max(22, el.scrollHeight) + 'px';
+      el.style.height = Math.max(20, el.scrollHeight) + 'px';
     }
 
     function initQuickMemo() {
       const memoInput = document.getElementById('quick-memo-input');
-      const badge = document.getElementById('memo-saved-badge');
+      const savedBadge = document.getElementById('memo-saved-badge');
       if (!memoInput) return;
 
-      const saved = safeGetStorage(STORAGE_KEYS.MEMO, '');
-      if (saved) {
-        memoInput.value = saved;
-        setTimeout(() => autoResizeMemo(memoInput), 0);
-      }
+      memoInput.value = safeGetStorage(STORAGE_KEYS.MEMO) || safeGetStorage(STORAGE_KEYS.MEMO_ALT, '');
+      setTimeout(() => autoResizeMemoTextarea(memoInput), 0);
 
-      let memoTimer = null;
+      let saveTimer = null;
       memoInput.addEventListener('input', () => {
-        autoResizeMemo(memoInput);
+        autoResizeMemoTextarea(memoInput);
         safeSetStorage(STORAGE_KEYS.MEMO, memoInput.value);
-        if (badge) {
-          badge.classList.remove('opacity-0');
-          badge.classList.add('opacity-100');
-          if (memoTimer) clearTimeout(memoTimer);
-          memoTimer = setTimeout(() => {
-            badge.classList.remove('opacity-100');
-            badge.classList.add('opacity-0');
-          }, 1000);
+        safeSetStorage(STORAGE_KEYS.MEMO_ALT, memoInput.value);
+        if (savedBadge) {
+          savedBadge.classList.remove('opacity-0');
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(() => savedBadge.classList.add('opacity-0'), 1200);
         }
       });
     }
 
     function clearQuickMemo() {
       const memoInput = document.getElementById('quick-memo-input');
-      if (memoInput) {
-        memoInput.value = '';
-        autoResizeMemo(memoInput);
-      }
-      safeRemoveStorage(STORAGE_KEYS.MEMO);
+      if (!memoInput) return;
+      memoInput.value = '';
+      autoResizeMemoTextarea(memoInput);
+      safeSetStorage(STORAGE_KEYS.MEMO, '');
+      safeSetStorage(STORAGE_KEYS.MEMO_ALT, '');
       showToast('메모가 지워졌습니다.');
+    }
+
+    /**
+     * 8. 상단 시계, 링크 이동방식, 다크모드, 토스트
+     */
+    function updateClock() {
+      const el = document.getElementById('clock-display');
+      if (!el) return;
+      const now = new Date();
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const m = now.getMonth() + 1;
+      const d = now.getDate();
+      const day = days[now.getDay()];
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      el.textContent = `${m}.${d}(${day}) ${hh}:${mm}`;
     }
 
     function toggleLinkTarget() {
       state.linkTarget = state.linkTarget === '_top' ? '_blank' : '_top';
       safeSetStorage(STORAGE_KEYS.LINK_TARGET, state.linkTarget);
-      updateLinkTargetUI();
+      updateLinkTargetButtonUI();
       renderShortcutsBar();
       renderComparisonColumns();
+      renderNewsTab();
+      renderMyNewsTab();
+      renderEnterTab();
       showToast(state.linkTarget === '_top'
-        ? '터치 시 [현재 창]에서 바로 이동합니다.'
-        : '터치 시 [새 탭]에서 페이지를 엽니다.');
+        ? '터치 시 현재 창에서 바로 이동합니다.'
+        : '터치 시 새 탭에서 열립니다.');
     }
 
-    function updateLinkTargetUI() {
+    function updateLinkTargetButtonUI() {
       const btn = document.getElementById('btn-link-target');
-      if (btn) {
-        btn.textContent = state.linkTarget === '_top' ? '현재창 이동' : '새탭 열기';
-      }
+      if (!btn) return;
+      btn.textContent = state.linkTarget === '_top' ? '현재창' : '새탭';
     }
 
     function initTheme() {
       const saved = safeGetStorage(STORAGE_KEYS.THEME);
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const isDark = saved ? saved === 'dark' : prefersDark;
-      applyTheme(isDark);
+      document.documentElement.classList.toggle('dark', isDark);
+      updateThemeMetaColor(isDark);
     }
 
     function toggleDarkMode() {
-      const isDark = !document.documentElement.classList.contains('dark');
-      applyTheme(isDark);
+      const isDark = document.documentElement.classList.toggle('dark');
       safeSetStorage(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
+      updateThemeMetaColor(isDark);
     }
 
-    function applyTheme(isDark) {
-      const htmlEl = document.documentElement;
-      const metaTheme = document.getElementById('meta-theme-color');
-      if (isDark) {
-        htmlEl.classList.add('dark');
-        if (metaTheme) metaTheme.setAttribute('content', '#1A1D23');
-      } else {
-        htmlEl.classList.remove('dark');
-        if (metaTheme) metaTheme.setAttribute('content', '#03C75A');
-      }
+    function updateThemeMetaColor(isDark) {
+      const meta = document.getElementById('meta-theme-color');
+      if (meta) meta.setAttribute('content', isDark ? '#1A1D23' : '#03C75A');
     }
 
-    function updateHeaderClock() {
-      const el = document.getElementById('clock-display');
-      if (!el) return;
-      const now = new Date();
-      const month = now.getMonth() + 1;
-      const date = now.getDate();
-      const days = ['일', '월', '화', '수', '목', '금', '토'];
-      const dayName = days[now.getDay()];
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      el.textContent = `${month}.${date}(${dayName}) ${hh}:${mm}`;
-    }
-
-    let toastTimer = null;
+    let toastTimeout = null;
     function showToast(msg) {
       const box = document.getElementById('toast-box');
       const text = document.getElementById('toast-message');
@@ -1485,74 +2662,71 @@
       text.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#03C75A] shrink-0"></span><span>${escapeHtml(msg)}</span>`;
       box.classList.remove('opacity-0');
       box.classList.add('opacity-100');
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
         box.classList.remove('opacity-100');
         box.classList.add('opacity-0');
-      }, 2200);
+      }, 2100);
     }
 
     /**
-     * 앱 초기 구동 (각 모듈별 독립 try-catch로 단일 장애 원천 차단)
+     * 초기 실행 부트스트랩 (화면 빈칸 방지를 위해 즉시 렌더링 후 비동기 갱신)
      */
-    function initApp() {
-      if (state.isInitialized) return;
-      state.isInitialized = true;
-
-      try { initTheme(); } catch (e) { console.warn(e); }
-      try { updateLinkTargetUI(); } catch (e) { console.warn(e); }
-      try { updateHeaderClock(); } catch (e) { console.warn(e); }
-      try { initQuickMemo(); } catch (e) { console.warn(e); }
-
+    function bootstrapApp() {
+      try { initTheme(); } catch (e) {}
+      try { updateLinkTargetButtonUI(); } catch (e) {}
       try {
-        const searchInput = document.getElementById('naver-search-input');
-        const clearBtn = document.getElementById('btn-clear-input');
-        if (searchInput && clearBtn) {
-          searchInput.addEventListener('input', () => {
-            if (searchInput.value.trim().length > 0) clearBtn.classList.remove('hidden');
-            else clearBtn.classList.add('hidden');
-          });
-        }
-      } catch (e) { console.warn(e); }
+        updateClock();
+        setInterval(updateClock, 15000);
+      } catch (e) {}
 
-      // 1. 자주 가는 사이트 8열 아이콘 즉시 렌더링
       try {
         loadShortcuts();
         renderShortcutsBar();
-      } catch (e) { console.warn(e); }
+      } catch (e) {}
 
-      // 2. 날씨 기본 시간대별 바 즉시 표시 후 오창읍 실시간 기상 데이터 패치
-      try {
-        renderDefaultHourlyStrip(18);
-        fetchWeatherAndAirQuality();
-      } catch (e) { console.warn(e); }
+      try { initQuickMemo(); } catch (e) {}
+      try { renderDefaultHourlyStrip(6); } catch (e) {}
 
-      // 3. 실시간 검색어 초기 데이터 즉시 렌더링 후 실시간 API 패치
       try {
-        const cachedNaver = safeGetStorage(STORAGE_KEYS.NAVER_CACHE);
-        const cachedGoogle = safeGetStorage(STORAGE_KEYS.GOOGLE_CACHE);
-        state.naverKeywords = cachedNaver
-          ? JSON.parse(cachedNaver)
-          : computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
-        state.googleKeywords = cachedGoogle
-          ? JSON.parse(cachedGoogle)
-          : computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
+        state.naverKeywords = computeRankDiffs(FALLBACK_NAVER_KEYWORDS, STORAGE_KEYS.NAVER_SNAPSHOT);
+        state.googleKeywords = computeRankDiffs(FALLBACK_GOOGLE_KEYWORDS, STORAGE_KEYS.GOOGLE_SNAPSHOT);
         renderComparisonColumns();
-        refreshAllTrends();
-      } catch (e) {
-        state.naverKeywords = FALLBACK_NAVER_KEYWORDS;
-        state.googleKeywords = FALLBACK_GOOGLE_KEYWORDS;
-        renderComparisonColumns();
+      } catch (e) {}
+
+      try {
+        renderNewsTab();
+        renderMyNewsTab();
+        renderEnterTab();
+        initSwipeNavigation();
+      } catch (e) {}
+
+      // 검색창 X 버튼 토글
+      const searchInput = document.getElementById('naver-search-input');
+      const clearBtn = document.getElementById('btn-clear-input');
+      if (searchInput && clearBtn) {
+        searchInput.addEventListener('input', () => {
+          if (searchInput.value.trim().length > 0) clearBtn.classList.remove('hidden');
+          else clearBtn.classList.add('hidden');
+        });
       }
 
-      // 4. 시계 업데이트 및 60초 주기 조용한 백그라운드 갱신
-      setInterval(updateHeaderClock, 10000);
-      setInterval(refreshAllTrends, 60000);
+      // 실시간 데이터 비동기 호출
+      fetchWeatherAndAirQuality();
+      refreshAllTrends();
+      refreshLiveNewsFeeds(false);
+
+      // 백그라운드 무소음 주기적 자동 갱신
+      setInterval(refreshAllTrends, 60 * 1000);
+      setInterval(fetchWeatherAndAirQuality, 10 * 60 * 1000);
+      setInterval(() => refreshLiveNewsFeeds(false), 5 * 60 * 1000);
     }
 
-    // 스크립트 로드 즉시 실행 + DOMContentLoaded 이중 안전장치
-    initApp();
-    window.addEventListener('DOMContentLoaded', initApp);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapApp);
+    } else {
+      bootstrapApp();
+    }
   </script>
 </body>
 </html>
