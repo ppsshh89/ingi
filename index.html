@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>마이 포털 홈 - 네이버 검색 · 오창 날씨 · 실시간 검색어</title>
-  <meta name="description" content="삼성 인터넷 브라우저 맞춤형 시작페이지 - 네이버 즉시 검색, 16개 자주 가는 사이트, 오창읍 시간대별 날씨, 네이버·구글 실시간 인기검색어 비교" />
+  <title>마이 포털 홈 - 네이버 검색 · 오창 날씨 · 실시간 인기검색어</title>
+  <meta name="description" content="삼성 인터넷 브라우저 최적화 시작페이지 - 네이버 검색, 오창읍 날씨, 자주 가는 사이트, 네이버·구글 실시간 인기검색어 1~10위" />
 
-  <!-- 삼성 인터넷 브라우저 & 모바일 홈화면/빠른실행 최적화 메타 태그 -->
+  <!-- 삼성 인터넷 브라우저 & 모바일 홈화면 최적화 메타 태그 -->
   <meta name="theme-color" id="meta-theme-color" content="#03C75A" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="마이 포털 홈" />
-  <meta name="application-name" content="마이 포털 홈" />
 
-  <!-- 고해상도 SVG 파비콘 & 삼성 브라우저 북마크 아이콘 -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%2303C75A'/%3E%3Cpath d='M32 34h18l20 31V34h18v52H70L50 55v31H32V34z' fill='%23ffffff'/%3E%3Ccircle cx='92' cy='28' r='16' fill='%23FF3B30'/%3E%3Cpath d='M92 19l7 10h-5v8h-4v-8h-5l7-10z' fill='%23ffffff'/%3E%3C/svg%3E" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%2303C75A'/%3E%3Cpath d='M32 34h18l20 31V34h18v52H70L50 55v31H32V34z' fill='%23ffffff'/%3E%3Ccircle cx='92' cy='28' r='16' fill='%23FF3B30'/%3E%3Cpath d='M92 19l7 10h-5v8h-4v-8h-5l7-10z' fill='%23ffffff'/%3E%3C/svg%3E" />
+  <!-- 고해상도 N 아이콘 파비콘 -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%2303C75A'/%3E%3Cpath d='M32 34h18l20 31V34h18v52H70L50 55v31H32V34z' fill='%23ffffff'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%2303C75A'/%3E%3Cpath d='M32 34h18l20 31V34h18v52H70L50 55v31H32V34z' fill='%23ffffff'/%3E%3C/svg%3E" />
 
   <!-- Pretendard 웹폰트 -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
@@ -55,25 +54,42 @@
     html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
       font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
       letter-spacing: -0.025em;
       overflow-x: hidden;
-      overscroll-behavior-x: none;
     }
 
-    /* 고정폭 숫자 (순위, 기온 등 흔들림 방지) */
+    /* 모바일 세로 화면에서 빈 공간 없이 한 화면(100dvh)에 꽉 차는 레이아웃 */
+    .app-shell {
+      min-height: 100dvh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 화면 높이가 아주 낮은 기기나 가로모드에서는 자연스러운 스크롤 허용 */
+    @media (max-height: 670px) {
+      .app-shell {
+        height: auto;
+      }
+    }
+
+    /* 숫자 고정폭 */
     .tnum {
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum";
     }
 
-    /* 네이버 검색창 테두리 */
+    /* 큼직한 네이버 검색창 */
     .naver-search-box {
-      border: 2px solid #03C75A;
+      border: 2.5px solid #03C75A;
+      box-shadow: 0 2px 6px rgba(3, 199, 90, 0.08);
       transition: box-shadow 0.18s ease;
     }
     .naver-search-box:focus-within {
-      box-shadow: 0 2px 8px rgba(3, 199, 90, 0.18);
+      box-shadow: 0 3px 12px rgba(3, 199, 90, 0.22);
     }
 
     /* 가로 스크롤바 숨김 */
@@ -85,410 +101,231 @@
       scrollbar-width: none;
     }
 
-    /* 컴팩트 스쿼클 아이콘 (8열x2줄 총 16개 배치 최적화) */
-    .squircle-icon-16 {
-      border-radius: 10px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    }
-
-    /* 2줄 말줄임 */
-    .line-clamp-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    /* 4단 스와이프 뷰포트 & 하단 빈 공간 원천 차단 */
-    #swipe-viewport {
-      width: 100%;
-      overflow: hidden;
+    /* 자주 가는 사이트 아이콘 박스 (원래 파비콘 + 내부 커스텀 글자 오버레이) */
+    .site-favicon-box {
       position: relative;
-      transition: height 0.18s ease-out;
-    }
-
-    .swipe-track {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      overflow: hidden;
+      background-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
       display: flex;
-      width: 400%;
-      will-change: transform;
-      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
-      align-items: flex-start;
-    }
-
-    .swipe-track.dragging {
-      transition: none !important;
-    }
-
-    .swipe-page {
-      width: 25%;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      min-width: 0;
+    }
+    .dark .site-favicon-box {
+      background-color: #252932;
+      border-color: rgba(255, 255, 255, 0.1);
     }
 
-    /* 비활성 탭이 전체 문서 높이를 늘리지 못하도록 드래그 중이 아닐 때 높이 축소 */
-    .swipe-track:not(.dragging) .swipe-page.page-inactive {
-      height: 0 !important;
-      max-height: 0 !important;
-      overflow: hidden !important;
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-      pointer-events: none;
+    /* 원래 아이콘 위에 글자를 적었을 때 선명하게 보이도록 하는 반투명 오버레이 */
+    .site-favicon-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1px;
+      text-align: center;
+    }
+    .site-favicon-overlay span {
+      color: #ffffff;
+      font-weight: 900;
+      line-height: 1.05;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.95);
+      word-break: keep-all;
+    }
+
+    /* 인기검색어 1~10위 10개 행이 남은 세로 공간을 균등하게 꽉 채우도록 설정 */
+    .rank-10-grid {
+      flex: 1;
+      display: grid;
+      grid-template-rows: repeat(10, minmax(28px, 1fr));
+      min-height: 0;
     }
   </style>
 </head>
-<body class="bg-[#F2F4F7] dark:bg-[#111317] text-[#1E1E23] dark:text-[#F1F3F5] transition-colors duration-200 select-none sm:select-auto">
+<body class="bg-[#F2F4F7] dark:bg-[#111317] text-[#1E1E23] dark:text-[#F1F3F5] select-none sm:select-auto">
 
-  <!-- 삼성 인터넷 모바일 최적 폭(500px) 컨테이너 (불필요한 min-h-screen 제거해 하단 빈 여백 방지) -->
-  <div class="max-w-[500px] mx-auto bg-[#F2F4F7] dark:bg-[#111317] relative overflow-x-hidden pb-1.5">
+  <!-- =====================================================================
+       단일 메인 홈 컨테이너 (뉴스·엔터 슬라이드 제거 & 100dvh 풀화면 맞춤)
+       ===================================================================== -->
+  <div class="app-shell max-w-[500px] mx-auto px-2 pt-1.5 pb-1.5 gap-1.5">
 
-    <!-- =====================================================================
-         1. 상단 고정 헤더: 타이틀바 + 네이버 검색창 + 4단 스와이프 탭바
-         ===================================================================== -->
-    <header class="bg-white dark:bg-[#1A1D23] pt-1.5 px-2.5 sticky top-0 z-30 border-b border-gray-200/80 dark:border-gray-800/90 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-      <!-- 최상단 컴팩트 상태바 (N 마이 포털 홈 + 실시간 날짜/시각 + 현재창/새탭 + 다크모드) -->
-      <div class="flex items-center justify-between mb-1">
+    <!-- 1. 상단 고정 헤더 & 더 큼직해진 네이버 검색창 -->
+    <header class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-3 pt-2 pb-2.5 shadow-2xs shrink-0">
+      <!-- 상단 타이틀 & 상태바 -->
+      <div class="flex items-center justify-between mb-1.5">
         <div class="flex items-center gap-1.5">
-          <button type="button" onclick="switchMainPage(0)" class="w-4 h-4 rounded-[4px] bg-[#03C75A] text-white font-black text-[10px] inline-flex items-center justify-center leading-none">
+          <span class="w-5 h-5 rounded-[5px] bg-[#03C75A] text-white font-black text-[11.5px] inline-flex items-center justify-center leading-none shadow-2xs">
             N
-          </button>
-          <span class="text-[12px] font-black text-gray-900 dark:text-white tracking-tight">마이 포털 홈</span>
-          <span id="clock-display" class="text-[10.5px] font-semibold text-gray-400 dark:text-gray-500 tnum"></span>
+          </span>
+          <h1 class="text-[13.5px] font-black text-gray-900 dark:text-white tracking-tight">마이 포털 홈</h1>
+          <span id="clock-display" class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tnum"></span>
         </div>
 
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1.5">
           <button id="btn-link-target" type="button"
                   onclick="toggleLinkTarget()"
-                  class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                  class="px-2 py-0.5 rounded-md text-[10.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 active:scale-95 transition-all">
             현재창 이동
           </button>
           <button type="button" onclick="toggleDarkMode()"
-                  class="p-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
+                  class="p-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A] transition-colors"
                   aria-label="다크모드 전환">
-            <svg class="w-3 h-3 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-3.5 h-3.5 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
             </svg>
-            <svg class="w-3 h-3 block dark:hidden text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-3.5 h-3.5 block dark:hidden text-gray-600" fill="currentColor" viewBox="0 0 20 20">
               <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
             </svg>
           </button>
         </div>
       </div>
 
-      <!-- 네이버 다이렉트 검색창 -->
-      <form id="naver-search-form" onsubmit="handleDirectSearch(event)" class="naver-search-box rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-2.5 pr-1 py-[2px]">
-        <span class="text-[#03C75A] font-black text-[14px] mr-2 shrink-0 select-none">N</span>
+      <!-- 높이와 터치 영역을 키운 네이버 다이렉트 검색창 (44px) -->
+      <form id="naver-search-form" onsubmit="handleDirectSearch(event)"
+            class="naver-search-box h-[44px] rounded-xl bg-white dark:bg-[#13161B] flex items-center overflow-hidden pl-3 pr-1.5">
+        <span class="text-[#03C75A] font-black text-[17px] mr-2.5 shrink-0 select-none">N</span>
         <input
           id="naver-search-input"
           type="search"
           placeholder="네이버 검색어를 입력하세요"
           autocomplete="off"
-          class="w-full bg-transparent text-[13px] font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none py-0.5"
+          class="w-full h-full bg-transparent text-[14.5px] font-semibold text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
         />
-        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+        <button type="button" id="btn-clear-input" onclick="clearSearchInput()" class="hidden p-1.5 text-gray-400 hover:text-gray-600" aria-label="검색어 지우기">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
         </button>
-        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-2.5 py-1 text-[11px] font-extrabold shrink-0 transition-all">
+        <button type="submit" class="bg-[#03C75A] hover:bg-[#02b350] active:scale-95 text-white rounded-lg px-3.5 py-1.5 text-[12.5px] font-extrabold shrink-0 transition-all">
           검색
         </button>
       </form>
-
-      <!-- 네이버 모바일(m.naver.com) 스타일 4단 탭바 (홈 / 뉴스 / MY뉴스 / 엔터) -->
-      <nav class="flex items-center justify-between pt-1 px-1 select-none" aria-label="메인 탭 네비게이션">
-        <div class="flex items-center gap-5">
-          <button type="button" onclick="switchMainPage(0)" id="gnb-tab-0"
-                  class="relative pb-1 text-[13.5px] font-extrabold text-[#03C75A] transition-colors flex flex-col items-center">
-            <span>홈</span>
-            <span id="gnb-bar-0" class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#03C75A] rounded-t-full"></span>
-          </button>
-
-          <button type="button" onclick="switchMainPage(1)" id="gnb-tab-1"
-                  class="relative pb-1 text-[13.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center">
-            <div class="flex items-center gap-1">
-              <span>뉴스</span>
-              <span class="inline-flex items-center gap-0.5">
-                <i id="news-dot-0" class="w-1 h-1 rounded-full bg-[#03C75A] inline-block"></i>
-                <i id="news-dot-1" class="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600 inline-block"></i>
-              </span>
-            </div>
-            <span id="gnb-bar-1" class="hidden absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#03C75A] rounded-t-full"></span>
-          </button>
-
-          <button type="button" onclick="switchMainPage(2)" id="gnb-tab-2"
-                  class="relative pb-1 text-[13.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center">
-            <span>MY뉴스</span>
-            <span id="gnb-bar-2" class="hidden absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#03C75A] rounded-t-full"></span>
-          </button>
-
-          <button type="button" onclick="switchMainPage(3)" id="gnb-tab-3"
-                  class="relative pb-1 text-[13.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center">
-            <span>엔터</span>
-            <span id="gnb-bar-3" class="hidden absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#03C75A] rounded-t-full"></span>
-          </button>
-        </div>
-
-        <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium pb-1">좌우 밀어서 전환</span>
-      </nav>
     </header>
 
-    <!-- =====================================================================
-         스와이프 멀티 페이지 뷰포트 (활성 탭 높이에 딱 맞춰져 하단 빈 공간 제로)
-         ===================================================================== -->
-    <div id="swipe-viewport">
-      <div id="swipe-track" class="swipe-track">
-
-        <!-- =================================================================
-             [SLIDE 0] 홈 (날씨 -> 자주가는사이트 8x2 16개 -> 실검 1~10위)
-             빠른 메모 제거 완료 & 첫 화면 스크롤 없이 실검 10위까지 100% 노출
-             ================================================================= -->
-        <div id="page-0" class="swipe-page px-2 pt-1.5 flex flex-col gap-1.5">
-
-          <!-- 1) 오창읍 초슬림 날씨 위젯 -->
-          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-1.5 shadow-2xs">
-            <!-- 첫째 줄: 아이콘·기온·날씨 | 오창읍 [📍현위치] | 강수·미세·초미세 -->
-            <div class="flex items-center justify-between gap-1">
-              <div class="flex items-center gap-1 min-w-0">
-                <span id="weather-current-icon" class="text-[15px] leading-none select-none shrink-0">☀️</span>
-                <span id="weather-current-temp" class="text-[14px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">6°</span>
-                <span id="weather-current-desc" class="text-[11px] font-bold text-gray-600 dark:text-gray-300 truncate">맑음</span>
-                <span class="text-gray-300 dark:text-gray-700 text-[9px]">|</span>
-                <h2 id="weather-location-title" class="text-[11px] font-extrabold text-gray-800 dark:text-gray-200 truncate">
-                  오창읍
-                </h2>
-                <button type="button" onclick="useGpsWeather()"
-                        class="px-1 py-[1px] rounded text-[9px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] shrink-0">
-                  📍현위치
-                </button>
-                <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
-                        class="hidden px-1 py-[1px] rounded text-[9px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
-                  오창읍
-                </button>
-              </div>
-
-              <div class="flex items-center gap-1 shrink-0">
-                <span id="weather-rain-badge" class="px-1 py-[1px] rounded text-[9px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
-                  💧0%
-                </span>
-                <span id="badge-pm10" class="px-1 py-[1px] rounded text-[9px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
-                  미세 좋음
-                </span>
-                <span id="badge-pm25" class="px-1 py-[1px] rounded text-[9px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
-                  초미세 좋음
-                </span>
-              </div>
-            </div>
-
-            <!-- 둘째 줄: 최저/최고/체감 & 습도/바람 -->
-            <div class="flex items-center justify-between text-[9.5px] text-gray-400 dark:text-gray-500 font-medium tnum mt-0.5 mb-1">
-              <span id="weather-minmax-feel">최저 -1° / 최고 9° · 체감 1°</span>
-              <span id="weather-humid-wind">습도 39% · 바람 1.3m/s</span>
-            </div>
-
-            <!-- 셋째 줄: 18시간 시간대별 날씨 가로 스크롤 (.no-swipe로 탭 전환 간섭 차단) -->
-            <div id="hourly-weather-strip" data-no-swipe="true" class="no-swipe flex items-center gap-1 overflow-x-auto no-scrollbar"></div>
-          </section>
-
-          <!-- 2) 자주 가는 사이트 (8칸 × 2줄 = 총 16개 그리드) -->
-          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 px-2 py-1.5 shadow-2xs">
-            <div class="flex items-center justify-between mb-1 px-0.5">
-              <div class="flex items-center gap-1.5">
-                <span class="text-[11px] font-extrabold text-gray-800 dark:text-gray-200">자주 가는 사이트</span>
-                <span class="text-[9.5px] text-gray-400 dark:text-gray-500 font-medium">8칸 × 2줄 (16개)</span>
-              </div>
-              <button type="button" onclick="openShortcutModal()"
-                      class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A]">
-                <span>+ 편집</span>
-              </button>
-            </div>
-
-            <!-- 8열 2줄 (16개) 아이콘 컨테이너 -->
-            <div id="shortcuts-grid" class="grid grid-cols-8 gap-x-1 gap-y-1.5"></div>
-          </section>
-
-          <!-- 3) 실시간 인기검색어 비교 (1~10위 24px 초슬림 행 높이 -> 스크롤 없이 10위까지 한 화면 노출) -->
-          <section class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-2xs overflow-hidden">
-            <!-- 상단 타이틀 + 무소음 새로고침 바 -->
-            <div class="px-2.5 py-1 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-[#1A1D23]">
-              <div class="flex items-center gap-1.5">
-                <span class="w-1 h-3 rounded-full bg-[#03C75A]"></span>
-                <h3 class="text-[11.5px] font-extrabold text-gray-900 dark:text-white">실시간 인기검색어 비교</h3>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span id="updated-time-text" class="text-[9.5px] font-semibold text-gray-400 dark:text-gray-500 tnum">실시간</span>
-                <button type="button" onclick="manualRefresh()"
-                        class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 text-[9.5px] font-bold">
-                  새로고침
-                </button>
-              </div>
-            </div>
-
-            <!-- 서브 컬럼 헤더 (네이버·포털 실검 | 구글 급상승) -->
-            <div class="grid grid-cols-2 divide-x divide-gray-200/80 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 bg-[#F8FAFC] dark:bg-[#15181E]">
-              <div class="py-1 px-2 flex items-center justify-between">
-                <span class="text-[10.5px] font-extrabold text-[#03C75A] flex items-center gap-1">
-                  <span class="w-3.5 h-3.5 rounded-xs bg-[#03C75A] text-white text-[8.5px] font-black inline-flex items-center justify-center">N</span>
-                  <span>네이버·포털 실검</span>
-                </span>
-                <span class="text-[8.5px] text-gray-400 font-medium">N검색</span>
-              </div>
-              <div class="py-1 px-2 flex items-center justify-between">
-                <span class="text-[10.5px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                  <span class="w-3.5 h-3.5 rounded-xs bg-blue-500 text-white text-[8.5px] font-black inline-flex items-center justify-center">G</span>
-                  <span>구글 급상승</span>
-                </span>
-                <span class="text-[8.5px] text-gray-400 font-medium">N검색</span>
-              </div>
-            </div>
-
-            <!-- 2열 순위 리스트 (각 행 h-[24px] -> 1~10위 240px) -->
-            <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
-              <div id="compare-col-naver" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
-              <div id="compare-col-google" class="divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
-            </div>
-
-            <!-- 11위 ~ 20위 더보기 버튼 -->
-            <div class="border-t border-gray-100 dark:border-gray-800 bg-[#F9FAFB] dark:bg-[#15181E] px-2 py-1">
-              <button type="button" id="btn-toggle-expand" onclick="toggleRankExpand()"
-                      class="w-full py-1 px-3 rounded-lg bg-white dark:bg-[#1F242D] border border-gray-200/80 dark:border-gray-700 text-[10.5px] font-extrabold text-gray-600 dark:text-gray-300 hover:border-[#03C75A] hover:text-[#03C75A] transition-colors flex items-center justify-center gap-1">
-                <span id="expand-btn-label">11위 ~ 20위 더보기</span>
-                <svg id="expand-btn-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
-          </section>
-
+    <!-- 2. 오창읍 실시간 & 시간대별 날씨 위젯 -->
+    <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-3 py-1.5 shadow-2xs shrink-0">
+      <div class="flex items-center justify-between gap-1">
+        <div class="flex items-center gap-1 min-w-0">
+          <span id="weather-current-icon" class="text-[16px] leading-none select-none shrink-0">☀️</span>
+          <span id="weather-current-temp" class="text-[15px] font-black text-gray-900 dark:text-white tnum leading-none shrink-0">1°</span>
+          <span id="weather-current-desc" class="text-[11.5px] font-bold text-gray-600 dark:text-gray-300 truncate">맑음</span>
+          <span class="text-gray-300 dark:text-gray-700 text-[10px]">|</span>
+          <h2 id="weather-location-title" class="text-[11.5px] font-extrabold text-gray-800 dark:text-gray-200 truncate">
+            오창읍
+          </h2>
+          <button type="button" onclick="useGpsWeather()"
+                  class="px-1.5 py-[1px] rounded text-[9.5px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-[#03C75A] shrink-0">
+            📍현위치
+          </button>
+          <button type="button" id="btn-reset-ochang" onclick="resetToOchangWeather()"
+                  class="hidden px-1.5 py-[1px] rounded text-[9.5px] font-bold bg-[#E8FAF0] dark:bg-[#03C75A]/20 text-[#029e46] dark:text-[#25e278] shrink-0">
+            오창읍
+          </button>
         </div>
 
-        <!-- =================================================================
-             [SLIDE 1] 네이버 모바일 '뉴스 (언론사편집)'
-             ================================================================= -->
-        <div id="page-1" class="swipe-page page-inactive px-2 pt-1.5 flex flex-col gap-2">
-          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 overflow-hidden shadow-2xs">
-            <div class="px-3.5 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="text-[15.5px] font-black text-gray-900 dark:text-white tracking-tight">언론사편집</span>
-                <span class="text-[12px] font-bold text-gray-500 dark:text-gray-400">
-                  내구독 <strong class="text-blue-600 dark:text-blue-400">8</strong> ▾
-                </span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <button type="button" onclick="refreshLiveNewsFeeds(true)"
-                        class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-[10.5px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#03C75A]">
-                  새로고침
-                </button>
-                <button type="button" onclick="switchMainPage(2)"
-                        class="px-2.5 py-0.5 rounded-full border border-gray-300 dark:border-gray-700 text-[11px] font-extrabold text-gray-700 dark:text-gray-200 hover:border-[#03C75A]">
-                  MY &gt;
-                </button>
-              </div>
-            </div>
-
-            <!-- 구독 언론사 8개 빠른 선택 바 (.no-swipe) -->
-            <div data-no-swipe="true" id="press-selector-bar"
-                 class="no-swipe flex items-center gap-1.5 px-3 py-2 bg-[#F8FAFC] dark:bg-[#14171D] overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800"></div>
-
-            <!-- 대표 선택 언론사 편집판 -->
-            <div id="press-main-card" class="p-3.5"></div>
-          </div>
-
-          <!-- 하단 구독 언론사 추가 카드 1개 -->
-          <div id="press-secondary-cards" class="space-y-2"></div>
+        <div class="flex items-center gap-1 shrink-0">
+          <span id="weather-rain-badge" class="px-1.5 py-[1px] rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
+            💧0%
+          </span>
+          <span id="badge-pm10" class="px-1.5 py-[1px] rounded text-[9.5px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 tnum">
+            미세 좋음
+          </span>
+          <span id="badge-pm25" class="px-1.5 py-[1px] rounded text-[9.5px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 tnum">
+            초미세 좋음
+          </span>
         </div>
-
-        <!-- =================================================================
-             [SLIDE 2] 네이버 모바일 'MY뉴스'
-             ================================================================= -->
-        <div id="page-2" class="swipe-page page-inactive px-2 pt-1.5 flex flex-col gap-2">
-          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 overflow-hidden shadow-2xs">
-            <div class="px-3.5 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <h3 class="text-[16px] font-black text-gray-900 dark:text-white tracking-tight">MY뉴스</h3>
-                <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 text-[10px] font-bold text-gray-400 inline-flex items-center justify-center">i</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <button type="button" onclick="refreshLiveNewsFeeds(true)"
-                        class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-[10.5px] font-bold text-gray-600 dark:text-gray-300">
-                  새로고침
-                </button>
-                <a href="https://news.naver.com" onclick="return handleShortcutClick(event, 'https://news.naver.com')"
-                   class="px-2.5 py-0.5 rounded-full border border-gray-300 dark:border-gray-700 text-[11px] font-extrabold text-gray-700 dark:text-gray-200">
-                  MY &gt;
-                </a>
-              </div>
-            </div>
-
-            <!-- 분야별 필터 칩 (.no-swipe) -->
-            <div data-no-swipe="true" id="mynews-category-bar"
-                 class="no-swipe flex items-center gap-1.5 px-3.5 py-2 bg-[#F8FAFC] dark:bg-[#14171D] overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800"></div>
-
-            <!-- 좌측 썸네일(88x62) + 우측 2줄 제목 + 언론사·시간 + 댓글수 캡슐 -->
-            <div id="mynews-list-container" class="divide-y divide-gray-100 dark:divide-gray-800 px-3.5"></div>
-          </div>
-        </div>
-
-        <!-- =================================================================
-             [SLIDE 3] 네이버 모바일 '엔터' (엔터 숏텐츠 + 엔터 NOW)
-             ================================================================= -->
-        <div id="page-3" class="swipe-page page-inactive px-2 pt-1.5 flex flex-col gap-2">
-          <!-- 엔터 숏텐츠 -->
-          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 p-3.5 shadow-2xs">
-            <div class="flex items-center justify-between mb-0.5">
-              <div class="flex items-center gap-1">
-                <span class="text-[16px] font-black text-gray-900 dark:text-white">엔터</span>
-                <span class="text-[16px] font-black text-[#e91e63]">숏텐츠</span>
-                <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 text-[10px] font-bold text-gray-400 inline-flex items-center justify-center">i</span>
-              </div>
-              <span id="enter-time-label" class="text-[11px] font-medium text-gray-400 dark:text-gray-500">오후 1시 제공</span>
-            </div>
-            <p class="text-[11px] text-gray-400 dark:text-gray-500 mb-2.5">
-              AI가 생성한 결과로 정확하지 않을 수 있어요.
-            </p>
-
-            <div id="enter-shortents-container" class="space-y-2"></div>
-
-            <div class="flex items-center justify-center gap-2 mt-3">
-              <div class="flex items-center gap-1.5" id="enter-pagination-dots"></div>
-              <button type="button" onclick="nextEnterShortentsSet()"
-                      class="ml-1 px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-950/50 text-[#e91e63] text-[10px] font-extrabold">
-                다음 키워드 ↻
-              </button>
-            </div>
-          </div>
-
-          <!-- 엔터 NOW (2열 포토 카드) -->
-          <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 p-3.5 shadow-2xs">
-            <div class="flex items-center justify-between mb-2.5">
-              <div class="flex items-center gap-1">
-                <span class="text-[16px] font-black text-gray-900 dark:text-white">엔터</span>
-                <span class="text-[16px] font-black text-[#e91e63]">NOW</span>
-              </div>
-              <div class="flex items-center gap-1 text-[11px] text-gray-400">
-                <span class="italic">by</span>
-                <span class="font-extrabold text-gray-600 dark:text-gray-300">AiRS</span>
-                <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 text-[10px] font-bold text-gray-400 inline-flex items-center justify-center">i</span>
-              </div>
-            </div>
-
-            <div id="enter-now-grid" class="grid grid-cols-2 gap-2.5"></div>
-          </div>
-        </div>
-
       </div>
-    </div>
+
+      <div class="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 font-medium tnum mt-0.5 mb-1">
+        <span id="weather-minmax-feel">최저 0° / 최고 10° · 체감 -2°</span>
+        <span id="weather-humid-wind">습도 60% · 바람 1.5m/s</span>
+      </div>
+
+      <!-- 18시간 시간대별 예보 -->
+      <div id="hourly-weather-strip" class="flex items-center gap-1 overflow-x-auto no-scrollbar"></div>
+    </section>
+
+    <!-- 3. 자주 가는 사이트 (8칸 × 2줄 = 최대 16개 / 원래 사이트 파비콘 + 글자 입력 시 아이콘 안 표시) -->
+    <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 px-2.5 py-2 shadow-2xs shrink-0">
+      <div class="flex items-center justify-between mb-1.5 px-0.5">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11.5px] font-extrabold text-gray-800 dark:text-gray-200">자주 가는 사이트</span>
+          <span id="shortcut-count-label" class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">8칸 × 2줄</span>
+        </div>
+        <button type="button" onclick="openShortcutModal()"
+                class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-[#03C75A]">
+          <span>+ 아이콘 편집</span>
+        </button>
+      </div>
+
+      <!-- 8열 그리드 (최대 16개) -->
+      <div id="shortcuts-grid" class="grid grid-cols-8 gap-x-1 gap-y-2"></div>
+    </section>
+
+    <!-- 4. 실시간 인기검색어 비교 (1위~10위 꽉 차는 레이아웃 · 더보기 버튼 제거) -->
+    <section class="bg-white dark:bg-[#1A1D23] rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-2xs overflow-hidden flex-1 flex flex-col min-h-[310px]">
+      <!-- 상단 헤더 -->
+      <div class="px-3 py-1.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-1.5">
+          <span class="w-1.5 h-3.5 rounded-full bg-[#03C75A]"></span>
+          <h3 class="text-[12.5px] font-extrabold text-gray-900 dark:text-white">실시간 인기검색어 TOP 10</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="updated-time-text" class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 tnum">실시간 연동중</span>
+          <button type="button" onclick="manualRefresh()"
+                  class="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 text-[10px] font-bold active:scale-95 transition-transform">
+            새로고침
+          </button>
+        </div>
+      </div>
+
+      <!-- 2열 서브 헤더 (좌: 네이버·포털 실검 / 우: 구글 급상승 + 인기순·최신순 전환 버튼) -->
+      <div class="grid grid-cols-2 divide-x divide-gray-200/80 dark:divide-gray-800 border-b border-gray-100 dark:border-gray-800 bg-[#F8FAFC] dark:bg-[#15181E] shrink-0">
+        <div class="py-1.5 px-2.5 flex items-center justify-between">
+          <span class="text-[11px] font-extrabold text-[#03C75A] flex items-center gap-1">
+            <span class="w-4 h-4 rounded-[4px] bg-[#03C75A] text-white text-[9px] font-black inline-flex items-center justify-center">N</span>
+            <span>네이버·포털 실검</span>
+          </span>
+          <span class="text-[9.5px] text-gray-400 font-semibold">시그널 실시간</span>
+        </div>
+        <div class="py-1.5 px-2.5 flex items-center justify-between">
+          <span class="text-[11px] font-extrabold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+            <span class="w-4 h-4 rounded-[4px] bg-blue-500 text-white text-[9px] font-black inline-flex items-center justify-center">G</span>
+            <span>구글 급상승</span>
+          </span>
+          <button type="button" id="btn-google-sort" onclick="toggleGoogleSortMode()"
+                  title="구글 트렌드 정렬 기준 전환 (인기순: 검색량 기준 / 최신순: 발생시각 기준)"
+                  class="px-1.5 py-[1px] rounded bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-[9.5px] font-extrabold hover:bg-blue-100 transition-colors">
+            인기순 ▾
+          </button>
+        </div>
+      </div>
+
+      <!-- 2열 1~10위 리스트 (남은 세로 공간을 10등분하여 여백 없이 꽉 채움) -->
+      <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800 flex-1 min-h-0">
+        <div id="compare-col-naver" class="rank-10-grid divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
+        <div id="compare-col-google" class="rank-10-grid divide-y divide-gray-100 dark:divide-gray-800/70 min-w-0"></div>
+      </div>
+    </section>
 
   </div>
 
   <!-- =======================================================================
-       모달: 자주 가는 사이트 16개 아이콘 편집 (추가 / 수정 / 순서변경 / 초기화)
+       모달: 자주 가는 사이트 편집 (원래 사이트 파비콘 + 아이콘 안 글자 설정)
        ======================================================================= -->
   <div id="shortcut-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-[#1A1D23] w-full max-w-[480px] rounded-t-2xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden max-h-[88vh] flex flex-col">
       <div class="px-4 py-3 bg-[#03C75A] text-white flex items-center justify-between">
         <div>
           <h3 class="font-extrabold text-[15px]">자주 가는 사이트 편집 (최대 16개 · 8칸×2줄)</h3>
-          <p class="text-[11px] text-white/90">비워두면 사이트 이름 앞 2~3글자가 아이콘에 자동 표시됩니다</p>
+          <p class="text-[11px] text-white/90">원래 사이트 아이콘이 기본 표시되며, 글자를 적으면 아이콘 안에 표시됩니다</p>
         </div>
         <button type="button" onclick="closeShortcutModal()" class="p-1 text-white/90 hover:text-white font-bold text-xl leading-none">&times;</button>
       </div>
@@ -509,43 +346,33 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
-                아이콘 아래 작은 이름 (예: 갤럭시)
+                아이콘 아래 이름 (필수)
               </label>
-              <input id="sc-label" type="text" maxlength="8" required placeholder="갤럭시"
+              <input id="sc-label" type="text" maxlength="8" required placeholder="예: 아이폰갤, 웃대"
                      class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[13px] font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
             </div>
             <div>
               <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
-                아이콘 안 글자/이모지 (비우면 자동)
+                아이콘 안 글자 (선택 · 비우면 순정 아이콘)
               </label>
-              <input id="sc-badge" type="text" maxlength="3" placeholder="갤럭 또는 📱"
+              <input id="sc-badge" type="text" maxlength="4" placeholder="예: 아이폰 (비우면 원래 아이콘만)"
                      class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[13px] font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
             </div>
           </div>
 
           <div>
             <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
-              이동할 주소 (URL)
+              사이트 주소 (URL)
             </label>
-            <input id="sc-url" type="text" required placeholder="https://gall.dcinside.com/mgallery/board/lists/?id=galaxy"
+            <input id="sc-url" type="text" required placeholder="https://gall.dcinside.com/mgallery/board/lists/?id=iphone"
                    class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-gray-200 dark:border-gray-700 text-[12.5px] text-gray-900 dark:text-white focus:outline-none focus:border-[#03C75A]" />
           </div>
 
-          <div class="flex items-center justify-between gap-2 pt-1">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 mr-1">배경색:</span>
-              <input type="color" id="sc-color" value="#3B82F6" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent" />
-              <div class="flex items-center gap-1">
-                <button type="button" onclick="setScColor('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6]"></button>
-                <button type="button" onclick="setScColor('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444]"></button>
-                <button type="button" onclick="setScColor('#f97316')" class="w-4 h-4 rounded-full bg-[#f97316]"></button>
-                <button type="button" onclick="setScColor('#03c75a')" class="w-4 h-4 rounded-full bg-[#03c75a]"></button>
-                <button type="button" onclick="setScColor('#10b981')" class="w-4 h-4 rounded-full bg-[#10b981]"></button>
-                <button type="button" onclick="setScColor('#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1]"></button>
-              </div>
-            </div>
-
-            <button type="submit" id="sc-submit-btn" class="px-3.5 py-1.5 rounded-lg bg-[#03C75A] hover:bg-[#02b350] text-white text-[12px] font-extrabold shrink-0">
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-[10.5px] text-gray-400 dark:text-gray-500">
+              💡 디시 갤러리처럼 아이콘이 겹칠 때만 '아이콘 안 글자'를 적어주세요.
+            </span>
+            <button type="submit" id="sc-submit-btn" class="px-4 py-1.5 rounded-lg bg-[#03C75A] hover:bg-[#02b350] text-white text-[12px] font-extrabold shrink-0">
               저장하기
             </button>
           </div>
@@ -553,9 +380,9 @@
 
         <div>
           <div class="flex items-center justify-between mb-2">
-            <span class="text-[12px] font-extrabold text-gray-700 dark:text-gray-300">현재 등록된 아이콘 목록 (16칸)</span>
+            <span class="text-[12px] font-extrabold text-gray-700 dark:text-gray-300">등록된 아이콘 목록 (순서 변경 및 수정)</span>
             <button type="button" onclick="restoreDefaultShortcuts()" class="text-[11px] font-bold text-rose-500 hover:underline">
-              16개 기본값 복원
+              기본 목록으로 초기화
             </button>
           </div>
           <div id="modal-shortcuts-list" class="space-y-1.5"></div>
@@ -583,7 +410,7 @@
        ======================================================================= -->
   <script>
     /**
-     * 안전한 LocalStorage 접근 헬퍼
+     * 안전한 LocalStorage 읽기/쓰기 헬퍼
      */
     function safeGetStorage(key, fallback = null) {
       try {
@@ -600,595 +427,6 @@
       } catch (e) {}
     }
 
-    /**
-     * [16개 자주 가는 사이트 기본 목록 (8칸 × 2줄)]
-     * 1줄: 갤럭시, LOL, 웃대, 테슬라, 뽐뿌, 퀘사이존, 핫딜, 아이폰갤
-     * 2줄: 유튜브, 치지직, N쇼핑, N카페, 쿠팡, 다나와, 클리앙, 네이버
-     */
-    const DEFAULT_SHORTCUTS_16 = [
-      { id: 'sc-galaxy', label: '갤럭시', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=galaxy', badge: '갤럭', color: '#3b82f6' },
-      { id: 'sc-lol', label: 'LOL', url: 'https://gall.dcinside.com/board/lists/?id=leagueoflegends6', badge: 'LOL', color: '#2563eb' },
-      { id: 'sc-humor', label: '웃대', url: 'http://m.humoruniv.com', badge: '웃대', color: '#f97316' },
-      { id: 'sc-tesla', label: '테슬라', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=tesla', badge: '테슬', color: '#ef4444' },
-      { id: 'sc-ppomppu', label: '뽐뿌', url: 'https://m.ppomppu.co.kr', badge: '뽐뿌', color: '#ea580c' },
-      { id: 'sc-quasar', label: '퀘사이존', url: 'https://quasarzone.com', badge: '퀘사', color: '#4f46e5' },
-      { id: 'sc-hotdeal', label: '핫딜', url: 'https://m.fmkorea.com/hotdeal', badge: '핫딜', color: '#10b981' },
-      { id: 'sc-iphone', label: '아이폰갤', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=iphone', badge: '아이', color: '#0ea5e9' },
-      { id: 'sc-youtube', label: '유튜브', url: 'https://m.youtube.com', badge: '▶', color: '#dc2626' },
-      { id: 'sc-chzzk', label: '치지직', url: 'https://chzzk.naver.com', badge: '⚡', color: '#16a34a' },
-      { id: 'sc-nshop', label: 'N쇼핑', url: 'https://shopping.naver.com/ns/home', badge: '쇼핑', color: '#03c75a' },
-      { id: 'sc-ncafe', label: 'N카페', url: 'https://section.cafe.naver.com', badge: '카페', color: '#059669' },
-      { id: 'sc-coupang', label: '쿠팡', url: 'https://m.coupang.com', badge: '쿠팡', color: '#e11d48' },
-      { id: 'sc-danawa', label: '다나와', url: 'https://m.danawa.com', badge: '다나', color: '#7c3aed' },
-      { id: 'sc-clien', label: '클리앙', url: 'https://m.clien.net/service', badge: '클리', color: '#0284c7' },
-      { id: 'sc-naver', label: '네이버', url: 'https://m.naver.com', badge: 'N', color: '#03c75a' }
-    ];
-
-    /**
-     * [기본 날씨 좌표: 충북 청주시 오창읍]
-     */
-    const OCHANG_LOCATION = {
-      name: '오창읍',
-      lat: 36.7126,
-      lon: 127.4339
-    };
-
-    const STORAGE_KEYS = {
-      THEME: 'myhome_theme_v6',
-      LINK_TARGET: 'myhome_link_target_v6',
-      SHORTCUTS_16: 'my_portal_shortcuts_16_v6',
-      LEGACY_SHORTCUTS_V3: 'my_portal_shortcuts_v3',
-      LEGACY_SHORTCUTS_V4: 'myhome_shortcuts_v4',
-      EXPAND_RANKS: 'myhome_expand_ranks_v6',
-      LIVE_RANKS_STATE: 'portal_prev_live_ranks_v5',
-      NAVER_CACHE: 'myhome_cache_naver_v6',
-      GOOGLE_CACHE: 'myhome_cache_google_v6'
-    };
-
-    const state = {
-      currentPage: 0, // 0: 홈, 1: 뉴스, 2: MY뉴스, 3: 엔터
-      linkTarget: safeGetStorage(STORAGE_KEYS.LINK_TARGET, '_top'),
-      isExpandedRanks: safeGetStorage(STORAGE_KEYS.EXPAND_RANKS, 'false') === 'true',
-      shortcuts: [],
-      weatherLoc: { ...OCHANG_LOCATION, isGps: false },
-      isFetchingTrends: false,
-      naverKeywords: [],
-      googleKeywords: [],
-      selectedPressIdx: 0,
-      selectedMyNewsCat: 'all',
-      enterSetIdx: 0,
-      enterExpandedIdx: 0
-    };
-
-    /**
-     * 초기 폴백 데이터 (절대 이전 순위 스냅샷에 저장하지 않으며, 자연스러운 상태값 보유)
-     */
-    const FALLBACK_NAVER_KEYWORDS = [
-      { rank: 1, keyword: '트럼프 백악관 비서실장 인선', status: 'same', delta: 0 },
-      { rank: 2, keyword: '이정은 의사 시청률 1위', status: 'up', delta: 1 },
-      { rank: 3, keyword: '미 10월 고용지표 뉴욕증시', status: 'same', delta: 0 },
-      { rank: 4, keyword: '입동 아침 서울 첫 얼음', status: 'up', delta: 2 },
-      { rank: 5, keyword: '오창읍 미세먼지 주말 날씨', status: 'same', delta: 0 },
-      { rank: 6, keyword: '테슬라 모델Y 주니퍼 보조금', status: 'up', delta: 1 },
-      { rank: 7, keyword: '프로야구 FA 스토브리그', status: 'down', delta: 1 },
-      { rank: 8, keyword: '청약홈 아파트 분양일정', status: 'same', delta: 0 },
-      { rank: 9, keyword: '손흥민 주말 프리미어리그', status: 'new', delta: 0 },
-      { rank: 10, keyword: '원달러 환율 실시간 전망', status: 'down', delta: 2 },
-      { rank: 11, keyword: '챔피언스리그 하이라이트', status: 'same', delta: 0 },
-      { rank: 12, keyword: '코스피 코스닥 기관 수급', status: 'up', delta: 1 },
-      { rank: 13, keyword: '전기차 지자체 보조금 조회', status: 'same', delta: 0 },
-      { rank: 14, keyword: '국세청 홈택스 연말정산', status: 'down', delta: 1 },
-      { rank: 15, keyword: 'KTX 주말 예매 코레일', status: 'same', delta: 0 },
-      { rank: 16, keyword: 'AI 반도체 HBM 관련주', status: 'up', delta: 3 },
-      { rank: 17, keyword: '갤럭시 One UI 업데이트', status: 'same', delta: 0 },
-      { rank: 18, keyword: '청주 주말 나들이 명소', status: 'down', delta: 1 },
-      { rank: 19, keyword: '넷플릭스 한국 TOP 10', status: 'same', delta: 0 },
-      { rank: 20, keyword: '오늘의 운세 띠별운세', status: 'same', delta: 0 }
-    ];
-
-    const FALLBACK_GOOGLE_KEYWORDS = [
-      { rank: 1, keyword: '옥주현', status: 'same', delta: 0 },
-      { rank: 2, keyword: '두산에너빌리티', status: 'up', delta: 2 },
-      { rank: 3, keyword: '염경엽', status: 'same', delta: 0 },
-      { rank: 4, keyword: '하지원', status: 'up', delta: 1 },
-      { rank: 5, keyword: '테슬라 주가', status: 'same', delta: 0 },
-      { rank: 6, keyword: '프리미어리그 일정', status: 'down', delta: 1 },
-      { rank: 7, keyword: '젠슨 황', status: 'new', delta: 0 },
-      { rank: 8, keyword: '원달러 환율', status: 'same', delta: 0 },
-      { rank: 9, keyword: '박스오피스 순위', status: 'down', delta: 2 },
-      { rank: 10, keyword: '챗GPT 업데이트', status: 'same', delta: 0 },
-      { rank: 11, keyword: '건강보험 환급금', status: 'up', delta: 1 },
-      { rank: 12, keyword: '프로배구 V리그', status: 'same', delta: 0 },
-      { rank: 13, keyword: '해외직구 관세', status: 'down', delta: 1 },
-      { rank: 14, keyword: '자동차세 연납', status: 'same', delta: 0 },
-      { rank: 15, keyword: 'K패스 교통카드', status: 'up', delta: 2 },
-      { rank: 16, keyword: '아이돌 쇼케이스', status: 'same', delta: 0 },
-      { rank: 17, keyword: '주간 날씨예보', status: 'same', delta: 0 },
-      { rank: 18, keyword: '금리 인하 전망', status: 'down', delta: 1 },
-      { rank: 19, keyword: '배당주 추천', status: 'same', delta: 0 },
-      { rank: 20, keyword: '고속도로 교통상황', status: 'same', delta: 0 }
-    ];
-
-    /**
-     * [SLIDE 1 데이터: 언론사편집]
-     */
-    const PRESS_OUTLETS = [
-      {
-        id: 'kbs',
-        name: 'KBS',
-        logoText: 'KBS NEWS',
-        logoBg: '#003087',
-        subscribers: '400만',
-        liveTitle: '멈추지 않는다! KBS 뉴스24',
-        headlines: [
-          '뉴욕증시 급락세 진정…미 10월 고용 ‘깜짝증가’',
-          '트럼프, “인공지능 전적 지지”…민주, ‘트럼프 밀착 기업’ 주시',
-          '이제 미국엔 데이터센터를 못 짓는 걸까…전력망 확충 비상',
-          '2년 만에 ‘청장 공백’ 끝나나…신임 경찰청장의 과제는?',
-          '금융권 보안 시스템 긴급 점검…고객 정보 보호 대책 총력'
-        ],
-        photoCards: [
-          {
-            badge: '잇슈 #태그',
-            overlayTop: '집값 하락?',
-            title: '연일 ‘집값 하락’ 얘기하는 대통령…진실은?',
-            img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '잇슈 #태그',
-            duration: '01:51',
-            overlayTop: '글로벌 금융 비상',
-            title: '“300만 명 예금 인출 중단”…파라과이 대통령 전격 발표',
-            img: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '‘입동 추위’ 속에 서울 ‘첫 얼음’, 지난해보다 열흘 늦었다'
-      },
-      {
-        id: 'yonhap',
-        name: '연합뉴스',
-        logoText: '연합뉴스',
-        logoBg: '#0054A6',
-        subscribers: '520만',
-        liveTitle: '연합뉴스TV 24시간 라이브 뉴스특보',
-        headlines: [
-          '반도체·자동차 수출 호조세 지속…무역수지 흑자 폭 확대',
-          '충북 오창·청주 이차전지·바이오 클러스터 신규 투자 가속',
-          '내년도 전기차 보조금 개편안 논의 본격화…달라지는 혜택은',
-          '주말 고속도로 나들이 차량 몰려…경부·중부선 정체 구간',
-          '환율 변동성 확대 속 외환당국 시장 안정화 조치 시사'
-        ],
-        photoCards: [
-          {
-            badge: '핫이슈',
-            overlayTop: '수출 성적표',
-            title: '반도체 수출 플러스 행진…하반기 주력 산업 전망은',
-            img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '현장영상',
-            duration: '02:14',
-            overlayTop: '차세대 전기차',
-            title: '자율주행·전기차 신기술 경쟁 치열…신형 모델 대거 공개',
-            img: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '전국 대체로 맑고 일교차 커…건강관리·화재 예방 각별히 유의'
-      },
-      {
-        id: 'mbc',
-        name: 'MBC',
-        logoText: 'MBC 뉴스',
-        logoBg: '#1E293B',
-        subscribers: '450만',
-        liveTitle: 'MBC 뉴스데스크 실시간 라이브',
-        headlines: [
-          '장바구니 물가 안정 대책 발표…농축산물 할인 지원 확대',
-          '수도권·충청권 연결 광역철도망 구축 사업 본궤도 오른다',
-          '온디바이스 AI 탑재 스마트폰 신제품 경쟁…소비자 선택은',
-          '겨울철 호흡기 감염병 유행 조짐…전문가 예방 수칙 당부',
-          '주말 전국 주요 산 단풍 절정…나들이객 안전사고 주의보'
-        ],
-        photoCards: [
-          {
-            badge: '뉴스데스크',
-            overlayTop: '물가 집중점검',
-            title: '김장철 앞둔 장바구니 물가…체감 할인 폭 얼마나 될까',
-            img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '밀착취재',
-            duration: '01:45',
-            overlayTop: 'AI 스마트폰',
-            title: '실시간 통역부터 사진 편집까지…진화하는 모바일 AI',
-            img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '아침 기온 영하권 뚝…낮부터 평년 기온 회복하며 나들이 무난'
-      },
-      {
-        id: 'sbs',
-        name: 'SBS',
-        logoText: 'SBS 뉴스',
-        logoBg: '#004EA2',
-        subscribers: '480만',
-        liveTitle: 'SBS 8뉴스 & 실시간 모닝와이드',
-        headlines: [
-          '글로벌 빅테크 AI 데이터센터 투자 사상 최대…국내 수혜주는',
-          '실수요자 내 집 마련 대출 규제 점검…내년 부동산 시장은',
-          '해외직구 플랫폼 안전성 검사 강화…소비자 피해 예방 총력',
-          '고속도로 휴게소 인기 간식 가격 비교…알뜰 이용 팁 공개',
-          '프로야구 스토브리그 본격 개막…대어급 FA 행선지 어디로'
-        ],
-        photoCards: [
-          {
-            badge: '스브스뉴스',
-            overlayTop: '빅테크 투자',
-            title: 'AI 인프라 전쟁 본격화…전 세계 반도체 공급망 재편',
-            img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '현장포커스',
-            duration: '02:05',
-            overlayTop: '겨울철 차량관리',
-            title: '기온 급강하에 배터리·타이어 점검 필수…겨울 안전운전 팁',
-            img: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '건조한 날씨 속 산불 위험 고조…산림 인접 지역 소각 행위 금지'
-      },
-      {
-        id: 'ytn',
-        name: 'YTN',
-        logoText: 'YTN 24',
-        logoBg: '#0066B3',
-        subscribers: '460만',
-        liveTitle: '24시간 뉴스채널 YTN 라이브 속보',
-        headlines: [
-          '미 연준 금리 속도조절 시사…한국은행 통화정책 영향은',
-          '차세대 배터리 전고체 기술 개발 가속…K-배터리 초격차 시동',
-          '보이스피싱·스미싱 신종 수법 주의보…금융당국 대응 강화',
-          '전국 주요 스키장 개장 준비 한창…초겨울 레저 수요 꿈틀',
-          '온라인동영상서비스(OTT) 연말 기대작 줄줄이 공개 예고'
-        ],
-        photoCards: [
-          {
-            badge: '뉴스24',
-            overlayTop: 'K-배터리 초격차',
-            title: '차세대 배터리 기술 경쟁…글로벌 시장 주도권 잡는다',
-            img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '이슈분석',
-            duration: '01:38',
-            overlayTop: '금리·환율 전망',
-            title: '글로벌 금리 인하 사이클 진입…재테크 포트폴리오 전략은',
-            img: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '주말 도심 곳곳 문화행사 개최…대중교통 이용 당부'
-      },
-      {
-        id: 'mk',
-        name: '매일경제',
-        logoText: '매일경제',
-        logoBg: '#F37021',
-        subscribers: '390만',
-        liveTitle: '매경 마켓PRO 실시간 투자브리핑',
-        headlines: [
-          '서학개미 미국 기술주 순매수 지속…엔비디아·테슬라 집중',
-          '청주·오창 등 중부권 핵심 산업단지 인근 주거단지 관심 집중',
-          '퇴직연금 실물이전 제도 시행 이후 자금 이동 본격화',
-          '고환율 시대 수출기업 실적 기대감…주목할 업종 분석',
-          'AI 에이전트 도입 기업 급증…업무 생산성 혁신 가속화'
-        ],
-        photoCards: [
-          {
-            badge: '마켓PRO',
-            overlayTop: '서학개미 픽',
-            title: '미 증시 랠리 속 글로벌 빅테크 실적 분석과 투자 전략',
-            img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '부동산',
-            duration: '01:55',
-            overlayTop: '청약시장 분석',
-            title: '직주근접 갖춘 산업단지 배후 핵심 단지 청약 열기 지속',
-            img: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '내년도 세법 및 금융제도 개편 체크포인트 총정리'
-      },
-      {
-        id: 'hk',
-        name: '한국경제',
-        logoText: '한국경제',
-        logoBg: '#003876',
-        subscribers: '380만',
-        liveTitle: '한경 코리아마켓 라이브',
-        headlines: [
-          'K-방산·전력기기 수출 잭팟 행진…수주 잔고 역대 최고 경신',
-          '차세대 고대역폭메모리(HBM) 공급 확대…반도체 실적 견인',
-          '전기차 충전 인프라 급속 확충…공동주택 편의성 높인다',
-          '연말 배당주 및 밸류업 프로그램 수혜주 옥석 가리기 한창',
-          '유통업계 연말 대규모 할인 행사 돌입…온·오프라인 총력전'
-        ],
-        photoCards: [
-          {
-            badge: '한경마켓',
-            overlayTop: '전력기기 호황',
-            title: 'AI 데이터센터 발 전력 수요 폭증…국내 변압기·전선주 강세',
-            img: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '테크트렌드',
-            duration: '01:42',
-            overlayTop: 'HBM 초격차',
-            title: 'AI 가속기 핵심 부품 HBM…차세대 공정 경쟁력 집중 점검',
-            img: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '글로벌 공급망 재편 속 국내 주력 제조업 경쟁력 강화 방안'
-      },
-      {
-        id: 'chosun',
-        name: '조선일보',
-        logoText: '조선일보',
-        logoBg: '#B91C1C',
-        subscribers: '430만',
-        liveTitle: '조선일보 실시간 주요뉴스 브리핑',
-        headlines: [
-          '초고령사회 진입 눈앞…은퇴 후 자산관리·건강관리 핵심은',
-          '디지털 교과서·AI 교육 시대…학부모가 알아야 할 교육 정보',
-          '가을·겨울 환절기 심뇌혈관 질환 주의보…아침 운동 요령',
-          '국내외 저비용항공사(LCC) 동계 노선 증편…여행객 선택 폭 확대',
-          '전통시장·골목상권 활력 불어넣는 지역 상생 프로젝트 확산'
-        ],
-        photoCards: [
-          {
-            badge: '헬스조선',
-            overlayTop: '환절기 건강',
-            title: '기온 뚝 떨어진 아침…혈관 건강 지키는 생활 속 습관',
-            img: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=400&q=75'
-          },
-          {
-            badge: '트래블',
-            duration: '01:29',
-            overlayTop: '겨울 여행지',
-            title: '합리적 비용으로 떠나는 근거리 해외·국내 겨울 휴양지',
-            img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=75'
-          }
-        ],
-        footerHeadline: '주말 기온 일시 회복…다음 주 중반 다시 쌀쌀한 날씨 전망'
-      }
-    ];
-
-    /**
-     * [SLIDE 2 데이터: MY뉴스]
-     */
-    const MY_NEWS_CATEGORIES = [
-      { id: 'all', label: '종합' },
-      { id: 'economy', label: '경제' },
-      { id: 'it', label: 'IT/과학' },
-      { id: 'society', label: '사회' },
-      { id: 'politics', label: '정치' },
-      { id: 'world', label: '세계' }
-    ];
-
-    let MY_NEWS_ITEMS = [
-      {
-        title: "'성남라인' 이용철 법무장관 지명…여야 인사 검증 공방 예고",
-        press: '뉴스1',
-        time: '11월 7일 10:41',
-        comments: 38,
-        cat: 'politics',
-        img: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=240&q=75'
-      },
-      {
-        title: "대통령, '성장확산 방점' 예산안 시정연설…사진으로 돌아보는 한 주",
-        press: '세계일보',
-        time: '11월 7일 10:41',
-        comments: 24,
-        cat: 'politics',
-        img: 'https://images.unsplash.com/photo-1575320181282-9afab399332c?auto=format&fit=crop&w=240&q=75'
-      },
-      {
-        title: '차세대 전기차·이차전지 시장 재편 속 K-배터리 초격차 기술 시동',
-        press: '매일경제',
-        time: '11월 7일 10:15',
-        comments: 64,
-        cat: 'economy',
-        img: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=240&q=75'
-      },
-      {
-        title: '온디바이스 AI 스마트폰·차세대 반도체 칩셋 성능 대폭 향상',
-        press: '전자신문',
-        time: '11월 7일 09:50',
-        comments: 47,
-        cat: 'it',
-        img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=75'
-      },
-      {
-        title: '미 고용지표 호조에 뉴욕증시 반등…글로벌 빅테크 투자 심리 회복',
-        press: '한국경제',
-        time: '11월 7일 09:32',
-        comments: 82,
-        cat: 'world',
-        img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=240&q=75'
-      },
-      {
-        title: '환경미화·현장 근로자 안전 장비 및 작업 환경 개선 대책 마련',
-        press: '문화일보',
-        time: '11월 6일 20:35',
-        comments: 33,
-        cat: 'society',
-        img: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=240&q=75'
-      }
-    ];
-
-    /**
-     * [SLIDE 3 데이터: 엔터 숏텐츠 & 엔터 NOW]
-     */
-    const ENTER_SHORTENTS_SETS = [
-      [
-        {
-          keyword: '비서진 이서진 강남과 내기 승리',
-          summary: '"형 3조 아니었어?" 이서진 놀리던 강남 싱가포르서 1500달러 결제 화제',
-          timeAgo: '9시간 전',
-          img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '옆자리 프란체스카 11월 공개',
-          summary: '새로운 케미와 유쾌한 에피소드로 돌아오는 기대작 11월 전격 공개',
-          timeAgo: '6시간 전',
-          img: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '조진웅 출연 드라마 12월 첫방송',
-          summary: '강렬한 연기 변신 예고한 신작 드라마 12월 편성 확정 및 티저 공개',
-          timeAgo: '5시간 전',
-          img: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '모자쓴고양이 조정석 첫 더빙 참여',
-          summary: '특유의 재치 넘치는 목소리 연기로 완성한 애니메이션 더빙 현장 공개',
-          timeAgo: '4시간 전',
-          img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=200&q=75'
-        }
-      ],
-      [
-        {
-          keyword: '주말 예능 시청률 1위 하이라이트',
-          summary: '안방극장 웃음 사로잡은 금주 최고의 명장면과 화제의 게스트 총정리',
-          timeAgo: '2시간 전',
-          img: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '아이돌 신곡 음원차트 올킬 달성',
-          summary: '컴백과 동시에 국내외 주요 음원 차트 1위 석권하며 글로벌 인기 입증',
-          timeAgo: '3시간 전',
-          img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '한국 영화 박스오피스 예매율 급등',
-          summary: '개봉 첫 주말 관객 입소문 타며 실시간 예매율 압도적 1위 기록',
-          timeAgo: '4시간 전',
-          img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '화제의 웹예능 조회수 300만 돌파',
-          summary: '솔직 담백한 토크로 공개 직후 유튜브 인기 급상승 동영상 상위권 진입',
-          timeAgo: '5시간 전',
-          img: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=200&q=75'
-        }
-      ],
-      [
-        {
-          keyword: '연말 시상식 라인업 1차 공개',
-          summary: '올 한 해를 빛낸 주역들이 총출동하는 연말 가요·연기 시상식 라인업 발표',
-          timeAgo: '1시간 전',
-          img: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '글로벌 OTT 오리지널 시리즈 호평',
-          summary: '탄탄한 스토리와 연출력으로 해외 비평 사이트서 높은 평점 기록 중',
-          timeAgo: '3시간 전',
-          img: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '전국투어 콘서트 전석 매진 기염',
-          summary: '티켓 오픈과 동시에 전 회차 매진 기록하며 추가 공연 문의 쇄도',
-          timeAgo: '6시간 전',
-          img: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '스타 화보 비하인드 컷 깜짝 공개',
-          summary: '가을·겨울 시즌 분위기 물씬 풍기는 화보 촬영장 비하인드 스틸 공개',
-          timeAgo: '7시간 전',
-          img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=75'
-        }
-      ],
-      [
-        {
-          keyword: '금토드라마 자체 최고 시청률 경신',
-          summary: '클라이맥스 향해 달려가는 전개와 배우들의 열연으로 시청률 고공행진',
-          timeAgo: '2시간 전',
-          img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '화제의 OST 음원 차트 역주행',
-          summary: '드라마 명장면에 삽입된 감성 보컬 OST가 입소문 타며 차트 상위권 안착',
-          timeAgo: '4시간 전',
-          img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '예능 대세 스타 광고계 블루칩 등극',
-          summary: '특유의 친근하고 유쾌한 매력으로 식품·패션·IT 업계 모델 발탁 이어져',
-          timeAgo: '5시간 전',
-          img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '뮤지컬 대작 티켓 오픈 동시 1위',
-          summary: '화려한 캐스팅 라인업 공개 직후 예매 사이트 랭킹 1위 석권',
-          timeAgo: '8시간 전',
-          img: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=200&q=75'
-        }
-      ],
-      [
-        {
-          keyword: '스타 유튜브 채널 골드버튼 달성',
-          summary: '일상 브이로그와 진솔한 토크 콘텐츠로 구독자 급증하며 인기 몰이',
-          timeAgo: '3시간 전',
-          img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '글로벌 영화제 초청작 현지 기립박수',
-          summary: '해외 유수 영화제 공식 상영 직후 현지 언론과 관객들의 찬사 쏟아져',
-          timeAgo: '5시간 전',
-          img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '아이돌 월드투어 추가 공연 확정',
-          summary: '북미·유럽·아시아 주요 도시 스타디움 투어 매진 행렬에 추가 회차 오픈',
-          timeAgo: '6시간 전',
-          img: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=200&q=75'
-        },
-        {
-          keyword: '새 시즌 돌아오는 레전드 추리 예능',
-          summary: '더욱 치밀해진 세트와 세계관으로 무장한 추리 예능 신규 시즌 예고편 화제',
-          timeAgo: '9시간 전',
-          img: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=200&q=75'
-        }
-      ]
-    ];
-
-    let ENTER_NOW_ITEMS = [
-      {
-        channel: 'Channel A',
-        title: '깊어가는 가을 감성 무대…출연진 깜짝 듀엣 호흡에 현장 감동 물결',
-        press: '스포츠동아',
-        img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=450&q=75'
-      },
-      {
-        channel: 'MBC',
-        title: '화사한 핑크빛 스타일링으로 시선 집중…공식석상 환한 미소 화제',
-        press: 'OSEN',
-        img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=450&q=75'
-      },
-      {
-        channel: 'tvN',
-        title: '예상치 못한 반전 전개에 자체 최고 시청률 경신…주말극 독주 체제',
-        press: '엑스포츠뉴스',
-        img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=450&q=75'
-      },
-      {
-        channel: 'SBS',
-        title: '절친 스타들의 리얼 여행기…웃음 터진 현지 에피소드 비하인드 공개',
-        press: '마이데일리',
-        img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=450&q=75'
-      }
-    ];
-
     function escapeHtml(str) {
       return String(str || '')
         .replace(/&/g, '&amp;')
@@ -1199,161 +437,85 @@
     }
 
     /**
-     * 0. 4단 스와이프 네비게이션 & 활성 탭 높이 동기화 (하단 빈 공간 스크롤 완벽 제거)
+     * [기본 자주 가는 사이트 목록]
+     * - 디시인사이드 갤러리처럼 동일 도메인 사이트는 iconText(아이콘 안 글자)를 지정해 디시 아이콘 안에 글자가 보이게 설정
+     * - 일반 사이트(웃대, 뽐뿌, 퀘사이존, 핫딜, 네이버, 네이버카페, 제미나이 등)는 iconText를 비워 원래 사이트 파비콘이 깨끗하게 노출되도록 설정
      */
-    function syncViewportHeight() {
-      const viewport = document.getElementById('swipe-viewport');
-      const activePage = document.getElementById(`page-${state.currentPage}`);
-      if (!viewport || !activePage) return;
+    const DEFAULT_SHORTCUTS = [
+      { id: 'sc-galaxy', label: '갤럭시', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=galaxy', iconText: '갤럭시' },
+      { id: 'sc-lol', label: 'LOL', url: 'https://gall.dcinside.com/board/lists/?id=leagueoflegends6', iconText: 'LOL' },
+      { id: 'sc-tesla', label: '테슬라', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=tesla', iconText: '테슬라' },
+      { id: 'sc-iphone', label: '아이폰갤', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=iphone', iconText: '아이폰' },
+      { id: 'sc-onepiece', label: '원피스갤', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=onepieceblood', iconText: '원피스' },
+      { id: 'sc-chzzk-gall', label: '치지직갤', url: 'https://gall.dcinside.com/mgallery/board/lists/?id=chzzk', iconText: '치지직' },
+      { id: 'sc-humor', label: '웃대', url: 'http://m.humoruniv.com', iconText: '' },
+      { id: 'sc-ppomppu', label: '뽐뿌', url: 'https://m.ppomppu.co.kr', iconText: '' },
+      { id: 'sc-quasar', label: '퀘사이존', url: 'https://quasarzone.com', iconText: '' },
+      { id: 'sc-hotdeal', label: '핫딜', url: 'https://m.fmkorea.com/hotdeal', iconText: '' },
+      { id: 'sc-naver', label: '네이버', url: 'https://m.naver.com', iconText: '' },
+      { id: 'sc-ncafe', label: '네이버카페', url: 'https://section.cafe.naver.com', iconText: '' },
+      { id: 'sc-gemini', label: '제미나이', url: 'https://gemini.google.com', iconText: '' }
+    ];
 
-      // 비활성 페이지 클래스 갱신
-      for (let i = 0; i < 4; i++) {
-        const pg = document.getElementById(`page-${i}`);
-        if (!pg) continue;
-        if (i === state.currentPage) {
-          pg.classList.remove('page-inactive');
-        } else {
-          pg.classList.add('page-inactive');
-        }
-      }
+    const OCHANG_LOCATION = {
+      name: '오창읍',
+      lat: 36.7126,
+      lon: 127.4339
+    };
 
-      const targetHeight = activePage.offsetHeight;
-      if (targetHeight > 0) {
-        viewport.style.height = targetHeight + 'px';
-      } else {
-        viewport.style.height = 'auto';
-      }
-    }
+    const STORAGE_KEYS = {
+      THEME: 'myhome_theme_v7',
+      LINK_TARGET: 'myhome_link_target_v7',
+      SHORTCUTS_V7: 'my_portal_shortcuts_v7',
+      LEGACY_KEYS: ['my_portal_shortcuts_16_v6', 'my_portal_shortcuts_v3', 'myhome_shortcuts_v4'],
+      GOOGLE_SORT: 'myhome_google_sort_v7', // 'popular' (검색량순) | 'recent' (최신순)
+      LIVE_SNAPSHOT: 'myhome_live_snapshot_v7',
+      NAVER_CACHE: 'myhome_cache_naver_v7',
+      GOOGLE_RAW_CACHE: 'myhome_cache_google_raw_v7'
+    };
 
-    function switchMainPage(pageIdx) {
-      const clamped = Math.max(0, Math.min(3, pageIdx));
-      state.currentPage = clamped;
-
-      const track = document.getElementById('swipe-track');
-      if (track) {
-        track.classList.remove('dragging');
-        track.style.transform = `translate3d(-${clamped * 25}%, 0, 0)`;
-      }
-
-      for (let i = 0; i < 4; i++) {
-        const tab = document.getElementById(`gnb-tab-${i}`);
-        const bar = document.getElementById(`gnb-bar-${i}`);
-        if (!tab || !bar) continue;
-        if (i === clamped) {
-          tab.className = 'relative pb-1 text-[13.5px] font-extrabold text-[#03C75A] transition-colors flex flex-col items-center';
-          bar.classList.remove('hidden');
-        } else {
-          tab.className = 'relative pb-1 text-[13.5px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#03C75A] transition-colors flex flex-col items-center';
-          bar.classList.add('hidden');
-        }
-      }
-
-      const dot0 = document.getElementById('news-dot-0');
-      const dot1 = document.getElementById('news-dot-1');
-      if (dot0 && dot1) {
-        if (clamped === 2) {
-          dot0.className = 'w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600 inline-block';
-          dot1.className = 'w-1 h-1 rounded-full bg-[#03C75A] inline-block';
-        } else {
-          dot0.className = 'w-1 h-1 rounded-full bg-[#03C75A] inline-block';
-          dot1.className = 'w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600 inline-block';
-        }
-      }
-
-      syncViewportHeight();
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-
-    function initSwipeNavigation() {
-      const viewport = document.getElementById('swipe-viewport');
-      const track = document.getElementById('swipe-track');
-      if (!viewport || !track) return;
-
-      let startX = 0;
-      let startY = 0;
-      let deltaX = 0;
-      let isSwiping = false;
-      let isIgnored = false;
-
-      viewport.addEventListener('touchstart', (e) => {
-        if (e.touches.length !== 1) return;
-        const targetEl = e.target;
-        if (targetEl && targetEl.closest('[data-no-swipe="true"], .no-swipe, input, textarea')) {
-          isIgnored = true;
-          return;
-        }
-        isIgnored = false;
-        isSwiping = false;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        deltaX = 0;
-      }, { passive: true });
-
-      viewport.addEventListener('touchmove', (e) => {
-        if (isIgnored || e.touches.length !== 1) return;
-        const curX = e.touches[0].clientX;
-        const curY = e.touches[0].clientY;
-        const dx = curX - startX;
-        const dy = curY - startY;
-
-        if (!isSwiping) {
-          if (Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx) * 0.7) {
-            isIgnored = true;
-            return;
-          }
-          if (Math.abs(dx) > 18 && Math.abs(dx) > Math.abs(dy) * 1.6) {
-            isSwiping = true;
-            track.classList.add('dragging');
-          }
-        }
-
-        if (isSwiping) {
-          deltaX = dx;
-          const width = viewport.clientWidth || 380;
-          let resistance = 1;
-          if ((state.currentPage === 0 && deltaX > 0) || (state.currentPage === 3 && deltaX < 0)) {
-            resistance = 0.25;
-          }
-          const offsetPercent = -(state.currentPage * 25) + ((deltaX * resistance) / width) * 25;
-          track.style.transform = `translate3d(${offsetPercent}%, 0, 0)`;
-        }
-      }, { passive: true });
-
-      viewport.addEventListener('touchend', () => {
-        if (isIgnored || !isSwiping) {
-          track.classList.remove('dragging');
-          syncViewportHeight();
-          return;
-        }
-        if (Math.abs(deltaX) > 55) {
-          if (deltaX < -55 && state.currentPage < 3) {
-            switchMainPage(state.currentPage + 1);
-          } else if (deltaX > 55 && state.currentPage > 0) {
-            switchMainPage(state.currentPage - 1);
-          } else {
-            switchMainPage(state.currentPage);
-          }
-        } else {
-          switchMainPage(state.currentPage);
-        }
-        isSwiping = false;
-      }, { passive: true });
-
-      // 각 페이지 내부 높이 변화(11~20위 펼치기, 아코디언 등) 감지 시 즉시 뷰포트 높이 동기화
-      if (typeof ResizeObserver !== 'undefined') {
-        const ro = new ResizeObserver(() => {
-          syncViewportHeight();
-        });
-        for (let i = 0; i < 4; i++) {
-          const pg = document.getElementById(`page-${i}`);
-          if (pg) ro.observe(pg);
-        }
-      }
-      window.addEventListener('resize', syncViewportHeight);
-    }
+    const state = {
+      linkTarget: safeGetStorage(STORAGE_KEYS.LINK_TARGET, '_top'),
+      googleSortMode: safeGetStorage(STORAGE_KEYS.GOOGLE_SORT, 'popular'),
+      shortcuts: [],
+      weatherLoc: { ...OCHANG_LOCATION, isGps: false },
+      isFetchingTrends: false,
+      naverKeywords: [],
+      googleRawItems: [],
+      googleKeywords: []
+    };
 
     /**
-     * 1. 무조건 네이버 검색 결과 페이지 이동 로직
+     * 초기 폴백 데이터 (오프라인 시에만 표시되며 절대 스냅샷에 저장하지 않음)
+     */
+    const FALLBACK_NAVER_TOP10 = [
+      { rank: 1, keyword: '100일의 거짓말', status: 'same', delta: 0 },
+      { rank: 2, keyword: '잠실주공5단지 아파트', status: 'up', delta: 1 },
+      { rank: 3, keyword: '프리미어리그 토트넘 경기일정', status: 'same', delta: 0 },
+      { rank: 4, keyword: '오창읍 주말 날씨 미세먼지', status: 'same', delta: 0 },
+      { rank: 5, keyword: '삼성전기 주가 전망', status: 'up', delta: 2 },
+      { rank: 6, keyword: '넷플릭스 주말 인기작 TOP 10', status: 'same', delta: 0 },
+      { rank: 7, keyword: '테슬라 모델Y 주니퍼 보조금', status: 'down', delta: 1 },
+      { rank: 8, keyword: '프로야구 스토브리그 FA', status: 'same', delta: 0 },
+      { rank: 9, keyword: '청약홈 아파트 분양일정', status: 'same', delta: 0 },
+      { rank: 10, keyword: '원달러 환율 실시간', status: 'down', delta: 1 }
+    ];
+
+    const FALLBACK_GOOGLE_RAW = [
+      { keyword: '심현섭', trafficNum: 50000, trafficText: '5만+', pubMs: Date.now() - 3600 * 1000 * 5 },
+      { keyword: '리즈 유나이티드 대 토트넘', trafficNum: 20000, trafficText: '2만+', pubMs: Date.now() - 3600 * 1000 * 4 },
+      { keyword: '보험', trafficNum: 20000, trafficText: '2만+', pubMs: Date.now() - 3600 * 1000 * 8 },
+      { keyword: '마인츠 05 대 바이에른', trafficNum: 10000, trafficText: '1만+', pubMs: Date.now() - 3600 * 1000 * 3 },
+      { keyword: '지리자동차', trafficNum: 10000, trafficText: '1만+', pubMs: Date.now() - 3600 * 1000 * 6 },
+      { keyword: '현대 싼타페', trafficNum: 10000, trafficText: '1만+', pubMs: Date.now() - 3600 * 1000 * 9 },
+      { keyword: '박수홍', trafficNum: 2000, trafficText: '2천+', pubMs: Date.now() - 3600 * 1000 * 2 },
+      { keyword: '넷플릭스', trafficNum: 1000, trafficText: '1천+', pubMs: Date.now() - 3600 * 1000 * 1 },
+      { keyword: 'valencia vs real madrid', trafficNum: 500, trafficText: '500+', pubMs: Date.now() - 1800 * 1000 },
+      { keyword: '잠실주공5단지 아파트', trafficNum: 200, trafficText: '200+', pubMs: Date.now() - 900 * 1000 }
+    ];
+
+    /**
+     * 1. 무조건 네이버 검색 결과 이동 헬퍼
      */
     function buildNaverSearchUrl(keyword) {
       const clean = String(keyword || '').trim();
@@ -1405,76 +567,112 @@
     }
 
     /**
-     * 2. 자주 가는 사이트 8칸 × 2줄 (총 16개) 로드 & 렌더링
+     * 2. 자주 가는 사이트 (원래 사이트 파비콘 + 내가 적은 글자 오버레이)
      */
-    function getAutoBadgeText(label) {
-      const clean = String(label || '').trim();
-      if (!clean) return '바로';
-      if (/^[A-Za-z0-9]+$/.test(clean)) {
-        return clean.slice(0, 3).toUpperCase();
+    function extractFaviconDomain(rawUrl) {
+      try {
+        const u = new URL(rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl);
+        let host = u.hostname.toLowerCase();
+        if (host.includes('dcinside.com')) return 'dcinside.com';
+        if (host.includes('humoruniv.com')) return 'humoruniv.com';
+        if (host.includes('ppomppu.co.kr')) return 'ppomppu.co.kr';
+        if (host.includes('fmkorea.com')) return 'fmkorea.com';
+        if (host.includes('quasarzone.com')) return 'quasarzone.com';
+        if (host.includes('cafe.naver.com')) return 'cafe.naver.com';
+        if (host.includes('shopping.naver.com')) return 'shopping.naver.com';
+        if (host.includes('chzzk.naver.com')) return 'chzzk.naver.com';
+        if (host.includes('gemini.google.com')) return 'gemini.google.com';
+        if (host.startsWith('m.')) host = host.slice(2);
+        return host;
+      } catch (e) {
+        return 'naver.com';
       }
-      return clean.slice(0, 2);
     }
 
-    function normalizeShortcutList(list) {
-      return list.map((item, idx) => {
+    function getPrimaryFaviconUrl(rawUrl) {
+      const domain = extractFaviconDomain(rawUrl);
+      return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=128';
+    }
+
+    function getFallbackFaviconUrl(rawUrl) {
+      const domain = extractFaviconDomain(rawUrl);
+      return 'https://icons.duckduckgo.com/ip3/' + encodeURIComponent(domain) + '.ico';
+    }
+
+    /**
+     * 이전 버전에서 강제로 잘라 넣었던 2글자 배지('갤럭', '테슬', '원피', '치지', '퀘사이', '제미나' 등)를
+     * 깔끔하게 복원·정리하는 스마트 마이그레이션 함수
+     */
+    function migrateLegacyShortcuts(rawList) {
+      return rawList.map((item, idx) => {
         const label = String(item.label || item.name || ('사이트' + (idx + 1))).trim();
         const url = String(item.url || 'https://m.naver.com').trim();
-        let badge = String(item.badge || item.iconText || item.icon || '').trim();
-        if (!badge) {
-          badge = getAutoBadgeText(label);
+        let iconText = String(item.iconText !== undefined ? item.iconText : (item.badge || '')).trim();
+        const isDc = url.toLowerCase().includes('dcinside.com');
+
+        if (isDc) {
+          // 디시인사이드 갤러리는 아이콘이 겹치므로 '갤럭시', '테슬라', '원피스', '치지직' 등 자연스러운 이름으로 표시
+          const cleanGalleryName = label.replace(/갤러리|갤$/g, '').trim() || label;
+          if (!iconText || iconText === label.slice(0, 2) || iconText === label.slice(0, 3)) {
+            iconText = cleanGalleryName.slice(0, 4);
+          }
+        } else {
+          // 디시가 아닌 일반 사이트(웃대, 뽐뿌, 퀘사이존, 핫딜, 네이버, 제미나이 등)에
+          // 이전 코드가 강제로 자동 생성했던 약자('웃대', '뽐뿌', '퀘사', '퀘사이', '핫딜', 'N', '제미', '제미나', '쇼핑', '카페', '▶', '⚡')는 비워서 원래 파비콘이 나오게 함
+          const autoSliced2 = label.slice(0, 2);
+          const autoSliced3 = label.slice(0, 3);
+          const knownAutoBadges = new Set([
+            autoSliced2, autoSliced3, label,
+            'N', '▶', '⚡', '쇼핑', '카페', '퀘사', '퀘사이', '제미', '제미나', '아이', '다나', '클리', '쿠팡'
+          ]);
+          if (knownAutoBadges.has(iconText)) {
+            iconText = '';
+          }
         }
+
         return {
           id: item.id || ('sc-' + idx + '-' + Date.now()),
           label,
           url,
-          badge,
-          color: item.color || '#3b82f6'
+          iconText
         };
       });
     }
 
     function loadShortcuts() {
-      // 16개 전용 저장소 우선 확인
+      // v7 신규 저장소 우선 확인
       try {
-        const saved16 = safeGetStorage(STORAGE_KEYS.SHORTCUTS_16);
-        if (saved16) {
-          const parsed = JSON.parse(saved16);
+        const savedV7 = safeGetStorage(STORAGE_KEYS.SHORTCUTS_V7);
+        if (savedV7) {
+          const parsed = JSON.parse(savedV7);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            state.shortcuts = normalizeShortcutList(parsed).slice(0, 16);
+            state.shortcuts = parsed.slice(0, 16);
             return;
           }
         }
       } catch (e) {}
 
-      // 이전 버전(7~8개) 저장 데이터가 있으면 유지하면서 나머지 슬롯을 기본 16개 목록으로 자동 보충
-      try {
-        const legacyRaw = safeGetStorage(STORAGE_KEYS.LEGACY_SHORTCUTS_V3) || safeGetStorage(STORAGE_KEYS.LEGACY_SHORTCUTS_V4);
-        if (legacyRaw) {
-          const legacyParsed = JSON.parse(legacyRaw);
-          if (Array.isArray(legacyParsed) && legacyParsed.length > 0) {
-            const merged = normalizeShortcutList(legacyParsed);
-            const existingUrls = new Set(merged.map(s => s.url));
-            const existingLabels = new Set(merged.map(s => s.label));
-            for (const defItem of DEFAULT_SHORTCUTS_16) {
-              if (merged.length >= 16) break;
-              if (!existingUrls.has(defItem.url) && !existingLabels.has(defItem.label)) {
-                merged.push({ ...defItem });
-              }
+      // 이전 버전 저장소가 있으면 사용자의 사이트 목록을 유지하면서 아이콘 안 글자만 깔끔하게 마이그레이션
+      for (const legacyKey of STORAGE_KEYS.LEGACY_KEYS) {
+        try {
+          const raw = safeGetStorage(legacyKey);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              state.shortcuts = migrateLegacyShortcuts(parsed).slice(0, 16);
+              saveShortcutsToStorage();
+              return;
             }
-            state.shortcuts = merged.slice(0, 16);
-            saveShortcutsToStorage();
-            return;
           }
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
 
-      state.shortcuts = normalizeShortcutList(DEFAULT_SHORTCUTS_16);
+      state.shortcuts = DEFAULT_SHORTCUTS.map(item => ({ ...item }));
       saveShortcutsToStorage();
     }
 
     function saveShortcutsToStorage() {
-      safeSetStorage(STORAGE_KEYS.SHORTCUTS_16, JSON.stringify(state.shortcuts));
+      safeSetStorage(STORAGE_KEYS.SHORTCUTS_V7, JSON.stringify(state.shortcuts));
     }
 
     function handleShortcutClick(event, url) {
@@ -1488,16 +686,24 @@
 
     function renderShortcutsBar() {
       const grid = document.getElementById('shortcuts-grid');
+      const countLabel = document.getElementById('shortcut-count-label');
       if (!grid) return;
 
+      if (countLabel) {
+        countLabel.textContent = `${state.shortcuts.length}개 / 최대 16개`;
+      }
+
       grid.innerHTML = state.shortcuts.slice(0, 16).map(item => {
-        const badgeText = String(item.badge || getAutoBadgeText(item.label)).trim();
-        const isThreeChar = badgeText.length >= 3;
-        const isTwoChar = badgeText.length === 2 && badgeText.charCodeAt(0) < 0x1F000;
-        const fontSizeClass = isThreeChar
-          ? 'text-[10px] font-black tracking-tighter'
-          : (isTwoChar ? 'text-[11px] font-black tracking-tighter' : 'text-[13.5px] font-black');
-        const bgColor = item.color || '#3b82f6';
+        const primaryFav = getPrimaryFaviconUrl(item.url);
+        const fallbackFav = getFallbackFaviconUrl(item.url);
+        const customText = String(item.iconText || '').trim();
+
+        // 글자 길이에 따른 아이콘 내부 텍스트 크기 자동 최적화
+        let overlayFontCls = 'text-[11px] tracking-tighter';
+        if (customText.length === 1) overlayFontCls = 'text-[14px]';
+        else if (customText.length === 2) overlayFontCls = 'text-[11.5px] tracking-tight';
+        else if (customText.length === 3) overlayFontCls = 'text-[10px] tracking-tighter';
+        else if (customText.length >= 4) overlayFontCls = 'text-[9px] tracking-tighter';
 
         return `
           <a href="${escapeHtml(item.url)}"
@@ -1505,18 +711,24 @@
              rel="noopener noreferrer"
              onclick="return handleShortcutClick(event, ${JSON.stringify(item.url).replace(/"/g, '&quot;')})"
              class="flex flex-col items-center justify-start group select-none min-w-0">
-            <div class="w-[34px] h-[34px] squircle-icon-16 flex items-center justify-center text-white transition-transform duration-150 group-active:scale-95 overflow-hidden px-0.5"
-                 style="background-color: ${escapeHtml(bgColor)};">
-              <span class="${fontSizeClass} leading-none text-center break-keep">${escapeHtml(badgeText)}</span>
+            <div class="site-favicon-box transition-transform duration-150 group-active:scale-95">
+              <img src="${escapeHtml(primaryFav)}"
+                   alt="${escapeHtml(item.label)}"
+                   class="w-[26px] h-[26px] object-contain select-none"
+                    loading="eager"
+                   onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='${escapeHtml(fallbackFav)}';}else{this.style.display='none';}" />
+              ${customText ? `
+                <div class="site-favicon-overlay">
+                  <span class="${overlayFontCls}">${escapeHtml(customText)}</span>
+                </div>
+              ` : ''}
             </div>
-            <span class="mt-0.5 text-[9.5px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate w-full text-center leading-tight tracking-tighter">
+            <span class="mt-1 text-[10px] font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#03C75A] truncate w-full text-center leading-tight tracking-tighter">
               ${escapeHtml(item.label)}
             </span>
           </a>
         `;
       }).join('');
-
-      syncViewportHeight();
     }
 
     function openShortcutModal() {
@@ -1531,17 +743,11 @@
       if (modal) modal.classList.add('hidden');
     }
 
-    function setScColor(hex) {
-      const el = document.getElementById('sc-color');
-      if (el) el.value = hex;
-    }
-
     function resetShortcutForm() {
       document.getElementById('sc-edit-id').value = '';
       document.getElementById('sc-label').value = '';
       document.getElementById('sc-badge').value = '';
       document.getElementById('sc-url').value = '';
-      document.getElementById('sc-color').value = '#3b82f6';
       document.getElementById('shortcut-form-title').textContent = '+ 새 바로가기 추가';
       document.getElementById('sc-submit-btn').textContent = '저장하기';
       document.getElementById('btn-cancel-edit').classList.add('hidden');
@@ -1552,10 +758,9 @@
       if (!target) return;
       document.getElementById('sc-edit-id').value = target.id;
       document.getElementById('sc-label').value = target.label;
-      document.getElementById('sc-badge').value = target.badge || '';
+      document.getElementById('sc-badge').value = target.iconText || '';
       document.getElementById('sc-url').value = target.url;
-      document.getElementById('sc-color').value = target.color || '#3b82f6';
-      document.getElementById('shortcut-form-title').textContent = "✏️ '" + target.label + "' 아이콘 수정";
+      document.getElementById('shortcut-form-title').textContent = "✏️ '" + target.label + "' 수정";
       document.getElementById('sc-submit-btn').textContent = '수정 저장';
       document.getElementById('btn-cancel-edit').classList.remove('hidden');
     }
@@ -1564,30 +769,26 @@
       event.preventDefault();
       const editId = document.getElementById('sc-edit-id').value.trim();
       const label = document.getElementById('sc-label').value.trim();
-      let badge = document.getElementById('sc-badge').value.trim();
+      const iconText = document.getElementById('sc-badge').value.trim();
       let url = document.getElementById('sc-url').value.trim();
-      const color = document.getElementById('sc-color').value;
 
       if (!label || !url) return;
       if (!/^https?:\/\//i.test(url)) {
         url = 'https://' + url;
       }
-      if (!badge) {
-        badge = getAutoBadgeText(label);
-      }
 
       if (editId) {
         const idx = state.shortcuts.findIndex(s => s.id === editId);
         if (idx !== -1) {
-          state.shortcuts[idx] = { ...state.shortcuts[idx], label, badge, url, color };
+          state.shortcuts[idx] = { ...state.shortcuts[idx], label, iconText, url };
         }
         showToast("'" + label + "' 아이콘이 수정되었습니다.");
       } else {
         if (state.shortcuts.length >= 16) {
-          showToast('최대 16개(8칸×2줄)까지만 등록할 수 있습니다. 기존 항목을 수정하거나 삭제해주세요.');
+          showToast('최대 16개(8칸×2줄)까지 등록할 수 있습니다.');
           return;
         }
-        state.shortcuts.push({ id: 'sc-' + Date.now(), label, badge, url, color });
+        state.shortcuts.push({ id: 'sc-' + Date.now(), label, iconText, url });
         showToast("'" + label + "' 아이콘이 추가되었습니다.");
       }
 
@@ -1621,42 +822,53 @@
     }
 
     function restoreDefaultShortcuts() {
-      state.shortcuts = normalizeShortcutList(DEFAULT_SHORTCUTS_16);
+      state.shortcuts = DEFAULT_SHORTCUTS.map(item => ({ ...item }));
       saveShortcutsToStorage();
       renderShortcutsBar();
       renderModalShortcutsList();
       resetShortcutForm();
-      showToast('16개 기본 아이콘으로 복원되었습니다.');
+      showToast('기본 아이콘 목록으로 초기화되었습니다.');
     }
 
     function renderModalShortcutsList() {
       const container = document.getElementById('modal-shortcuts-list');
       if (!container) return;
 
-      container.innerHTML = state.shortcuts.map((item, idx) => `
-        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#14171D] border border-gray-200/70 dark:border-gray-800">
-          <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-extrabold shrink-0"
-                 style="background-color: ${escapeHtml(item.color || '#3b82f6')}">
-              ${escapeHtml(item.badge || getAutoBadgeText(item.label))}
+      container.innerHTML = state.shortcuts.map((item, idx) => {
+        const primaryFav = getPrimaryFaviconUrl(item.url);
+        const customText = String(item.iconText || '').trim();
+        return `
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#14171D] border border-gray-200/70 dark:border-gray-800">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+              <div class="site-favicon-box !w-8 !h-8 !rounded-lg shrink-0">
+                <img src="${escapeHtml(primaryFav)}" alt="${escapeHtml(item.label)}" class="w-5 h-5 object-contain" />
+                ${customText ? `
+                  <div class="site-favicon-overlay">
+                    <span class="text-[8.5px]">${escapeHtml(customText)}</span>
+                  </div>
+                ` : ''}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-[12.5px] font-extrabold text-gray-800 dark:text-gray-100 truncate">
+                  ${idx + 1}. ${escapeHtml(item.label)}
+                  ${customText ? `<span class="ml-1 text-[10px] font-bold text-[#03C75A]">(아이콘글자: ${escapeHtml(customText)})</span>` : `<span class="ml-1 text-[10px] text-gray-400">(순정 아이콘)</span>`}
+                </div>
+                <div class="text-[10px] text-gray-400 truncate">${escapeHtml(item.url)}</div>
+              </div>
             </div>
-            <div class="min-w-0 flex-1">
-              <div class="text-[12.5px] font-extrabold text-gray-800 dark:text-gray-100 truncate">${idx + 1}. ${escapeHtml(item.label)}</div>
-              <div class="text-[10px] text-gray-400 truncate">${escapeHtml(item.url)}</div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button type="button" onclick="moveShortcutItem(${idx}, -1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 text-xs">▲</button>
+              <button type="button" onclick="moveShortcutItem(${idx}, 1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 text-xs">▼</button>
+              <button type="button" onclick="editShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[11px] font-bold">수정</button>
+              <button type="button" onclick="deleteShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-[11px] font-bold">삭제</button>
             </div>
           </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <button type="button" onclick="moveShortcutItem(${idx}, -1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 text-xs">▲</button>
-            <button type="button" onclick="moveShortcutItem(${idx}, 1)" class="p-1 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 text-xs">▼</button>
-            <button type="button" onclick="editShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[11px] font-bold">수정</button>
-            <button type="button" onclick="deleteShortcutItem('${escapeHtml(item.id)}')" class="px-2 py-1 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-[11px] font-bold">삭제</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     /**
-     * 3. 오창읍 컴팩트 실시간 날씨 & 18시간 예보 위젯
+     * 3. 오창읍 실시간 & 시간대별 날씨
      */
     function getWeatherInfoFromWmo(code, isDay = 1) {
       const map = {
@@ -1700,7 +912,7 @@
       return { label: '매우나쁨 ' + Math.round(value), cls: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400' };
     }
 
-    function renderDefaultHourlyStrip(baseTemp = 6) {
+    function renderDefaultHourlyStrip(baseTemp = 4) {
       const strip = document.getElementById('hourly-weather-strip');
       if (!strip) return;
       const nowHour = new Date().getHours();
@@ -1709,19 +921,19 @@
         const h = (nowHour + i) % 24;
         const isDay = h >= 6 && h <= 18;
         const label = i === 0 ? '지금' : h + '시';
-        const t = baseTemp + Math.round(Math.sin((h - 8) / 24 * Math.PI * 2) * 3);
+        const t = baseTemp + Math.round(Math.sin((h - 8) / 24 * Math.PI * 2) * 4);
         html.push(`
-          <div class="flex flex-col items-center justify-between min-w-[36px] py-0.5 px-1 rounded-lg ${i === 0 ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
-            <span class="text-[8.5px] font-bold ${i === 0 ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
-            <span class="text-[11px] my-0.5 leading-none select-none">${isDay ? '☀️' : '🌙'}</span>
-            <span class="text-[9.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${t}°</span>
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-1 rounded-lg ${i === 0 ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/90 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[9px] font-bold ${i === 0 ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
+            <span class="text-[11.5px] my-0.5 leading-none select-none">${isDay ? '☀️' : '🌙'}</span>
+            <span class="text-[10px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${t}°</span>
           </div>
         `);
       }
       strip.innerHTML = html.join('');
     }
 
-    async function fetchWithTimeout(url, options = {}, timeoutMs = 4000) {
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 4200) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -1768,11 +980,11 @@
           const b10 = document.getElementById('badge-pm10');
           const b25 = document.getElementById('badge-pm25');
           if (b10) {
-            b10.className = `px-1 py-[1px] rounded text-[9px] font-extrabold tnum ${g10.cls}`;
+            b10.className = `px-1.5 py-[1px] rounded text-[9.5px] font-extrabold tnum ${g10.cls}`;
             b10.textContent = `미세 ${g10.label}`;
           }
           if (b25) {
-            b25.className = `px-1 py-[1px] rounded text-[9px] font-extrabold tnum ${g25.cls}`;
+            b25.className = `px-1.5 py-[1px] rounded text-[9.5px] font-extrabold tnum ${g25.cls}`;
             b25.textContent = `초미세 ${g25.label}`;
           }
         }
@@ -1785,12 +997,12 @@
       const hourly = data.hourly || {};
 
       const info = getWeatherInfoFromWmo(cur.weather_code ?? 0, cur.is_day ?? 1);
-      const temp = Math.round(cur.temperature_2m ?? 6);
+      const temp = Math.round(cur.temperature_2m ?? 4);
       const feel = Math.round(cur.apparent_temperature ?? temp);
-      const humid = Math.round(cur.relative_humidity_2m ?? 45);
+      const humid = Math.round(cur.relative_humidity_2m ?? 50);
       const wind = cur.wind_speed_10m !== undefined ? Number(cur.wind_speed_10m).toFixed(1) : '1.2';
       const minTemp = daily.temperature_2m_min ? Math.round(daily.temperature_2m_min[0]) : temp - 4;
-      const maxTemp = daily.temperature_2m_max ? Math.round(daily.temperature_2m_max[0]) : temp + 4;
+      const maxTemp = daily.temperature_2m_max ? Math.round(daily.temperature_2m_max[0]) : temp + 5;
       const maxRainProb = daily.precipitation_probability_max ? daily.precipitation_probability_max[0] : 0;
 
       document.getElementById('weather-current-icon').textContent = info.icon;
@@ -1814,9 +1026,8 @@
         }
       }
 
-      const sliceCount = 18;
       const hourlyHtml = [];
-      for (let i = startIdx; i < Math.min(times.length, startIdx + sliceCount); i++) {
+      for (let i = startIdx; i < Math.min(times.length, startIdx + 18); i++) {
         const dt = new Date(times[i]);
         const hourNum = dt.getHours();
         const isNow = i === startIdx;
@@ -1825,10 +1036,10 @@
         const hTemp = Math.round(temps[i] ?? temp);
 
         hourlyHtml.push(`
-          <div class="flex flex-col items-center justify-between min-w-[36px] py-0.5 px-1 rounded-lg ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/80 dark:bg-[#14171C]'} shrink-0 tnum">
-            <span class="text-[8.5px] font-bold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
-            <span class="text-[11px] my-0.5 leading-none select-none">${hInfo.icon}</span>
-            <span class="text-[9.5px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${hTemp}°</span>
+          <div class="flex flex-col items-center justify-between min-w-[38px] py-1 px-1 rounded-lg ${isNow ? 'bg-[#E8FAF0] dark:bg-[#03C75A]/20 border border-[#03C75A]/30' : 'bg-gray-50/90 dark:bg-[#14171C]'} shrink-0 tnum">
+            <span class="text-[9px] font-bold ${isNow ? 'text-[#029e46] dark:text-[#25e278]' : 'text-gray-500 dark:text-gray-400'} leading-none">${label}</span>
+            <span class="text-[11.5px] my-0.5 leading-none select-none">${hInfo.icon}</span>
+            <span class="text-[10px] font-extrabold text-gray-800 dark:text-gray-100 leading-none">${hTemp}°</span>
           </div>
         `);
       }
@@ -1836,7 +1047,6 @@
       if (hourlyHtml.length > 0) {
         document.getElementById('hourly-weather-strip').innerHTML = hourlyHtml.join('');
       }
-      syncViewportHeight();
     }
 
     function useGpsWeather() {
@@ -1876,64 +1086,72 @@
     }
 
     /**
-     * 4. 정확한 실시간 검색어 순위 등락('NEW', '▲', '▼', '-') 판정 엔진
-     * - 초기 폴백 데이터를 스냅샷에 저장하지 않음
-     * - 짝수/홀수 인덱스 기반 인위적인 '+1(▲1)' 부여 로직 완전 제거
-     * - 실제 실시간 API 응답 간 변동이 발생했을 때만 스냅샷을 갱신하여 정확한 변동폭 계산
+     * 4. 실시간 인기검색어 (네이버·포털 실검 & 구글 급상승) 검증 및 등락 계산 엔진
+     * - 스냅샷 유효기간을 30분(1800초)으로 설정하여, 다음날 접속 시 전날 데이터와 비교해 전 항목이 NEW로 도배되는 현상을 원천 차단
+     * - 구글 트렌드 한국어 피드(&hl=ko) 강제 적용 및 병렬 프록시 레이싱(Promise.any)으로 최신 한국어 키워드 및 검색량('5만+', '2만+' 등) 즉시 파싱
      */
-    function getLiveRanksStore() {
+    function getLiveSnapshots() {
       try {
-        const raw = safeGetStorage(STORAGE_KEYS.LIVE_RANKS_STATE);
+        const raw = safeGetStorage(STORAGE_KEYS.LIVE_SNAPSHOT);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') return parsed;
         }
       } catch (e) {}
-      return {
-        naver: { prevMap: null, currMap: null, lastSig: '' },
-        google: { prevMap: null, currMap: null, lastSig: '' }
-      };
+      return {};
     }
 
-    function saveLiveRanksStore(store) {
-      safeSetStorage(STORAGE_KEYS.LIVE_RANKS_STATE, JSON.stringify(store));
+    function saveLiveSnapshots(store) {
+      safeSetStorage(STORAGE_KEYS.LIVE_SNAPSHOT, JSON.stringify(store));
     }
 
-    function evaluateLiveRankChanges(sourceKey, liveItems) {
-      const store = getLiveRanksStore();
-      const bucket = store[sourceKey] || { prevMap: null, currMap: null, lastSig: '' };
+    function computeVerifiedRankList(bucketKey, items, isGoogle = false) {
+      const store = getLiveSnapshots();
+      const nowMs = Date.now();
+      const MAX_SNAPSHOT_AGE = 30 * 60 * 1000; // 30분 이내 스냅샷만 직접 비교
 
-      const newSig = liveItems.slice(0, 10).map(i => i.keyword).join('|');
+      const bucket = store[bucketKey] || { prevMap: null, prevTime: 0, currMap: null, currTime: 0, sig: '' };
+      const top10 = items.slice(0, 10);
+      const newSig = top10.map(i => i.keyword).join('|');
       const newMap = {};
-      liveItems.slice(0, 20).forEach((item, idx) => {
-        newMap[item.keyword] = idx + 1;
+      top10.forEach((it, idx) => {
+        newMap[it.keyword] = idx + 1;
       });
 
-      // 이전에 저장된 실시간 스냅샷이 있고, 순위 구성이 실제로 바뀌었을 때만 prevMap 갱신
-      if (bucket.currMap && bucket.lastSig && bucket.lastSig !== newSig) {
-        bucket.prevMap = bucket.currMap;
+      if (bucket.currMap && bucket.sig && bucket.sig !== newSig) {
+        // 기존 currMap이 30분 이내일 때만 prevMap으로 승격
+        if (nowMs - (bucket.currTime || 0) <= MAX_SNAPSHOT_AGE) {
+          bucket.prevMap = bucket.currMap;
+          bucket.prevTime = bucket.currTime;
+        } else {
+          bucket.prevMap = null;
+          bucket.prevTime = 0;
+        }
         bucket.currMap = newMap;
-        bucket.lastSig = newSig;
+        bucket.currTime = nowMs;
+        bucket.sig = newSig;
       } else if (!bucket.currMap) {
         bucket.currMap = newMap;
-        bucket.lastSig = newSig;
+        bucket.currTime = nowMs;
+        bucket.sig = newSig;
+      } else {
+        bucket.currTime = nowMs;
       }
 
-      store[sourceKey] = bucket;
-      saveLiveRanksStore(store);
+      store[bucketKey] = bucket;
+      saveLiveSnapshots(store);
 
-      const prevMap = bucket.prevMap;
-      let newBadgeCount = 0;
+      const hasRecentPrev = bucket.prevMap && (nowMs - (bucket.prevTime || 0) <= MAX_SNAPSHOT_AGE);
+      let newCount = 0;
 
-      return liveItems.slice(0, 20).map((item, idx) => {
+      return top10.map((item, idx) => {
         const rank = idx + 1;
         const keyword = String(item.keyword || '').trim();
         let status = 'same';
         let delta = 0;
 
-        if (prevMap && Object.keys(prevMap).length > 0) {
-          // 실제 이전 스냅샷 대비 정확한 등락 계산
-          const prevRank = prevMap[keyword];
+        if (hasRecentPrev) {
+          const prevRank = bucket.prevMap[keyword];
           if (prevRank !== undefined) {
             const diff = prevRank - rank;
             if (diff > 0) {
@@ -1946,190 +1164,235 @@
               status = 'same';
               delta = 0;
             }
-          } else {
+          } else if (newCount < 3) {
             status = 'new';
+            newCount++;
+          }
+        } else if (!isGoogle) {
+          // 네이버·포털 실검(Signal.bz): 최근 스냅샷이 없을 때는 API 원본 상태값(+, -, n, s)을 존중하되 NEW 남발 방지
+          const st = String(item.apiState || 's').toLowerCase();
+          if (st === '+' || st === 'u' || st === 'up') {
+            status = 'up';
+            delta = item.apiDelta || 1;
+          } else if (st === '-' || st === 'd' || st === 'down') {
+            status = 'down';
+            delta = item.apiDelta || 1;
+          } else if ((st === 'n' || st === 'new') && newCount < 2) {
+            status = 'new';
+            newCount++;
+          } else {
+            status = 'same';
             delta = 0;
           }
         } else {
-          // 첫 접속(이전 스냅샷 없음): API 원본 상태 또는 최근 발행 시각만 엄격하게 반영
-          const apiState = String(item.apiState || '').toLowerCase();
-          if (sourceKey === 'naver') {
-            if ((apiState === '+' || apiState === 'u' || apiState === 'up') && item.apiDelta !== 0) {
-              status = 'up';
-              delta = item.apiDelta || 1;
-            } else if ((apiState === '-' || apiState === 'd' || apiState === 'down') && item.apiDelta !== 0) {
-              status = 'down';
-              delta = item.apiDelta || 1;
-            } else if ((apiState === 'n' || apiState === 'new') && newBadgeCount < 3) {
-              status = 'new';
-              newBadgeCount++;
-            } else {
-              status = 'same';
-              delta = 0;
-            }
+          // 구글 급상승: 최근 90분 이내에 발생한 신규 트렌드만 최대 2개까지 NEW 표시, 나머지는 깔끔하게 '-' 표시
+          const ageMs = item.pubMs ? (nowMs - item.pubMs) : Infinity;
+          if (ageMs >= 0 && ageMs <= 90 * 60 * 1000 && newCount < 2) {
+            status = 'new';
+            newCount++;
           } else {
-            // 구글 급상승: 최근 90분 이내 등록된 급상승 키워드만 최대 2개까지 NEW 표시, 나머지는 '-' 유지
-            if (item.isRecentNew && newBadgeCount < 2) {
-              status = 'new';
-              newBadgeCount++;
-            } else {
-              status = 'same';
-              delta = 0;
-            }
+            status = 'same';
+            delta = 0;
           }
         }
 
-        return { rank, keyword, status, delta };
+        return {
+          rank,
+          keyword,
+          trafficText: item.trafficText || '',
+          status,
+          delta
+        };
       });
     }
 
+    /**
+     * 네이버·포털 실시간 검색어 (Signal.bz API 병렬 레이싱)
+     */
     async function fetchNaverPortalTrends() {
-      const targetUrl = 'https://api.signal.bz/news/realtime';
-      const urls = [
+      const cb = Math.floor(Date.now() / 60000);
+      const targetUrl = `https://api.signal.bz/news/realtime?_cb=${cb}`;
+      const candidates = [
         targetUrl,
-        'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl),
-        'https://corsproxy.io/?' + encodeURIComponent(targetUrl)
+        `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
       ];
 
-      for (const u of urls) {
-        try {
-          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 3800);
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (data && Array.isArray(data.top10) && data.top10.length > 0) {
-            const rawList = data.top10.map((entry, idx) => ({
-              rank: entry.rank || idx + 1,
-              keyword: String(entry.keyword || '').trim(),
-              apiState: entry.state || 's',
-              apiDelta: entry.delta || 1
-            })).filter(i => i.keyword);
+      const fetchCandidate = async (u) => {
+        const res = await fetchWithTimeout(u, { cache: 'no-store' }, 3800);
+        if (!res.ok) throw new Error('status ' + res.status);
+        const data = await res.json();
+        if (!data || !Array.isArray(data.top10) || data.top10.length === 0) {
+          throw new Error('empty top10');
+        }
+        return data.top10;
+      };
 
-            if (rawList.length < 20) {
-              const used = new Set(rawList.map(i => i.keyword));
-              for (const fb of FALLBACK_NAVER_KEYWORDS) {
-                if (rawList.length >= 20) break;
-                if (!used.has(fb.keyword)) {
-                  rawList.push({
-                    rank: rawList.length + 1,
-                    keyword: fb.keyword,
-                    apiState: 's',
-                    apiDelta: 0
-                  });
-                }
-              }
-            }
+      try {
+        const top10 = await Promise.any(candidates.map(fetchCandidate));
+        const rawList = top10.slice(0, 10).map((entry, idx) => ({
+          rank: entry.rank || idx + 1,
+          keyword: String(entry.keyword || '').trim(),
+          apiState: entry.state || 's',
+          apiDelta: entry.delta || 1
+        })).filter(i => i.keyword);
 
-            const evaluated = evaluateLiveRankChanges('naver', rawList);
-            safeSetStorage(STORAGE_KEYS.NAVER_CACHE, JSON.stringify(evaluated));
-            return evaluated;
-          }
-        } catch (e) {}
-      }
+        if (rawList.length > 0) {
+          const verified = computeVerifiedRankList('naver', rawList, false);
+          safeSetStorage(STORAGE_KEYS.NAVER_CACHE, JSON.stringify(verified));
+          return verified;
+        }
+      } catch (e) {}
 
       try {
         const cached = safeGetStorage(STORAGE_KEYS.NAVER_CACHE);
         if (cached) return JSON.parse(cached);
       } catch (e) {}
-      return FALLBACK_NAVER_KEYWORDS;
+      return FALLBACK_NAVER_TOP10;
     }
 
+    /**
+     * 구글 검색량 문자열('50,000+', '20,000+', '500+' 등)을 한국어 표기('5만+', '2만+', '500+')와 숫자로 변환
+     */
+    function parseGoogleTraffic(rawTraffic) {
+      const clean = String(rawTraffic || '').replace(/,/g, '').trim();
+      const numMatch = clean.match(/\d+/);
+      const num = numMatch ? parseInt(numMatch[0], 10) : 0;
+
+      if (!num) return { num: 0, text: '' };
+      if (num >= 10000) {
+        return { num, text: Math.floor(num / 10000) + '만+' };
+      }
+      if (num >= 1000) {
+        return { num, text: Math.floor(num / 1000) + '천+' };
+      }
+      return { num, text: num + '+' };
+    }
+
+    /**
+     * 구글 트렌드 한국 공식 RSS (&hl=ko) 병렬 프록시 레이싱
+     */
     async function fetchGoogleTrendsKR() {
-      const rssUrl = 'https://trends.google.co.kr/trending/rss?geo=KR';
-      const xmlProxies = [
-        'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl),
-        'https://corsproxy.io/?' + encodeURIComponent(rssUrl)
+      const cb = Math.floor(Date.now() / 60000);
+      const rssUrl = `https://trends.google.co.kr/trending/rss?geo=KR&hl=ko&_cb=${cb}`;
+      const proxyUrls = [
+        `https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rssUrl)}`
       ];
 
-      const nowMs = Date.now();
+      const fetchXmlCandidate = async (u) => {
+        const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4200);
+        if (!res.ok) throw new Error('status ' + res.status);
+        const xmlText = await res.text();
+        if (!xmlText.includes('<item>')) throw new Error('invalid rss xml');
 
-      for (const u of xmlProxies) {
-        try {
-          const res = await fetchWithTimeout(u, { cache: 'no-store' }, 4000);
-          if (!res.ok) continue;
-          const xmlText = await res.text();
-          const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
-          const items = Array.from(xmlDoc.querySelectorAll('item'));
+        const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
+        const items = Array.from(xmlDoc.querySelectorAll('item'));
+        if (items.length === 0) throw new Error('no items');
 
-          if (items.length > 0) {
-            const parsed = items.slice(0, 20).map((item, idx) => {
-              const kw = item.querySelector('title')?.textContent?.trim() || '';
-              const pubDateStr = item.querySelector('pubDate')?.textContent?.trim() || '';
-              const pubMs = pubDateStr ? Date.parse(pubDateStr) : 0;
-              const isRecentNew = pubMs > 0 && (nowMs - pubMs) <= 90 * 60 * 1000;
-              return {
-                rank: idx + 1,
-                keyword: kw,
-                isRecentNew
-              };
-            }).filter(i => i.keyword);
-
-            if (parsed.length > 0) {
-              const used = new Set(parsed.map(p => p.keyword));
-              for (const fb of FALLBACK_GOOGLE_KEYWORDS) {
-                if (parsed.length >= 20) break;
-                if (!used.has(fb.keyword)) {
-                  parsed.push({
-                    rank: parsed.length + 1,
-                    keyword: fb.keyword,
-                    isRecentNew: false
-                  });
-                }
-              }
-              const evaluated = evaluateLiveRankChanges('google', parsed);
-              safeSetStorage(STORAGE_KEYS.GOOGLE_CACHE, JSON.stringify(evaluated));
-              return evaluated;
-            }
+        const parsed = items.map((item, idx) => {
+          const title = item.querySelector('title')?.textContent?.trim() || '';
+          // <ht:approx_traffic> 태그 추출 (네임스페이스 호환)
+          let trafficRaw = '';
+          const trafficNode = item.getElementsByTagName('ht:approx_traffic')[0] || item.getElementsByTagName('approx_traffic')[0];
+          if (trafficNode && trafficNode.textContent) {
+            trafficRaw = trafficNode.textContent.trim();
           }
-        } catch (e) {}
-      }
+          const { num: trafficNum, text: trafficText } = parseGoogleTraffic(trafficRaw);
+          const pubDateStr = item.querySelector('pubDate')?.textContent?.trim() || '';
+          const pubMs = pubDateStr ? Date.parse(pubDateStr) : (Date.now() - idx * 60000);
+
+          return {
+            keyword: title,
+            trafficNum,
+            trafficText,
+            pubMs: isNaN(pubMs) ? 0 : pubMs,
+            rssOrder: idx
+          };
+        }).filter(i => i.keyword);
+
+        if (parsed.length === 0) throw new Error('empty parsed');
+        return parsed;
+      };
 
       try {
-        const rss2JsonUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
-        const res = await fetchWithTimeout(rss2JsonUrl, {}, 4000);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.items) && data.items.length > 0) {
-            const parsed = data.items.slice(0, 20).map((it, idx) => {
-              const pubMs = it.pubDate ? Date.parse(it.pubDate) : 0;
-              return {
-                rank: idx + 1,
-                keyword: String(it.title || '').trim(),
-                isRecentNew: pubMs > 0 && (nowMs - pubMs) <= 90 * 60 * 1000
-              };
-            }).filter(i => i.keyword);
+        const rawItems = await Promise.any(proxyUrls.map(fetchXmlCandidate));
+        state.googleRawItems = rawItems;
+        safeSetStorage(STORAGE_KEYS.GOOGLE_RAW_CACHE, JSON.stringify(rawItems));
+        return buildSortedGoogleTop10(rawItems);
+      } catch (e) {}
 
-            const used = new Set(parsed.map(p => p.keyword));
-            for (const fb of FALLBACK_GOOGLE_KEYWORDS) {
-              if (parsed.length >= 20) break;
-              if (!used.has(fb.keyword)) {
-                parsed.push({ rank: parsed.length + 1, keyword: fb.keyword, isRecentNew: false });
-              }
-            }
-            const evaluated = evaluateLiveRankChanges('google', parsed);
-            safeSetStorage(STORAGE_KEYS.GOOGLE_CACHE, JSON.stringify(evaluated));
-            return evaluated;
-          }
+      try {
+        const cachedRaw = safeGetStorage(STORAGE_KEYS.GOOGLE_RAW_CACHE);
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw);
+          state.googleRawItems = parsed;
+          return buildSortedGoogleTop10(parsed);
         }
       } catch (e) {}
 
-      try {
-        const cached = safeGetStorage(STORAGE_KEYS.GOOGLE_CACHE);
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-      return FALLBACK_GOOGLE_KEYWORDS;
+      state.googleRawItems = FALLBACK_GOOGLE_RAW;
+      return buildSortedGoogleTop10(FALLBACK_GOOGLE_RAW);
+    }
+
+    /**
+     * 구글 급상승 정렬 모드 적용:
+     * - 'popular' (인기순 - 기본값): 구글 트렌드 '실시간 인기' 화면과 동일하게 검색량(5만+ > 2만+ > 1만+) 높은 순 + 최신순 정렬
+     * - 'recent' (최신순): LOWORD 사이트와 동일하게 최근 등록 시각(pubDate) 순 정렬
+     */
+    function buildSortedGoogleTop10(rawItems) {
+      const list = Array.isArray(rawItems) ? [...rawItems] : [];
+      if (state.googleSortMode === 'popular') {
+        list.sort((a, b) => {
+          if ((b.trafficNum || 0) !== (a.trafficNum || 0)) {
+            return (b.trafficNum || 0) - (a.trafficNum || 0);
+          }
+          return (b.pubMs || 0) - (a.pubMs || 0);
+        });
+      } else {
+        list.sort((a, b) => (b.pubMs || 0) - (a.pubMs || 0));
+      }
+
+      const bucketKey = 'google_' + state.googleSortMode;
+      return computeVerifiedRankList(bucketKey, list.slice(0, 10), true);
+    }
+
+    function toggleGoogleSortMode() {
+      state.googleSortMode = state.googleSortMode === 'popular' ? 'recent' : 'popular';
+      safeSetStorage(STORAGE_KEYS.GOOGLE_SORT, state.googleSortMode);
+      updateGoogleSortButtonUI();
+
+      if (state.googleRawItems && state.googleRawItems.length > 0) {
+        state.googleKeywords = buildSortedGoogleTop10(state.googleRawItems);
+        renderComparisonColumns();
+      } else {
+        refreshAllTrends();
+      }
+
+      showToast(state.googleSortMode === 'popular'
+        ? '구글 급상승: 인기순(검색량 기준 · 구글 트렌드 동일)으로 정렬합니다.'
+        : '구글 급상승: 최신순(발생시각 기준 · 로워드 동일)으로 정렬합니다.');
+    }
+
+    function updateGoogleSortButtonUI() {
+      const btn = document.getElementById('btn-google-sort');
+      if (!btn) return;
+      btn.textContent = state.googleSortMode === 'popular' ? '인기순 ▾' : '최신순 ▾';
     }
 
     function renderDeltaBadgeCompact(item) {
       if (item.status === 'new') {
-        return `<span class="px-1 py-[1px] rounded bg-[#F43142] text-white text-[8px] font-extrabold leading-none tracking-tighter">NEW</span>`;
+        return `<span class="px-1 py-[1px] rounded bg-[#F43142] text-white text-[8.5px] font-extrabold leading-none tracking-tighter">NEW</span>`;
       }
       if (item.status === 'up') {
-        return `<span class="text-[#F43142] font-extrabold text-[9.5px] tnum whitespace-nowrap">▲${item.delta || 1}</span>`;
+        return `<span class="text-[#F43142] font-extrabold text-[10px] tnum whitespace-nowrap">▲${item.delta || 1}</span>`;
       }
       if (item.status === 'down') {
-        return `<span class="text-[#2B78F6] font-extrabold text-[9.5px] tnum whitespace-nowrap">▼${item.delta || 1}</span>`;
+        return `<span class="text-[#2B78F6] font-extrabold text-[10px] tnum whitespace-nowrap">▼${item.delta || 1}</span>`;
       }
-      return `<span class="text-gray-300 dark:text-gray-600 font-bold text-[10px] px-1">-</span>`;
+      return `<span class="text-gray-300 dark:text-gray-600 font-bold text-[10.5px] px-1">-</span>`;
     }
 
     function renderComparisonColumns() {
@@ -2137,13 +1400,11 @@
       const colGoogle = document.getElementById('compare-col-google');
       if (!colNaver || !colGoogle) return;
 
-      const visibleCount = state.isExpandedRanks ? 20 : 10;
-
-      // 각 행 높이 h-[24px] 고정 -> 1~10위 총 240px로 2줄 아이콘 바와 함께 한 화면에 완벽 노출
-      const buildColumnHtml = (list) => (list || []).slice(0, visibleCount).map(item => {
-        const isTop3 = item.rank <= 3;
+      const buildColumnHtml = (list, isGoogleCol = false) => (list || []).slice(0, 10).map((item, idx) => {
+        const rank = item.rank || (idx + 1);
+        const isTop3 = rank <= 3;
         const rankColor = isTop3
-          ? 'text-[#03C75A] font-black'
+          ? (isGoogleCol ? 'text-blue-600 dark:text-blue-400 font-black' : 'text-[#03C75A] font-black')
           : 'text-gray-400 dark:text-gray-500 font-bold';
         const naverSearchUrl = buildNaverSearchUrl(item.keyword);
 
@@ -2153,12 +1414,17 @@
              rel="noopener noreferrer"
              title="${escapeHtml(item.keyword)} - 네이버 검색"
              onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
-             class="flex items-center justify-between h-[24px] px-2 hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group">
+             class="flex items-center justify-between px-2.5 h-full hover:bg-[#F4FBF7] dark:hover:bg-[#222730] active:bg-[#E8FAF0] transition-colors group min-w-0">
             <div class="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
-              <span class="tnum text-[10.5px] w-3.5 text-center shrink-0 ${rankColor}">${item.rank}</span>
-              <span class="text-[11px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
+              <span class="tnum text-[11.5px] w-4 text-center shrink-0 ${rankColor}">${rank}</span>
+              <span class="text-[12px] font-bold text-gray-800 dark:text-gray-100 truncate group-hover:text-[#03C75A] transition-colors">
                 ${escapeHtml(item.keyword)}
               </span>
+              ${isGoogleCol && item.trafficText ? `
+                <span class="text-[9px] font-semibold text-gray-400 dark:text-gray-500 shrink-0 tnum">
+                  ${escapeHtml(item.trafficText)}
+                </span>
+              ` : ''}
             </div>
             <div class="shrink-0 ml-0.5 flex items-center">
               ${renderDeltaBadgeCompact(item)}
@@ -2167,28 +1433,8 @@
         `;
       }).join('');
 
-      colNaver.innerHTML = buildColumnHtml(state.naverKeywords);
-      colGoogle.innerHTML = buildColumnHtml(state.googleKeywords);
-
-      const labelEl = document.getElementById('expand-btn-label');
-      const arrowEl = document.getElementById('expand-btn-arrow');
-      if (labelEl && arrowEl) {
-        if (state.isExpandedRanks) {
-          labelEl.textContent = '11위 ~ 20위 접기';
-          arrowEl.classList.add('rotate-180');
-        } else {
-          labelEl.textContent = '11위 ~ 20위 더보기';
-          arrowEl.classList.remove('rotate-180');
-        }
-      }
-
-      syncViewportHeight();
-    }
-
-    function toggleRankExpand() {
-      state.isExpandedRanks = !state.isExpandedRanks;
-      safeSetStorage(STORAGE_KEYS.EXPAND_RANKS, String(state.isExpandedRanks));
-      renderComparisonColumns();
+      colNaver.innerHTML = buildColumnHtml(state.naverKeywords, false);
+      colGoogle.innerHTML = buildColumnHtml(state.googleKeywords, true);
     }
 
     async function refreshAllTrends() {
@@ -2208,7 +1454,7 @@
         const hh = String(now.getHours()).padStart(2, '0');
         const mm = String(now.getMinutes()).padStart(2, '0');
         const timeEl = document.getElementById('updated-time-text');
-        if (timeEl) timeEl.textContent = `${hh}:${mm} 기준`;
+        if (timeEl) timeEl.textContent = `${hh}:${mm} 실시간`;
 
         renderComparisonColumns();
       } catch (e) {} finally {
@@ -2219,396 +1465,11 @@
     function manualRefresh() {
       refreshAllTrends();
       fetchWeatherAndAirQuality();
+      showToast('실시간 인기검색어와 날씨를 갱신했습니다.');
     }
 
     /**
-     * 5. [SLIDE 1: 뉴스] & [SLIDE 2: MY뉴스] & [SLIDE 3: 엔터] 렌더링
-     */
-    function buildPressCardHtml(press, dateStr) {
-      const headlinesHtml = (press.headlines || []).slice(0, 5).map(hl => {
-        const searchUrl = buildNaverSearchUrl(hl);
-        return `
-          <a href="${searchUrl}"
-             target="${state.linkTarget}"
-             rel="noopener noreferrer"
-             onclick="return handleKeywordClick(event, ${JSON.stringify(hl).replace(/"/g, '&quot;')})"
-             class="block py-2.5 text-[14px] font-medium text-gray-900 dark:text-gray-100 hover:text-[#03C75A] truncate leading-snug">
-            ${escapeHtml(hl)}
-          </a>
-        `;
-      }).join('');
-
-      const photoCardsHtml = (press.photoCards || []).slice(0, 2).map(card => {
-        const searchUrl = buildNaverSearchUrl(card.title);
-        return `
-          <a href="${searchUrl}"
-             target="${state.linkTarget}"
-             rel="noopener noreferrer"
-             onclick="return handleKeywordClick(event, ${JSON.stringify(card.title).replace(/"/g, '&quot;')})"
-             class="flex flex-col group min-w-0">
-            <div class="relative w-full aspect-16/10 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 mb-1.5">
-              <img src="${escapeHtml(card.img)}" alt="${escapeHtml(card.title)}"
-                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                   onerror="this.src='https://placehold.co/400x250/1e293b/ffffff?text=NEWS'" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent"></div>
-              <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-[#ef4444] text-white text-[10px] font-extrabold leading-none">
-                ${escapeHtml(card.badge || '잇슈 #태그')}
-              </span>
-              ${card.duration ? `
-                <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 text-white text-[10px] font-bold tnum">
-                  ▶ ${escapeHtml(card.duration)}
-                </span>
-              ` : ''}
-              ${card.overlayTop ? `
-                <span class="absolute bottom-2 left-2 text-amber-300 font-black text-[11.5px] drop-shadow">
-                  ${escapeHtml(card.overlayTop)}
-                </span>
-              ` : ''}
-            </div>
-            <p class="text-[13px] font-semibold text-gray-800 dark:text-gray-100 leading-[1.35] line-clamp-2 group-hover:text-[#03C75A]">
-              ${escapeHtml(card.title)}
-            </p>
-          </a>
-        `;
-      }).join('');
-
-      const footerUrl = buildNaverSearchUrl(press.footerHeadline || press.name);
-
-      return `
-        <div class="flex items-center justify-between mb-2.5">
-          <div class="flex items-center gap-2.5">
-            <div class="w-10 h-10 rounded-full flex flex-col items-center justify-center text-white font-black text-[9.5px] leading-tight text-center px-1 shadow-xs shrink-0"
-                 style="background-color: ${escapeHtml(press.logoBg)}">
-              ${escapeHtml(press.logoText)}
-            </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-[16px] font-black text-gray-900 dark:text-white leading-none">${escapeHtml(press.name)}</span>
-                <span class="px-1.5 py-0.5 rounded-full border border-pink-300 dark:border-pink-800 bg-pink-50/70 dark:bg-pink-950/40 text-[#e91e63] text-[9.5px] font-extrabold leading-none">
-                  ✪ ${escapeHtml(press.subscribers)}
-                </span>
-              </div>
-              <div class="text-[11px] text-gray-400 dark:text-gray-500 font-medium mt-1 tnum">
-                ${dateStr}
-              </div>
-            </div>
-          </div>
-          <a href="${buildNaverSearchUrl(press.name + ' 뉴스')}"
-             target="${state.linkTarget}"
-             onclick="return handleKeywordClick(event, '${escapeHtml(press.name)} 뉴스')"
-             class="p-1 text-gray-400 hover:text-gray-600 text-lg font-bold leading-none">⋮</a>
-        </div>
-
-        <a href="${buildNaverSearchUrl(press.liveTitle)}"
-           target="${state.linkTarget}"
-           onclick="return handleKeywordClick(event, ${JSON.stringify(press.liveTitle).replace(/"/g, '&quot;')})"
-           class="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700/80 bg-[#F9FAFB] dark:bg-[#14171D] mb-1.5 hover:border-[#03C75A] transition-colors">
-          <span class="px-2 py-0.5 rounded-full bg-[#ef4444] text-white text-[10px] font-black tracking-tight shrink-0">LIVE</span>
-          <span class="text-[13px] font-extrabold text-gray-900 dark:text-gray-100 truncate">
-            ${escapeHtml(press.liveTitle)}
-          </span>
-        </a>
-
-        <div class="divide-y divide-gray-100 dark:divide-gray-800 mb-2.5">
-          ${headlinesHtml}
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5 pt-1 pb-2.5 border-b border-gray-100 dark:border-gray-800">
-          ${photoCardsHtml}
-        </div>
-
-        <a href="${footerUrl}"
-           target="${state.linkTarget}"
-           onclick="return handleKeywordClick(event, ${JSON.stringify(press.footerHeadline).replace(/"/g, '&quot;')})"
-           class="block pt-2.5 text-[13.5px] font-medium text-gray-800 dark:text-gray-200 hover:text-[#03C75A] truncate">
-          ${escapeHtml(press.footerHeadline)}
-        </a>
-      `;
-    }
-
-    function selectPressOutlet(idx) {
-      state.selectedPressIdx = idx;
-      renderNewsTab();
-    }
-
-    function renderNewsTab() {
-      const selectorBar = document.getElementById('press-selector-bar');
-      const mainCard = document.getElementById('press-main-card');
-      const secondaryContainer = document.getElementById('press-secondary-cards');
-      if (!selectorBar || !mainCard || !secondaryContainer) return;
-
-      selectorBar.innerHTML = PRESS_OUTLETS.map((p, idx) => {
-        const active = idx === state.selectedPressIdx;
-        return `
-          <button type="button" onclick="selectPressOutlet(${idx})"
-                  class="px-3 py-1 rounded-full text-[11.5px] font-extrabold shrink-0 transition-colors ${active ? 'bg-[#03C75A] text-white shadow-2xs' : 'bg-white dark:bg-[#1E222B] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700'}">
-            ${escapeHtml(p.name)}
-          </button>
-        `;
-      }).join('');
-
-      const now = new Date();
-      const dateStr = `${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      const curPress = PRESS_OUTLETS[state.selectedPressIdx] || PRESS_OUTLETS[0];
-      mainCard.innerHTML = buildPressCardHtml(curPress, dateStr);
-
-      const nextOutlet = PRESS_OUTLETS[(state.selectedPressIdx + 1) % PRESS_OUTLETS.length];
-      secondaryContainer.innerHTML = `
-        <div class="bg-white dark:bg-[#1A1D23] rounded-xl border border-gray-200/80 dark:border-gray-800 p-3.5 shadow-2xs">
-          ${buildPressCardHtml(nextOutlet, dateStr)}
-        </div>
-      `;
-
-      syncViewportHeight();
-    }
-
-    function selectMyNewsCategory(catId) {
-      state.selectedMyNewsCat = catId;
-      renderMyNewsTab();
-    }
-
-    function renderMyNewsTab() {
-      const catBar = document.getElementById('mynews-category-bar');
-      const listContainer = document.getElementById('mynews-list-container');
-      if (!catBar || !listContainer) return;
-
-      catBar.innerHTML = MY_NEWS_CATEGORIES.map(c => {
-        const active = c.id === state.selectedMyNewsCat;
-        return `
-          <button type="button" onclick="selectMyNewsCategory('${c.id}')"
-                  class="px-3 py-1 rounded-full text-[11.5px] font-extrabold shrink-0 transition-colors ${active ? 'bg-[#03C75A] text-white' : 'bg-white dark:bg-[#1E222B] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700'}">
-            ${escapeHtml(c.label)}
-          </button>
-        `;
-      }).join('');
-
-      const filtered = state.selectedMyNewsCat === 'all'
-        ? MY_NEWS_ITEMS
-        : MY_NEWS_ITEMS.filter(item => item.cat === state.selectedMyNewsCat);
-      const displayList = filtered.length > 0 ? filtered : MY_NEWS_ITEMS;
-
-      listContainer.innerHTML = displayList.map(item => {
-        const searchUrl = item.link || buildNaverSearchUrl(item.title);
-        return `
-          <a href="${escapeHtml(searchUrl)}"
-             target="${state.linkTarget}"
-             rel="noopener noreferrer"
-             onclick="return handleShortcutClick(event, ${JSON.stringify(searchUrl).replace(/"/g, '&quot;')})"
-             class="flex items-center gap-3 py-3 group">
-            <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.title)}"
-                 class="w-[88px] h-[62px] rounded-lg object-cover bg-gray-100 dark:bg-gray-800 shrink-0"
-                 onerror="this.src='https://placehold.co/176x124/334155/ffffff?text=MY+NEWS'" />
-            <div class="flex-1 min-w-0">
-              <h4 class="text-[14px] font-medium text-gray-900 dark:text-gray-100 leading-[1.35] line-clamp-2 group-hover:text-[#03C75A]">
-                ${escapeHtml(item.title)}
-              </h4>
-              <div class="flex items-center justify-between mt-1.5">
-                <span class="text-[11.5px] text-gray-400 dark:text-gray-500 font-medium truncate">
-                  ${escapeHtml(item.press)} · ${escapeHtml(item.time)}
-                </span>
-                <span class="px-2 py-[1px] rounded-full border border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 text-[10.5px] font-bold tnum shrink-0">
-                  ${item.comments || 33}
-                </span>
-              </div>
-            </div>
-          </a>
-        `;
-      }).join('');
-
-      syncViewportHeight();
-    }
-
-    async function refreshLiveNewsFeeds(showNotification = false) {
-      const rssUrl = 'https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko';
-      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl);
-
-      try {
-        const res = await fetchWithTimeout(proxyUrl, { cache: 'no-store' }, 4200);
-        if (res.ok) {
-          const xmlText = await res.text();
-          const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
-          const items = Array.from(xmlDoc.querySelectorAll('item'));
-
-          if (items.length >= 5) {
-            const parsedNews = items.slice(0, 12).map((it, idx) => {
-              const rawTitle = it.querySelector('title')?.textContent?.trim() || '';
-              const lastDash = rawTitle.lastIndexOf(' - ');
-              const cleanTitle = lastDash > 0 ? rawTitle.slice(0, lastDash).trim() : rawTitle;
-              const pressName = lastDash > 0 ? rawTitle.slice(lastDash + 3).trim() : '주요언론';
-              return { title: cleanTitle, press: pressName, idx };
-            }).filter(i => i.title);
-
-            if (parsedNews.length >= 5) {
-              PRESS_OUTLETS[0].headlines = parsedNews.slice(0, 5).map(n => n.title);
-              if (parsedNews.length >= 10) {
-                PRESS_OUTLETS[1].headlines = parsedNews.slice(5, 10).map(n => n.title);
-              }
-
-              const thumbPool = [
-                'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=240&q=75',
-                'https://images.unsplash.com/photo-1575320181282-9afab399332c?auto=format&fit=crop&w=240&q=75',
-                'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=240&q=75',
-                'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=75',
-                'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=240&q=75',
-                'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=240&q=75'
-              ];
-              const now = new Date();
-              const timeLabel = `${now.getMonth() + 1}월 ${now.getDate()}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-              const liveMyNews = parsedNews.slice(0, 6).map((n, i) => ({
-                title: n.title,
-                press: n.press,
-                time: timeLabel,
-                comments: 25 + ((i * 17) % 65),
-                cat: i % 2 === 0 ? 'economy' : 'society',
-                img: thumbPool[i % thumbPool.length]
-              }));
-
-              MY_NEWS_ITEMS = [...liveMyNews, ...MY_NEWS_ITEMS.slice(0, 2)];
-              renderNewsTab();
-              renderMyNewsTab();
-            }
-          }
-        }
-      } catch (e) {}
-
-      if (showNotification) {
-        showToast('실시간 뉴스 헤드라인을 갱신했습니다.');
-      }
-    }
-
-    function toggleEnterAccordion(idx) {
-      state.enterExpandedIdx = idx;
-      renderEnterTab();
-    }
-
-    function selectEnterSet(setIdx) {
-      state.enterSetIdx = setIdx % ENTER_SHORTENTS_SETS.length;
-      state.enterExpandedIdx = 0;
-      renderEnterTab();
-    }
-
-    function nextEnterShortentsSet() {
-      state.enterSetIdx = (state.enterSetIdx + 1) % ENTER_SHORTENTS_SETS.length;
-      state.enterExpandedIdx = 0;
-      renderEnterTab();
-    }
-
-    function renderEnterTab() {
-      const shortentsBox = document.getElementById('enter-shortents-container');
-      const dotsBox = document.getElementById('enter-pagination-dots');
-      const nowGrid = document.getElementById('enter-now-grid');
-      const timeLabel = document.getElementById('enter-time-label');
-      if (!shortentsBox || !dotsBox || !nowGrid) return;
-
-      const curHour = new Date().getHours();
-      const ampm = curHour < 12 ? '오전' : '오후';
-      const dispHour = curHour % 12 === 0 ? 12 : curHour % 12;
-      if (timeLabel) timeLabel.textContent = `${ampm} ${dispHour}시 제공`;
-
-      const currentSet = ENTER_SHORTENTS_SETS[state.enterSetIdx] || ENTER_SHORTENTS_SETS[0];
-
-      shortentsBox.innerHTML = currentSet.map((item, idx) => {
-        const isExpanded = idx === state.enterExpandedIdx;
-        const searchUrl = buildNaverSearchUrl(item.keyword);
-
-        if (isExpanded) {
-          return `
-            <div class="rounded-2xl overflow-hidden border border-[#f48fb1] bg-[#fdf2f7] dark:bg-[#2a1721] shadow-2xs transition-all">
-              <a href="${searchUrl}"
-                 target="${state.linkTarget}"
-                 onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
-                 class="flex items-center gap-2.5 px-3.5 py-2.5 bg-white dark:bg-[#1E222A] rounded-b-xl border-b border-[#f48fb1]/40">
-                <span class="text-[#e91e63] text-[14px] font-black leading-none shrink-0">🔍</span>
-                <span class="text-[14px] font-extrabold text-gray-900 dark:text-white truncate">
-                  ${escapeHtml(item.keyword)}
-                </span>
-              </a>
-              <a href="${searchUrl}"
-                 target="${state.linkTarget}"
-                 onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
-                 class="flex items-center justify-between gap-3 px-3.5 py-2.5">
-                <p class="text-[13px] font-medium text-gray-800 dark:text-gray-200 leading-[1.4] line-clamp-2 flex-1">
-                  ${escapeHtml(item.summary)}
-                  <span class="text-gray-400 dark:text-gray-400 text-[11.5px] ml-1">${escapeHtml(item.timeAgo)}</span>
-                </p>
-                <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.keyword)}"
-                     class="w-13 h-13 rounded-xl object-cover shrink-0 border border-white/60 shadow-2xs"
-                     onerror="this.src='https://placehold.co/104x104/ec4899/ffffff?text=ENT'" />
-              </a>
-            </div>
-          `;
-        }
-
-        return `
-          <div class="flex items-center justify-between px-3.5 py-2 rounded-2xl bg-[#F4F5F7] dark:bg-[#14171D] hover:bg-gray-200/70 dark:hover:bg-gray-800 transition-colors">
-            <a href="${searchUrl}"
-               target="${state.linkTarget}"
-               onclick="return handleKeywordClick(event, ${JSON.stringify(item.keyword).replace(/"/g, '&quot;')})"
-               class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
-              <span class="text-[#e91e63] text-[14px] font-black leading-none shrink-0">🔍</span>
-              <span class="text-[14px] font-extrabold text-gray-900 dark:text-gray-100 truncate">
-                ${escapeHtml(item.keyword)}
-              </span>
-            </a>
-            <div class="flex items-center gap-1.5 shrink-0">
-              <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.keyword)}"
-                   onclick="toggleEnterAccordion(${idx})"
-                   class="w-8 h-8 rounded-lg object-cover cursor-pointer"
-                   onerror="this.src='https://placehold.co/64x64/ec4899/ffffff?text=E'" />
-              <button type="button" onclick="toggleEnterAccordion(${idx})"
-                      aria-label="내용 펼치기"
-                      class="w-6 h-8 rounded-lg bg-gray-200/80 dark:bg-gray-800 text-gray-500 dark:text-gray-400 flex items-center justify-center text-xs font-bold">
-                ▾
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      dotsBox.innerHTML = ENTER_SHORTENTS_SETS.map((_, idx) => {
-        const active = idx === state.enterSetIdx;
-        return `
-          <button type="button" onclick="selectEnterSet(${idx})"
-                  aria-label="엔터 숏텐츠 ${idx + 1}페이지"
-                  class="w-2 h-2 rounded-full transition-colors ${active ? 'bg-gray-700 dark:bg-white scale-110' : 'bg-gray-300 dark:bg-gray-700'}"></button>
-        `;
-      }).join('');
-
-      nowGrid.innerHTML = ENTER_NOW_ITEMS.map(item => {
-        const searchUrl = buildNaverSearchUrl(item.title);
-        return `
-          <a href="${searchUrl}"
-             target="${state.linkTarget}"
-             onclick="return handleKeywordClick(event, ${JSON.stringify(item.title).replace(/"/g, '&quot;')})"
-             class="group flex flex-col">
-            <div class="relative w-full aspect-3/4 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-2xs">
-              <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.title)}"
-                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                   onerror="this.src='https://placehold.co/300x400/db2777/ffffff?text=ENTER+NOW'" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20"></div>
-              <span class="absolute top-2.5 right-2.5 text-white/90 text-[10px] font-extrabold drop-shadow">
-                ${escapeHtml(item.channel)}
-              </span>
-              <div class="absolute bottom-2.5 left-2.5 right-2.5">
-                <span class="inline-block px-1.5 py-0.5 rounded bg-pink-600/90 text-white text-[9.5px] font-bold mb-1">
-                  ${escapeHtml(item.press)}
-                </span>
-                <p class="text-white text-[12px] font-extrabold leading-snug line-clamp-2 drop-shadow">
-                  ${escapeHtml(item.title)}
-                </p>
-              </div>
-            </div>
-          </a>
-        `;
-      }).join('');
-
-      syncViewportHeight();
-    }
-
-    /**
-     * 6. 상단 시계, 링크 이동방식, 다크모드, 토스트
+     * 5. 시계, 링크 타겟 토글, 다크모드, 토스트
      */
     function updateClock() {
       const el = document.getElementById('clock-display');
@@ -2629,9 +1490,6 @@
       updateLinkTargetButtonUI();
       renderShortcutsBar();
       renderComparisonColumns();
-      renderNewsTab();
-      renderMyNewsTab();
-      renderEnterTab();
       showToast(state.linkTarget === '_top'
         ? '터치 시 현재 창에서 바로 이동합니다.'
         : '터치 시 새 탭에서 열립니다.');
@@ -2678,11 +1536,12 @@
     }
 
     /**
-     * 초기 실행 부트스트랩
+     * 초기 부트스트랩 실행
      */
     function bootstrapApp() {
       try { initTheme(); } catch (e) {}
       try { updateLinkTargetButtonUI(); } catch (e) {}
+      try { updateGoogleSortButtonUI(); } catch (e) {}
       try {
         updateClock();
         setInterval(updateClock, 15000);
@@ -2693,28 +1552,25 @@
         renderShortcutsBar();
       } catch (e) {}
 
-      try { renderDefaultHourlyStrip(6); } catch (e) {}
+      try { renderDefaultHourlyStrip(4); } catch (e) {}
 
       try {
-        // 캐시가 있으면 캐시를 먼저 보여주고, 없으면 스냅샷 오염 없이 초기 폴백 표시
         const cachedNaver = safeGetStorage(STORAGE_KEYS.NAVER_CACHE);
-        const cachedGoogle = safeGetStorage(STORAGE_KEYS.GOOGLE_CACHE);
-        state.naverKeywords = cachedNaver ? JSON.parse(cachedNaver) : FALLBACK_NAVER_KEYWORDS;
-        state.googleKeywords = cachedGoogle ? JSON.parse(cachedGoogle) : FALLBACK_GOOGLE_KEYWORDS;
+        const cachedGoogleRaw = safeGetStorage(STORAGE_KEYS.GOOGLE_RAW_CACHE);
+        state.naverKeywords = cachedNaver ? JSON.parse(cachedNaver) : FALLBACK_NAVER_TOP10;
+        if (cachedGoogleRaw) {
+          state.googleRawItems = JSON.parse(cachedGoogleRaw);
+          state.googleKeywords = buildSortedGoogleTop10(state.googleRawItems);
+        } else {
+          state.googleRawItems = FALLBACK_GOOGLE_RAW;
+          state.googleKeywords = buildSortedGoogleTop10(FALLBACK_GOOGLE_RAW);
+        }
         renderComparisonColumns();
       } catch (e) {
-        state.naverKeywords = FALLBACK_NAVER_KEYWORDS;
-        state.googleKeywords = FALLBACK_GOOGLE_KEYWORDS;
+        state.naverKeywords = FALLBACK_NAVER_TOP10;
+        state.googleKeywords = buildSortedGoogleTop10(FALLBACK_GOOGLE_RAW);
         renderComparisonColumns();
       }
-
-      try {
-        renderNewsTab();
-        renderMyNewsTab();
-        renderEnterTab();
-        initSwipeNavigation();
-        syncViewportHeight();
-      } catch (e) {}
 
       const searchInput = document.getElementById('naver-search-input');
       const clearBtn = document.getElementById('btn-clear-input');
@@ -2725,15 +1581,13 @@
         });
       }
 
-      // 실시간 날씨·실검·뉴스 비동기 호출
+      // 실시간 날씨 및 인기검색어 호출
       fetchWeatherAndAirQuality();
       refreshAllTrends();
-      refreshLiveNewsFeeds(false);
 
-      // 백그라운드 무소음 주기적 자동 갱신
+      // 1분 주기 실검 자동 갱신 & 10분 주기 날씨 갱신
       setInterval(refreshAllTrends, 60 * 1000);
       setInterval(fetchWeatherAndAirQuality, 10 * 60 * 1000);
-      setInterval(() => refreshLiveNewsFeeds(false), 5 * 60 * 1000);
     }
 
     if (document.readyState === 'loading') {
